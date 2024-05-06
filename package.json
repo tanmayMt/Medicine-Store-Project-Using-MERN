@@ -1,5 +1,5 @@
 {
-  "name": "ecommerce-app",
+  "name": "medicure",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -11,7 +11,7 @@
     "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "keywords": [],
-  "author": "Techinfoyt",
+  "author": "Web-collab and tanmayMt",
   "license": "MIT",
   "dependencies": {
     "bcrypt": "^5.1.1",
