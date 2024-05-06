@@ -107,7 +107,7 @@ const HomePage = () => {
     }
   };
   return (
-    <Layout title={"ALl Products - Best offers "}>
+    <Layout title={"Welcome to Medicure "}>
       {/* banner image */}
       <img
         src="/images/banner.png"

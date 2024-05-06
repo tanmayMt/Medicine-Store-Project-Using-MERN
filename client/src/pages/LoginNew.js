@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { withRouter, useNavigate } from 'react-router-dom'
 import { message } from "antd";
 import axios from 'axios';
+import Layout from '../components/Layout/Layout';
 function LoginNew() {
 
   const navigate = useNavigate();
@@ -80,6 +81,7 @@ function LoginNew() {
   };
 
   return (
+    <Layout>
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <img
@@ -131,7 +133,7 @@ function LoginNew() {
     </p>
   </div>
  </div>
-    
+   </Layout>  
   );
 }
 export default LoginNew;

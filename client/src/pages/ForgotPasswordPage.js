@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { withRouter, useNavigate } from 'react-router-dom'
 import axios from "axios";
 import { message } from 'antd';
+import Layout from '../components/Layout/Layout';
+import toast from 'react-hot-toast';
 
 function ForgotPasswordNew() {
   const [referenceId, setReferenceId] = useState(localStorage.getItem("OTPReference"));
@@ -85,24 +87,29 @@ function ForgotPasswordNew() {
     let newErrors = {};
     if (formData.password.length < 8) {
       newErrors.password = 'Password must be at least 8 characters long';
-    }
-    setErrors(newErrors);
-    const res = await axios.post("/api/v1/auth/resetpassword", {
-      headers:{
-      Authorization : "Bearer "+localStorage.getItem("ResetToken"),
-    },password: formData.password,otp: otp1});
-    if(res.data.success)
-    {
-      localStorage.clear();
-      localStorage.setItem("LoginToken", res.data.logintoken);
-      //console.log(res.data.logintoken);
-      message.success(res.data.message);
-      navigate("/");
+      toast.error("Password must be at least 8 characters long, please try again")
+      setIsSubmitting(false);
     }
     else{
-      message.error(res.data.message);
+        const res = await axios.post("/api/v1/auth/resetpassword", {
+            headers:{
+            Authorization : "Bearer "+localStorage.getItem("ResetToken"),
+          },password: formData.password,otp: otp1});
+          if(res.data.success)
+          {
+            localStorage.clear();
+            localStorage.setItem("LoginToken", res.data.logintoken);
+            //console.log(res.data.logintoken);
+            message.success(res.data.message);
+            navigate("/");
+          }
+          else{
+            message.error(res.data.message);
+          }
+          setIsSubmitting(false);
     }
-    setIsSubmitting(false);
+    setErrors(newErrors);
+    
 
   };
   const handleClick = () => {
@@ -110,6 +117,7 @@ function ForgotPasswordNew() {
   };
 
   return (
+    <Layout>
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
               <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <img
@@ -178,7 +186,7 @@ function ForgotPasswordNew() {
         </div>
 
     </div>
-
+    </Layout>
   );
 }
 

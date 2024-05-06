@@ -2,6 +2,8 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import { withRouter, useNavigate } from 'react-router-dom'
 import { message } from "antd";
+import Layout from '../components/Layout/Layout';
+import toast from 'react-hot-toast';
 function SignupPage() {
 
   const navigate = useNavigate();
@@ -36,7 +38,8 @@ function SignupPage() {
     if (!formData.name) {
       newErrors.name = 'Name is required';
     }
-    if (formData.phone.length <10) {
+    if (formData.phone.length < 10) {
+        toast.error("Phone number should be of 10 digits");
       newErrors.phone = 'Phone number should be of 10 digits';
     }
     if (formData.password.length < 8) {
@@ -80,6 +83,7 @@ function SignupPage() {
   };
 
   return (
+    <Layout>
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <img
@@ -135,7 +139,7 @@ function SignupPage() {
           value={formData.phone}
           onChange={handleChange}
         />
-        {errors.phone && <span className="error">{errors.error}</span>}
+        {errors.phone && <span className="error" color= 'red'>{errors.error}</span>}
       </div>
 
       <div className="form-group">
@@ -197,7 +201,7 @@ function SignupPage() {
     
   </div>
  </div>
-    
+    </Layout>
   );
 }
 
