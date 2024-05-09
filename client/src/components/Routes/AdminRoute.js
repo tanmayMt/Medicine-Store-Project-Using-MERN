@@ -9,15 +9,20 @@ export default function PrivateRoute() {
   const [auth, setAuth] = useAuth();
 
   useEffect(() => {
+    //console.log("Admin");
     const authCheck = async () => {
-      const res = await axios.get("/api/v1/auth/admin-auth");
+      const res = await axios.post("/api/v1/auth/adminauth", {
+        headers:{
+        Authorization : "Bearer "+localStorage.getItem("LoginToken"),
+      }});
       if (res.data.ok) {
         setOk(true);
       } else {
         setOk(false);
       }
     };
-    if (auth?.token) authCheck();
+   // console.log(auth);
+    if (localStorage.getItem("LoginToken")) authCheck();
   }, [auth?.token]);
 
   return ok ? <Outlet /> : <Spinner path="" />;

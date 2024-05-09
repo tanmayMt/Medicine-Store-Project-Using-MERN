@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import CategoryForm from "../../components/Form/CategoryForm";
 import { Modal } from "antd";
+import CategoryFormUpdate from "../../components/Form/CategoryFormUpdate";
 const CreateCategory = () => {
   const [categories, setCategories] = useState([]);
   const [name, setName] = useState("");
@@ -15,15 +16,21 @@ const CreateCategory = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      if(name){
+      //if(!name){
       const { data } = await axios.post("/api/v1/category/create-category", {
+        headers:{
+        Authorization : "Bearer "+localStorage.getItem("LoginToken"),
+      },
         name,
       });
       if (data?.success) {
-        toast.success(`${name} is created`);
+        toast.success(`${name} category is created`);
         getAllCategory();
       } else {
         toast.error(data.message);
       }
+    }else{toast.error("Please enter valid input");}
     } catch (error) {
       console.log(error);
       toast.error("somthing went wrong in input form");
@@ -33,13 +40,17 @@ const CreateCategory = () => {
   //get all cat
   const getAllCategory = async () => {
     try {
-      const { data } = await axios.get("/api/v1/category/get-category");
+      const { data } = await axios.get("/api/v1/category/get-category", {
+        headers:{
+          Authorization : "Bearer "+localStorage.getItem("LoginToken"),
+        }
+      });
       if (data?.success) {
         setCategories(data?.category);
       }
     } catch (error) {
       console.log(error);
-      toast.error("Something wwent wrong in getting catgeory");
+      toast.error("Something went wrong in getting catgeory");
     }
   };
 
@@ -51,9 +62,12 @@ const CreateCategory = () => {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.put(
-        `/api/v1/category/update-category/${selected._id}`,
-        { name: updatedName }
+      const { data } = await axios.post(
+        `/api/v1/category/update-category/${selected._id}`,{
+          headers:{
+            Authorization : "Bearer "+localStorage.getItem("LoginToken"),
+          }, name: updatedName
+        }
       );
       if (data?.success) {
         toast.success(`${updatedName} is updated`);
@@ -71,18 +85,22 @@ const CreateCategory = () => {
   //delete category
   const handleDelete = async (pId) => {
     try {
-      const { data } = await axios.delete(
-        `/api/v1/category/delete-category/${pId}`
+      const { data } = await axios.post(
+        `/api/v1/category/delete-category/${pId}`,{
+          headers:{
+            Authorization : "Bearer "+localStorage.getItem("LoginToken"),
+          }
+        }
       );
       if (data.success) {
-        toast.success(`category is deleted`);
+        toast.success(`Category is deleted successfully`);
 
         getAllCategory();
       } else {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error("Somtihing went wrong");
+      toast.error("Something went wrong");
     }
   };
   return (
@@ -145,7 +163,7 @@ const CreateCategory = () => {
               footer={null}
               visible={visible}
             >
-              <CategoryForm
+              <CategoryFormUpdate
                 value={updatedName}
                 setValue={setUpdatedName}
                 handleSubmit={handleUpdate}

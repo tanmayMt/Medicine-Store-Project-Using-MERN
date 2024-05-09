@@ -16,7 +16,7 @@ const Header = () => {
       user: null,
       token: "",
     });
-    localStorage.removeItem("auth");
+    localStorage.removeItem("LoginToken");
     toast.success("Logout Successfully");
   };
   return (

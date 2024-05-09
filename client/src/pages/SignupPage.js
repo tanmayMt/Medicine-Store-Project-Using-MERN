@@ -83,84 +83,86 @@ function SignupPage() {
   };
 
   return (
-    <Layout>
-    <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+    <Layout title="Create New Account">
+    <div className="form-container" style={{ minHeight: "90vh" }}>
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <img
-            className="mx-auto h-10 w-auto"
-            src="/ecommerce.png"
-            alt="Your Company"
+            // className="mx-auto h-10 w-auto"
+            // src="/ecommerce.png"
+            // alt="Your Company"
           />
-          <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-            Create a New Account
-          </h2>
+
         </div>
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
         <form onSubmit={handleSubmit} className="space-y-6">
+          <h4 className="title">
+            Create a New Account
+          </h4>
       {/* Pre-populated email (optional) */}
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-          Email Address
-        </label>
-        <div className="mt-2">
-        <input
-          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-          type="email"
+      <div className="mt-2" >
+
+        <input 
+          className="form-control"          type="email"
           name="email"
           id="email"
           value={localStorage.getItem("VerifiedEmail")}
           disabled
         />
-        </div>
+        <br></br>
 
         {errors.email && <span className="error">{errors.email}</span>}
       </div>
 
       <div>
-        <label htmlFor="name" className="block text-sm font-medium leading-6 text-gray-900">Name:</label>
+        {/* <label htmlFor="name" className="block text-sm font-medium leading-6 text-gray-900">Name:</label> */}
         <input
-        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+        className="form-control"
           type="text"
           name="name"
           id="name"
           value={formData.name}
           onChange={handleChange}
-        />
+          required
+          placeholder="Enter Your Name"
+        /><br></br>
         {errors.name && <span className="error" color='red'>{errors.name}</span>}
       </div>
 
-      <div className="form-group">
-        <label htmlFor="phone" className="block text-sm font-medium leading-6 text-gray-900">Phone Number:</label>
+      <div className="mb-3">
+        {/* <label htmlFor="phone" className="block text-sm font-medium leading-6 text-gray-900">Phone Number:</label> */}
         <input
-          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+          className="form-control"
           type="tel" // Consider using a library for phone number formatting
           name="phone"
           id="phone"
           value={formData.phone}
           onChange={handleChange}
+          placeholder="Phone Your Number"
         />
         {errors.phone && <span className="error" color= 'red'>{errors.error}</span>}
       </div>
 
-      <div className="form-group">
-        <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">Password:</label>
+      <div className="mb-3">
+        {/* Password: */}
         <input
-          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+          className="form-control"
           type="password"
           name="password"
           id="password"
+          placeholder="Enter Your Password"
           value={formData.password}
           onChange={handleChange}
         />
         {errors.password && <span className="error">{errors.password}</span>}
       </div>
 
-      <div className="form-group">
-        <label htmlFor="confirmPassword" className="block text-sm font-medium leading-6 text-gray-900">Confirm Password:</label>
+      <div className="mb-3">
+        {/* Confirm Password: */}
         <input
-          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+          className="form-control"
           type="password"
           name="confirmPassword"
+           placeholder="Confirm Your Password"
           id="confirmPassword"
           value={formData.confirmPassword}
           onChange={handleChange}
@@ -170,24 +172,33 @@ function SignupPage() {
         )}
       </div>
       <div>
-               <button
+        <div>
+                         <button
+                className="btn btn-primary ms-1"
                  type="submit"
                  onSubmit={"/login"}
-                 className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                 
                >
                  Register
-               </button>
-             </div>
-             <div>
-             <button
+               </button><br></br>
+        </div><br></br>
+        <div>
+                       <button
           type="button"
-          className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+           className="btn btn-primary ms-1"
           //disabled={isResendDisabled}
           onClick={handleClick}
         >
           Back
         </button>
         </div>
+        </div>
+
+
+               
+
+             
+
     </form>
     {/* <p className="mt-10 text-center text-sm text-gray-500">
             Already a Member?{' '}

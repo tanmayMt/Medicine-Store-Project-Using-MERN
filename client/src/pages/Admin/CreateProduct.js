@@ -15,7 +15,7 @@ const CreateProduct = () => {
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState("");
   const [quantity, setQuantity] = useState("");
-  const [shipping, setShipping] = useState("");
+  //const [shipping, setShipping] = useState("");
   const [photo, setPhoto] = useState("");
 
   //get all category
@@ -27,7 +27,7 @@ const CreateProduct = () => {
       }
     } catch (error) {
       console.log(error);
-      toast.error("Something wwent wrong in getting catgeory");
+      toast.error("Something went wrong while fetching category");
     }
   };
 
@@ -40,21 +40,40 @@ const CreateProduct = () => {
     e.preventDefault();
     try {
       const productData = new FormData();
-      productData.append("name", name);
-      productData.append("description", description);
-      productData.append("price", price);
-      productData.append("quantity", quantity);
-      productData.append("photo", photo);
-      productData.append("category", category);
-      const { data } = axios.post(
-        "/api/v1/product/create-product",
-        productData
+      // console.log(name);
+      // console.log(description);
+      // console.log(price);
+      // console.log(quantity);
+      // console.log(category);
+      //productData.append("name", name);
+      productData.name = name;
+      productData.description = description;
+      productData.price = price;
+      productData.quantity = quantity;
+      productData.photo = photo;
+      productData.category = category;
+      // console.log(productData.name);
+      // productData.append("description", description);
+      // productData.append("price", price);
+      // productData.append("quantity", quantity);
+      // productData.append("photo", photo);
+      // productData.append("category", category);
+      console.log("Helo");
+      console.log(productData);
+      const { data } = await axios.post(
+        "/api/v1/product/create-product",{
+          headers:{
+          Authorization : "Bearer "+localStorage.getItem("LoginToken"),
+          productData
+        },
+        }
       );
+      console.log(data);
       if (data?.success) {
         toast.error(data?.message);
       } else {
-        toast.success("Product Created Successfully");
-        navigate("/dashboard/admin/products");
+        toast.success("Product added successfully");
+        //navigate("/dashboard/admin/products");
       }
     } catch (error) {
       console.log(error);
@@ -63,14 +82,14 @@ const CreateProduct = () => {
   };
 
   return (
-    <Layout title={"Dashboard - Create Product"}>
+    <Layout title={"Dashboard - Add Product"}>
       <div className="container-fluid m-3 p-3 dashboard">
         <div className="row">
           <div className="col-md-3">
             <AdminMenu />
           </div>
           <div className="col-md-9">
-            <h1>Create Product</h1>
+            <h1>Add Product</h1>
             <div className="m-1 w-75">
               <Select
                 bordered={false}
@@ -90,7 +109,7 @@ const CreateProduct = () => {
               </Select>
               <div className="mb-3">
                 <label className="btn btn-outline-secondary col-md-12">
-                  {photo ? photo.name : "Upload Photo"}
+                  {photo ? photo.name : "Upload one Product Photo within 1 MB"}
                   <input
                     type="file"
                     name="photo"
@@ -116,7 +135,7 @@ const CreateProduct = () => {
                 <input
                   type="text"
                   value={name}
-                  placeholder="write a name"
+                  placeholder="Enter product name"
                   className="form-control"
                   onChange={(e) => setName(e.target.value)}
                 />
@@ -125,7 +144,7 @@ const CreateProduct = () => {
                 <textarea
                   type="text"
                   value={description}
-                  placeholder="write a description"
+                  placeholder="Enter product description"
                   className="form-control"
                   onChange={(e) => setDescription(e.target.value)}
                 />
@@ -135,7 +154,7 @@ const CreateProduct = () => {
                 <input
                   type="number"
                   value={price}
-                  placeholder="write a Price"
+                  placeholder="Enter product price"
                   className="form-control"
                   onChange={(e) => setPrice(e.target.value)}
                 />
@@ -144,12 +163,12 @@ const CreateProduct = () => {
                 <input
                   type="number"
                   value={quantity}
-                  placeholder="write a quantity"
+                  placeholder="Enter number of quantities that is in stock"
                   className="form-control"
                   onChange={(e) => setQuantity(e.target.value)}
                 />
               </div>
-              <div className="mb-3">
+              {/* <div className="mb-3">
                 <Select
                   bordered={false}
                   placeholder="Select Shipping "
@@ -163,12 +182,12 @@ const CreateProduct = () => {
                   <Option value="0">No</Option>
                   <Option value="1">Yes</Option>
                 </Select> 
-              </div>
+              </div> */}
               <div className="mb-3">
                 <button className="btn btn-primary" 
                 onClick={handleCreate}
                 >
-                  CREATE PRODUCT
+                  ADD PRODUCT
                 </button>
               </div>
             </div>

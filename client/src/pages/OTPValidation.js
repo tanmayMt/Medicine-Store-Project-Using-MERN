@@ -103,28 +103,20 @@ function OTPValidation() {
 
   return (
     <Layout>
-    <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-              <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-          <img
-            className="mx-auto h-10 w-auto"
-            src="/ecommerce.png"
-            alt="Your Company"
-          />
-          <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+    <div className="form-container" style={{ minHeight: "90vh" }}>
+        
+        <form onSubmit={handleSubmit}className="space-y-6">
+                    <h2 className="title">
           OTP Verification
           </h2>
-        </div>
-        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form onSubmit={handleSubmit}className="space-y-6">
-        <i>Please enter the otp received on {localStorage.getItem("Email")} with OTP ref. Id: {referenceId}. The OTP is valid for 5 minutes</i>
-      <div >
-        <label htmlFor="otp" className="block text-sm font-medium leading-6 text-gray-900">OTP 
-        </label>
+        <i>Please enter the otp received on {localStorage.getItem("Email")} with OTP ref. Id: <u>{referenceId}</u>. The OTP is valid for 5 minutes</i><br></br>
+      <div className="mb-4">
         <input
-        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+        className="form-control"
           type="text"
           name="otp"
           id="otp"
+          placeholder="Enter OTP"
           value={otp1}
           onChange={handleInputChange}
           // minLength={6} // Allow for shorter OTPs if needed
@@ -133,12 +125,12 @@ function OTPValidation() {
       </div>
       
       {errorMessage && <p>{errorMessage}</p>}
-      <button type="submit" disabled={isSubmitting}className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+      <button className="btn btn-primary ms-1" disabled={isSubmitting}>
         {isSubmitting ? 'Validating...' : 'Validate OTP'}
       </button>
       <button
           type="button"
-          className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          className="btn btn-primary ms-1"
           disabled={isResendDisabled}
           onClick={handleResendOtp}
         >
@@ -147,15 +139,13 @@ function OTPValidation() {
 
 
         <button
-          type="button"
-          className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          className="btn btn-primary ms-1"
           disabled={isResendDisabled}
           onClick={handleClick}
         >
           Back
         </button>
     </form>
-        </div>
 
     </div>
     </Layout>

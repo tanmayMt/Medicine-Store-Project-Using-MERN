@@ -348,6 +348,15 @@ export const testController = (req, res) => {
   }
 };
 
+export const getUser = (req, res) => {
+  try {
+    res.send("Protected Routes");
+  } catch (error) {
+    console.log(error);
+    res.send({ error });
+  }
+};
+
 //update prfole
 export const updateProfileController = async (req, res) => {
   try {
@@ -377,7 +386,7 @@ export const updateProfileController = async (req, res) => {
     console.log(error);
     res.status(400).send({
       success: false,
-      message: "Error WHile Update profile",
+      message: "Error while updating profile",
       error,
     });
   }

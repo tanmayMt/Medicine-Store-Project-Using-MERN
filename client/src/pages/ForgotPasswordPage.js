@@ -118,29 +118,21 @@ function ForgotPasswordNew() {
 
   return (
     <Layout>
-    <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-              <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-          <img
-            className="mx-auto h-10 w-auto"
-            src="/ecommerce.png"
-            alt="Your Company"
-          />
-          <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-          Forgot Password
-          </h2>
-        </div>
-        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+      <div className="form-container" style={{ minHeight: "90vh" }}>
+          {/* <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+          
+          </h2> */}
         <form onSubmit={handleSubmit}className="space-y-6">
-
-      <div >
-      <i>Please enter the OTP with Ref. Id: {referenceId} to reset the password. It is valid for 5 minutes</i>
-        <label htmlFor="otp" className="block text-sm font-medium leading-6 text-gray-900">OTP 
-        </label>
+          <h4 className="title">Forgot Password</h4>
+      
+      <i>Please enter the OTP with Ref. Id: <u>{referenceId}</u> to reset the password. It is valid for 5 minutes</i>
+      <div className="mb-3">
         <input
-        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+        className="form-control"
           type="text"
           name="otp"
           id="otp"
+          placeholder="Enter OTP"
           value={otp1}
           onChange={handleInputChange}
           maxLength={6} // Set a reasonable OTP length limit
@@ -150,23 +142,24 @@ function ForgotPasswordNew() {
       </div>
       
       {errorMessage && <p>{errorMessage}</p>}
-
-      <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">Password</label>
+      <div className="mb-3">
         <input
-          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+          className="form-control"
           type="password"
           name="password"
           id="password"
+          placeholder="Password"
           value={formData.password}
           onChange={handleChange}
         />
+      </div>
 
-      <button type="submit" disabled={isSubmitting}className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+      <button type="submit" disabled={isSubmitting}className="btn btn-primary ms-1">
         {isSubmitting ? 'Resetting Password...' : 'Reset Password'}
       </button>
       <button
           type="button"
-          className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          className="btn btn-primary ms-1"
           disabled={isResendDisabled}
           onClick={handleResendOtp}
         >
@@ -176,15 +169,13 @@ function ForgotPasswordNew() {
 
         <button
           type="button"
-          className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          className="btn btn-primary ms-1"
           disabled={isResendDisabled}
           onClick={handleClick}
         >
           Back
         </button>
     </form>
-        </div>
-
     </div>
     </Layout>
   );

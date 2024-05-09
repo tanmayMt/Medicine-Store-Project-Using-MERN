@@ -6,6 +6,7 @@ import fs from "fs";
 import slugify from "slugify";
 // import braintree from "braintree";
 import dotenv from "dotenv";
+import formidable from "express-formidable";
 
 dotenv.config();
 
@@ -19,9 +20,14 @@ dotenv.config();
 
 export const createProductController = async (req, res) => {
   try {
-    const { name, description, price, category, quantity, shipping } =
-      req.fields;
-    const { photo } = req.files;
+    console.log("Hi2");
+    console.log(req.body);
+    console.log(req.body.headers.productData);
+    formidable();
+    console.log(req.fields);
+    const { name, description, price, category, quantity} =
+      req.body.headers.productData;
+    const { photo } = req.body.headers.productData.photo;
     //alidation
     switch (true) {
       case !name:
@@ -34,10 +40,10 @@ export const createProductController = async (req, res) => {
         return res.status(500).send({ error: "Category is Required" });
       case !quantity:
         return res.status(500).send({ error: "Quantity is Required" });
-      case photo && photo.size > 1000000:
-        return res
-          .status(500)
-          .send({ error: "photo is Required and should be less then 1mb" });
+      // case photo || photo.size > 10000000:
+      //   return res
+      //     .status(500)
+      //     .send({ error: "Photo is Required and should be less then 1mb" });
     }
 
     const products = new productModel({ ...req.fields, slug: slugify(name) });
@@ -73,14 +79,14 @@ export const getProductController = async (req, res) => {
     res.status(200).send({
       success: true,
       counTotal: products.length,
-      message: "ALlProducts ",
+      message: "AllProducts ",
       products,
     });
   } catch (error) {
     console.log(error);
     res.status(500).send({
       success: false,
-      message: "Erorr in getting products",
+      message: "Error while getting products",
       error: error.message,
     });
   }

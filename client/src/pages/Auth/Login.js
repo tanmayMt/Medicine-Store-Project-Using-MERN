@@ -57,42 +57,46 @@ const Login = () => {
     }
   return (
     <Layout title="Login Medicure">
-      <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-          <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+      <div className="form-container" style={{ minHeight: "90vh" }}>
+        {/* <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+          {/* <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
             Let's Continue with <u>{email}</u>
-          </h2>
-        </div>
+          </h2> */}
+        {/* </div> */} 
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
         <form
             // onSubmit={handleSubmit}
             // noValidate
-            className="space-y-6"
+            // className="title"
           >
+          <h4 className="title">
+            Let's Continue with <u>{email}</u>
+          </h4>
             <div>
               <label
                 htmlFor="email"
                 className="block text-sm font-medium leading-6 text-gray-900"
               >
-                Email address
+                {/* Email address */}
               </label>
-              <div className="mt-2">
+              <div className="mt-3">
                 <input
                   onChange={handleChange}
                   id="email"
                   name="email"
                   type="email"
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className="form-control"
                   placeholder="What's your email" required
                 />
               </div>
             </div>
             <div>
+              <br></br>
               <button
                 type="submit"
                 onClick={handleSubmit}
-                className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                className="btn btn-primary"
               >
                 Continue
               </button>

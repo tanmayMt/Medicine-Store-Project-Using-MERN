@@ -6,6 +6,9 @@ import {
   // getAllOrdersController,
   // orderStatusController,
 } from "../controllers/authController.js";
+import {
+  profile
+} from "../controllers/userController.js";
 import { isAdmin, requireSignIn } from "../middlewares/authMiddleware.js";
 import { verifyuser, verifyolduser, resetolduser} from "../middlewares/usertypeMiddleware.js";
 import { verifyuserandResend} from "../middlewares/resendMiddleware.js";
@@ -22,16 +25,18 @@ router.post("/resetpassword", changePassword);
 router.post("/register", registerController);
 router.post("/resendotp", verifyuserandResend, sendOtp);
 router.post("/vpassword", verifyolduser, validatePassword);
+router.post("/getuser", requireSignIn, profile);
 
 //test routes
 router.get("/test", requireSignIn, isAdmin, testController);
 
 //protected User route auth
-router.get("/user-auth", requireSignIn, (req, res) => {
+router.post("/user-auth", requireSignIn, (req, res) => {
   res.status(200).send({ ok: true });
 });
 //protected Admin route auth
-router.get("/admin-auth", requireSignIn, isAdmin, (req, res) => {
+router.post("/adminauth", requireSignIn, isAdmin, (req, res) => {
+  // console.log("hj");
   res.status(200).send({ ok: true });
 });
 
