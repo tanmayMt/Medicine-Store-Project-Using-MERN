@@ -101,20 +101,32 @@ const CartPage = () => {
                     src={`${process.env.REACT_APP_API_BASE_URL}/api/v1/product/product-photo/${p._id}`}
                     className="card-img-top"
                     alt={p.name}
-                    width="100px"
-                    height={"100px"}
+                    width="20px"
+                    height={"180px"}
                   />
                 </div>
                 <div className="col-md-8">
-                  <p>{p.name}</p>
-                  <p>{p.description.substring(0, 30)}</p>
-                  <p>Price : {p.price}</p>
-                  <button
+                  <p><b>{p.name}</b></p>
+                  <p className="text-primary">{p.description.substring(0, 30)}</p>
+                  <p className="text-success font-weight-bold"><b>Price : 
+                      {p.price.toLocaleString("en-US", {
+                        style: "currency",
+                        // currency: "USD",
+                        currency: "INR",
+                      })}</b>
+                  </p>
+                  {/* <button
                     className="btn btn-danger"
                     onClick={() => removeCartItem(p._id)}
                   >
                     Remove
-                  </button>
+                  </button> */}
+                  <button
+                    className=" btn btn-danger bg-red-600 hover:bg-red-700 text-red font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300"
+                    onClick={() => removeCartItem(p._id)}
+                  >
+                    ❌ <b>Remove</b>
+                  </button>                  
                 </div>
               </div>
             ))}
@@ -195,6 +207,7 @@ const CartPage = () => {
           </div>
         </div>
       </div>
+      
     </Layout>
   );
 };
