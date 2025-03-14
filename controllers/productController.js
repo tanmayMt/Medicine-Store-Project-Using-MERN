@@ -71,7 +71,7 @@ export const getProductController = async (req, res) => {
       .populate("category")
       .select("-photo")
       .limit(12)
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: 1 });// Sorts the results in descending order based on the "createdAt" field
     res.status(200).send({
       success: true,
       counTotal: products.length,
