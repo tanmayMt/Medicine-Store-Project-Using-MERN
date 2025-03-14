@@ -66,24 +66,13 @@ export const createProductController = async (req, res) => {
 //get all products
 export const getProductController = async (req, res) => {
   try {
-    // const products = await productModel
-    //   .find({})
-    //   .populate("category")
-    //   .select("-photo")
-    //   .limit(12)
-    //   .sort({ createdAt: 1 });// Sorts the results in descending order based on the "createdAt" field
+    const products = await productModel
+      .find({})
+      .populate("category")
+      .select("-photo")
+      .limit(12)
+      .sort({ createdAt: 1 });// Sorts the results in descending order based on the "createdAt" field
 
-    const products = await productModel.aggregate([
-  { $sample: { size: 12 } }, // Randomly selects 12 products
-  { $lookup: {               // Equivalent to populate("category")
-      from: "categories", 
-      localField: "category",
-      foreignField: "_id",
-      as: "category"
-    } 
-  },
-  { $unset: "photo" }        // Equivalent to select("-photo")
-]);
     res.status(200).send({
       success: true,
       counTotal: products.length,
