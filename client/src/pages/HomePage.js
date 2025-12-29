@@ -173,7 +173,7 @@ const HomePage = () => {
 
           {/* Products Section */}
           <div className="col-md-9">
-            <h1 className="text-center mb-4">All Products</h1>
+            <h1 className="all-products-title text-center mb-4">All Products</h1>
 
             {/* PRODUCT GRID START */}
             <div className="product-grid">

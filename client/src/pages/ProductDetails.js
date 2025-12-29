@@ -44,7 +44,7 @@ const ProductDetails = () => {
 
   return (
     <Layout>
-      <div className="container product-details">
+      <div className="container product-details mt-5">
         <div className="row">
           <div className="col-md-6">
             <img
