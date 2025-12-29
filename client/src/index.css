@@ -295,6 +295,42 @@ p {
   .product-actions { @apply flex mt-auto; }
   .btn-custom { @apply flex-1 py-3 text-sm font-semibold uppercase text-white cursor-pointer transition-opacity; border: none; }
   .btn-custom:hover { opacity: 0.9; }
+
+/* Custom product button styles to match provided design */
+.btn-more,
+.product-details-info .btn-more,
+.similar-products .btn-more,
+.card .btn-more {
+    background: linear-gradient(90deg, #00d2ff 0%, #06b6d4 100%);
+    color: #000000;
+    padding: 10px 18px;
+    font-weight: 800;
+    border-radius: 6px !important;
+    text-transform: uppercase;
+    border: none;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.06);
+    transition: transform 0.08s ease, box-shadow 0.12s ease;
+}
+.btn-more:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(3, 24, 64, 0.12); }
+
+.btn-add,
+.product-details-info .btn-add,
+.similar-products .btn-add,
+.card .btn-add {
+    background: #2f2f2f;
+    color: #ffffff;
+    padding: 10px 18px;
+    font-weight: 800;
+    border-radius: 6px !important;
+    text-transform: uppercase;
+    border: none;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.12);
+    transition: transform 0.08s ease, box-shadow 0.12s ease;
+}
+.btn-add:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18); }
+
+/* Ensure small spacing when used with Bootstrap margin utility */
+.btn-more.ms-1, .btn-add.ms-1 { margin-left: 0.25rem; }
   .btn-details { background-color: var(--primary-cyan); }
   .btn-cart { background-color: var(--primary-dark); }
 
