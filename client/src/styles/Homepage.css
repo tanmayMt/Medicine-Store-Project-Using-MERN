@@ -1,81 +1,188 @@
+/* Homepage.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+:root {
+  --primary-cyan: #06b6d4;
+  /* Cyan for 'More Details' */
+  --primary-dark: #1e1e2e;
+  /* Black for 'Add to Cart' */
+  --price-green: #16a34a;
+  /* Green for Price */
+  --bg-light: #f3f4f6;
+  --text-gray: #4b5563;
+}
+
+body {
+  background-color: var(--bg-light);
+  font-family: 'Poppins', sans-serif;
+}
+
+.home-page {
+  padding: 20px;
+}
+
 .banner-img {
   margin-top: 60px;
 }
 
-.home-page h1 {
-  color: gray;
-  font-family: "Playfair Display", serif;
+/* --- Filter Sidebar --- */
+.filters {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  height: fit-content;
 }
 
-.home-page {
-  display: flex;
-  flex-wrap: wrap;
-}
-.home-page .card {
-  background-color: rgba(128, 128, 128, 0.097);
-  width: 18rem;
-}
-.home-page .card-name-price {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-}
-
-.home-page .card-price {
-  color: green;
-  font-weight: bold;
-}
-.home-page button {
-  border-radius: 0;
-  width: 100%;
-  border-top-left-radius: 5px;
-  border-bottom-right-radius: 5px;
-  font-size: 14px;
-  font-weight: bold;
-}
-
-.home-page .card-text {
-  color: rgb(90, 89, 89);
-}
-
-.home-page .card img:hover {
-  transform: scale(0.9);
-}
-
-.home-page .card-img-top {
-  height: 300px !important;
-}
-/* ==================
-filters
-============== */
 .filters h4 {
-  margin-top: 100px;
-  color: gray !important;
-  border-bottom: 1px solid rgba(128, 128, 128, 0.337);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
 }
 
-.ant-checkbox-wrapper:first-of-type {
-  margin-left: 8px;
+/* --- Product Grid Layout --- */
+.product-grid {
+  display: grid;
+  /* This creates a responsive grid. Cards will be at least 250px wide */
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 25px;
 }
 
-.ant-checkbox-wrapper {
-  margin: 2px;
-}
-.ant-radio-wrapper {
-  margin-bottom: 5px !important;
-  margin-left: 10px;
+/* --- Card Design --- */
+.product-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  /* Keeps content inside rounded corners */
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  /* Stacks Image -> Info -> Buttons */
+  height: 100%;
+  position: relative;
 }
 
-.filters button {
-  background-color: black;
-  width: 100%;
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border-color: transparent;
+}
+
+/* Image Area */
+.product-img-container {
+  height: 220px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid #f0f0f0;
+  background-color: #fff;
+}
+
+.product-img-container img {
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  /* Prevents stretching */
+  transition: transform 0.3s;
+}
+
+.product-card:hover .product-img-container img {
+  transform: scale(1.08);
+  /* Zoom effect on hover */
+}
+
+/* Info Area */
+.product-info {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  /* Pushes buttons to the bottom */
+}
+
+.product-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 5px;
+  line-height: 1.4;
+  height: 44px;
+  /* Limits title to 2 lines */
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.product-price {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--price-green);
+  margin-top: 5px;
+}
+
+.product-desc {
+  font-size: 0.85rem;
+  color: #9ca3af;
+  margin-top: 5px;
+  margin-bottom: 15px;
+}
+
+/* --- Buttons (Split Design) --- */
+.product-actions {
+  display: flex;
+  margin-top: auto;
+  /* Ensures buttons stick to bottom */
+}
+
+.btn-custom {
+  flex: 1;
+  /* Makes buttons equal width (50% each) */
   border: none;
-  border-radius: 0;
-  margin-top: 20px;
+  padding: 12px 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: white;
+  cursor: pointer;
+  transition: opacity 0.2s;
 }
 
-.loadmore {
-  color: green;
-  font-weight: bold;
-  font-size: 20px !important;
+.btn-custom:hover {
+  opacity: 0.9;
+}
+
+.btn-details {
+  background-color: var(--primary-cyan);
+}
+
+.btn-cart {
+  background-color: var(--primary-dark);
+}
+
+/* Load More Button */
+.loadmore-container {
+  text-align: center;
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+
+.btn-loadmore {
+  background: white;
+  border: 1px solid #333;
+  color: #333;
+  padding: 10px 25px;
+  border-radius: 50px;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.btn-loadmore:hover {
+  background: #333;
+  color: white;
 }

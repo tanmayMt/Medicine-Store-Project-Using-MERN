@@ -20,10 +20,12 @@ const HomePage = () => {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
 
-  //get all cat
+  // Get all categories
   const getAllCategory = async () => {
     try {
-      const { data } = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/v1/category/get-category`);
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/api/v1/category/get-category`
+      );
       if (data?.success) {
         setCategories(data?.category);
       }
@@ -36,11 +38,14 @@ const HomePage = () => {
     getAllCategory();
     getTotal();
   }, []);
-  //get products
+
+  // Get products
   const getAllProducts = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/v1/product/product-list/${page}`);
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/api/v1/product/product-list/${page}`
+      );
       setLoading(false);
       setProducts(data.products);
     } catch (error) {
@@ -49,10 +54,12 @@ const HomePage = () => {
     }
   };
 
-  //getTOtal COunt
+  // Get Total Count
   const getTotal = async () => {
     try {
-      const { data } = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/v1/product/product-count`);
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/api/v1/product/product-count`
+      );
       setTotal(data?.total);
     } catch (error) {
       console.log(error);
@@ -63,11 +70,14 @@ const HomePage = () => {
     if (page === 1) return;
     loadMore();
   }, [page]);
-  //load more
+
+  // Load more
   const loadMore = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/v1/product/product-list/${page}`);
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/api/v1/product/product-list/${page}`
+      );
       setLoading(false);
       setProducts([...products, ...data?.products]);
     } catch (error) {
@@ -76,7 +86,7 @@ const HomePage = () => {
     }
   };
 
-  // filter by cat
+  // Filter by category
   const handleFilter = (value, id) => {
     let all = [...checked];
     if (value) {
@@ -86,6 +96,7 @@ const HomePage = () => {
     }
     setChecked(all);
   };
+
   useEffect(() => {
     if (!checked.length || !radio.length) getAllProducts();
   }, [checked.length, radio.length]);
@@ -94,94 +105,111 @@ const HomePage = () => {
     if (checked.length || radio.length) filterProduct();
   }, [checked, radio]);
 
-  //get filterd product
+  // Get filtered product
   const filterProduct = async () => {
     try {
-      const { data } = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/v1/product/product-filters`, {
-        checked,
-        radio,
-      });
+      const { data } = await axios.post(
+        `${process.env.REACT_APP_API_BASE_URL}/api/v1/product/product-filters`,
+        {
+          checked,
+          radio,
+        }
+      );
       setProducts(data?.products);
     } catch (error) {
       console.log(error);
     }
   };
+
   return (
-    <Layout title={"ALl Products - Best offers "}>
-      {/* banner image */}
+    <Layout title={"All Products - Best Offers"}>
+      {/* Banner Image */}
       <img
         src="/images/banner.png"
         className="banner-img"
         alt="bannerimage"
-        width={"100%"}
+        style={{ width: "100%", maxHeight: "300px", objectFit: "cover" }}
       />
-      {/* banner image */}
-      <div className="container-fluid row mt-3 home-page">
-        <div className="col-md-3 filters">
-          <h4 className="text-center">Filter By Category</h4>
-          <div className="d-flex flex-column">
-            {categories?.map((c) => (
-              <Checkbox
-                key={c._id}
-                onChange={(e) => handleFilter(e.target.checked, c._id)}
-              >
-                {c.name}
-              </Checkbox>
-            ))}
+
+      <div className="container-fluid home-page">
+        <div className="row">
+          {/* Filters Section */}
+          <div className="col-md-3">
+            <div className="filters">
+              <h4 className="text-center">Filter By Category</h4>
+              <div className="d-flex flex-column mb-4">
+                {categories?.map((c) => (
+                  <Checkbox
+                    key={c._id}
+                    onChange={(e) => handleFilter(e.target.checked, c._id)}
+                  >
+                    {c.name}
+                  </Checkbox>
+                ))}
+              </div>
+
+              <h4 className="text-center">Filter By Price</h4>
+              <div className="d-flex flex-column">
+                <Radio.Group onChange={(e) => setRadio(e.target.value)}>
+                  {Prices?.map((p) => (
+                    <div key={p._id}>
+                      <Radio value={p.array}>{p.name}</Radio>
+                    </div>
+                  ))}
+                </Radio.Group>
+              </div>
+
+              <div className="d-flex flex-column mt-4">
+                <button
+                  className="btn btn-danger w-100"
+                  onClick={() => window.location.reload()}
+                >
+                  RESET FILTERS
+                </button>
+              </div>
+            </div>
           </div>
-          {/* price filter */}
-          <h4 className="text-center mt-4">Filter By Price</h4>
-          <div className="d-flex flex-column">
-            <Radio.Group onChange={(e) => setRadio(e.target.value)}>
-              {Prices?.map((p) => (
-                <div key={p._id}>
-                  <Radio value={p.array}>{p.name}</Radio>
-                </div>
-              ))}
-            </Radio.Group>
-          </div>
-          <div className="d-flex flex-column">
-            <button
-              className="btn btn-danger"
-              onClick={() => window.location.reload()}
-            >
-              RESET FILTERS
-            </button>
-          </div>
-        </div>
-        <div className="col-md-9 ">
-          <h1 className="text-center">All Products</h1>
-          <div className="d-flex flex-wrap">
-            {products?.map((p) => (
-              <div className="card m-2" key={p._id}>
-                <img
-                  src={`${process.env.REACT_APP_API_BASE_URL}/api/v1/product/product-photo/${p._id}`}
-                  className="card-img-top"
-                  alt={p.name}
-                />
-                <div className="card-body">
-                  <div className="card-name-price">
-                    <h5 className="card-title">{p.name}</h5>
-                    <h5 className="card-title card-price">
+
+          {/* Products Section */}
+          <div className="col-md-9">
+            <h1 className="text-center mb-4">All Products</h1>
+
+            {/* PRODUCT GRID START */}
+            <div className="product-grid">
+              {products?.map((p) => (
+                <div className="product-card" key={p._id}>
+                  {/* 1. Image */}
+                  <div className="product-img-container">
+                    <img
+                      src={`${process.env.REACT_APP_API_BASE_URL}/api/v1/product/product-photo/${p._id}`}
+                      alt={p.name}
+                    />
+                  </div>
+
+                  {/* 2. Details */}
+                  <div className="product-info">
+                    <h5 className="product-title">{p.name}</h5>
+                    <p className="product-desc">
+                      {p.description.substring(0, 30)}...
+                    </p>
+                    <h5 className="product-price">
                       {p.price.toLocaleString("en-US", {
                         style: "currency",
-                        // currency: "USD",
                         currency: "INR",
                       })}
                     </h5>
                   </div>
-                  <p className="card-text ">
-                    {p.description.substring(0, 60)}...
-                  </p>
-                  <div className="card-name-price">
+
+                  {/* 3. Buttons (Split Bottom) */}
+                  <div className="product-actions">
                     <button
-                      className="btn btn-info ms-1"
+                      className="btn-custom btn-details"
                       onClick={() => navigate(`/product/${p.slug}`)}
                     >
                       More Details
                     </button>
                     <button
-                      className="btn btn-dark ms-1"
+                      className="btn-custom btn-cart"
                       onClick={() => {
                         setCart([...cart, p]);
                         localStorage.setItem(
@@ -195,28 +223,30 @@ const HomePage = () => {
                     </button>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-          <div className="m-2 p-3">
-            {products && products.length < total && (
-              <button
-                className="btn loadmore"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setPage(page + 1);
-                }}
-              >
-                {loading ? (
-                  "Loading ..."
-                ) : (
-                  <>
-                    {" "}
-                    Loadmore <AiOutlineReload />
-                  </>
-                )}
-              </button>
-            )}
+              ))}
+            </div>
+            {/* PRODUCT GRID END */}
+
+            {/* Load More Button */}
+            <div className="loadmore-container">
+              {products && products.length < total && (
+                <button
+                  className="btn-loadmore"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setPage(page + 1);
+                  }}
+                >
+                  {loading ? (
+                    "Loading ..."
+                  ) : (
+                    <>
+                      Load More <AiOutlineReload />
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
