@@ -7,8 +7,6 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import Layout from "./../components/Layout/Layout";
 import { AiOutlineReload } from "react-icons/ai";
-// Homepage styles are imported globally from `index.css` to ensure Tailwind
-// `@tailwind components` is present before any `@layer components` files.
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -124,17 +122,19 @@ const HomePage = () => {
 
   return (
     <Layout title={"All Products - Best Offers"}>
-      {/* Banner Image */}
-      <img
-        src="/images/banner.png"
-        className="banner-img"
-        alt="bannerimage"
-        style={{ width: "100%", maxHeight: "300px", objectFit: "cover" }}
-      />
+      {/* Banner Section */}
+      <div className="w-100">
+        <img
+          src="/images/banner.png"
+          className="banner-img"
+          alt="bannerimage"
+          style={{ width: "100%", height: "250px", objectFit: "cover" }}
+        />
+      </div>
 
       <div className="container-fluid home-page">
         <div className="row">
-          {/* Filters Section */}
+          {/* Filters Sidebar */}
           <div className="col-md-3">
             <div className="filters">
               <h4 className="text-center">Filter By Category</h4>
@@ -163,6 +163,7 @@ const HomePage = () => {
               <div className="d-flex flex-column mt-4">
                 <button
                   className="btn btn-danger w-100"
+                  style={{ borderRadius: "20px" }}
                   onClick={() => window.location.reload()}
                 >
                   RESET FILTERS
@@ -173,7 +174,7 @@ const HomePage = () => {
 
           {/* Products Section */}
           <div className="col-md-9">
-            <h1 className="all-products-title text-center mb-4">All Products</h1>
+            <h1 className="all-products-title text-center">All Products</h1>
 
             {/* PRODUCT GRID START */}
             <div className="product-grid">
@@ -201,13 +202,13 @@ const HomePage = () => {
                     </h5>
                   </div>
 
-                  {/* 3. Buttons (Split Bottom) */}
+                  {/* 3. Buttons */}
                   <div className="product-actions">
                     <button
                       className="btn-custom btn-details"
                       onClick={() => navigate(`/product/${p.slug}`)}
                     >
-                      More Details
+                      Details
                     </button>
                     <button
                       className="btn-custom btn-cart"
@@ -220,7 +221,7 @@ const HomePage = () => {
                         toast.success("Item Added to cart");
                       }}
                     >
-                      ADD TO CART
+                      Add To Cart
                     </button>
                   </div>
                 </div>
