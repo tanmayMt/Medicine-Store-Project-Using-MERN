@@ -11,6 +11,19 @@
     box-sizing: border-box;
 }
 
+:root {
+    --primary-cyan: #06b6d4;
+    --primary-dark: #1e1e2e;
+    --price-green: #16a34a;
+    --bg-light: #f3f4f6;
+    --text-gray: #4b5563;
+}
+
+body {
+    background-color: var(--bg-light);
+    font-family: 'Poppins', sans-serif;
+}
+
 /* font-family: 'Poppins', sans-serif; */
 /* font-family: 'Playfair Display', serif; */
 
@@ -244,3 +257,140 @@ p {
 .price-admin-order{
     color: darkviolet;
 }
+
+/* Inlined component layer for Homepage (moved from ./styles/Homepage.css)
+    Keeping this in `index.css` ensures Tailwind's `@tailwind components`
+    directive is present in the same processed file as `@layer components`.
+*/
+@layer components {
+  .home-page { @apply p-5; }
+
+  .banner-img { /* custom spacing preserved */ margin-top: 60px; }
+
+  /* Filter Sidebar */
+  .filters { @apply bg-white p-5 rounded-lg shadow-sm h-fit; }
+  .filters h4 { @apply text-lg font-bold text-gray-800 mb-5 pb-2 border-b border-gray-100; }
+
+  /* Product Grid Layout */
+  .product-grid { @apply grid gap-6; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+
+  /* Card Design */
+  .product-card { @apply bg-white border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 flex flex-col h-full relative; }
+  .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); border-color: transparent; }
+
+  /* Image Area */
+  .product-img-container { height: 220px; @apply p-5 flex items-center justify-center border-b border-gray-100 bg-white; }
+  .product-img-container img { max-height: 100%; max-width: 100%; object-fit: contain; transition: transform 0.3s; }
+  .product-card:hover .product-img-container img { transform: scale(1.08); }
+
+  /* Info Area */
+  .product-info { @apply p-4 flex flex-col flex-grow; }
+
+  .product-title { @apply text-base font-semibold text-gray-800 mb-1; line-height: 1.4; height: 44px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+
+  .product-price { @apply text-lg font-bold; color: var(--price-green); }
+  .product-desc { @apply text-sm text-gray-400 mb-4; }
+
+  /* Buttons (Split Design) */
+  .product-actions { @apply flex mt-auto; }
+  .btn-custom { @apply flex-1 py-3 text-sm font-semibold uppercase text-white cursor-pointer transition-opacity; border: none; }
+  .btn-custom:hover { opacity: 0.9; }
+  .btn-details { background-color: var(--primary-cyan); }
+  .btn-cart { background-color: var(--primary-dark); }
+
+  /* Load More Button */
+  .loadmore-container { @apply text-center mt-10 mb-10; }
+  .btn-loadmore { @apply bg-white border border-gray-800 text-gray-800 px-6 py-2 rounded-full font-semibold transition; }
+  .btn-loadmore:hover { @apply bg-gray-800 text-white; }
+}
+
+/* Product details component styles migrated from ProductDetailsStyles.css */
+@layer components {
+    .product-details { margin-top: 100px !important; }
+
+    .product-details-info { @apply flex flex-col justify-center; }
+    .product-details-info h6 { @apply mb-5; }
+
+    .similar-products .card { background-color: rgba(128, 128, 128, 0.097); width: 18rem; }
+
+    .similar-products .card-name-price { @apply flex justify-between; }
+
+    .similar-products .card-price { @apply text-green-600 font-bold; }
+    .similar-products button { border-radius: 0; @apply w-full text-sm font-bold; border-top-left-radius: 5px; border-bottom-right-radius: 5px; }
+
+    .similar-products .card-text { color: rgb(90, 89, 89); }
+    .similar-products .card img:hover { transform: scale(0.9); }
+
+    .similar-products .card-img-top { height: 300px !important; }
+}
+
+/* Cart styles migrated from CartStyles.css */
+@layer components {
+    .cart-page { margin-top: 64px; }
+
+    .cart-page h1 { @apply p-4; font-family: "roboto", sans-serif; font-weight: normal; background-color: rgba(0, 0, 255, 0.072) !important; }
+    .cart-page h1 > p { font-size: 20px; margin-top: 10px; }
+
+    .cart-page .card { @apply p-1; height: 150px !important; margin-bottom: 5px !important; }
+    .cart-page .cart-remove-btn { @apply flex items-center justify-center; }
+    .cart-page .cart-summary { @apply text-center; }
+}
+
+/* Auth styles migrated from AuthStyles.css */
+@layer components {
+    .form-container { @apply mt-16 flex items-center justify-center flex-col; min-height: 70vh; background-color: #ffdee9; background-image: linear-gradient(0deg, #ffdee9 0%, #b5fffc 100%); }
+
+    .form-container form { box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px; padding: 1.25rem; background-color: #fff; }
+
+    .form-container form .title { @apply text-center mb-4 font-bold; font-family: "Playfair Display", serif; }
+
+    .form-container form input { border: none; border-bottom: 1px solid #000; border-radius: 0; }
+
+    .form-container form button { border: 1px solid black; border-radius: 0; background-color: #000; color: white; width: 250px; }
+
+    .form-container form button:hover { border: 1px solid black; background: linear-gradient(to right, #434343, #000000); }
+
+    .forgot-btn { background-color: #434343a4 !important; border: 0 !important; }
+    .forgot-btn:hover { color: white !important; }
+}
+
+
+.home-page { @apply p-5; }
+
+  .banner-img { /* custom spacing preserved */ margin-top: 60px; }
+
+  /* Filter Sidebar */
+  .filters { @apply bg-white p-5 rounded-lg shadow-sm h-fit; }
+  .filters h4 { @apply text-lg font-bold text-gray-800 mb-5 pb-2 border-b border-gray-100; }
+
+  /* Product Grid Layout */
+  .product-grid { @apply grid gap-6; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+
+  /* Card Design */
+  .product-card { @apply bg-white border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 flex flex-col h-full relative; }
+  .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); border-color: transparent; }
+
+  /* Image Area */
+  .product-img-container { height: 220px; @apply p-5 flex items-center justify-center border-b border-gray-100 bg-white; }
+  .product-img-container img { max-height: 100%; max-width: 100%; object-fit: contain; transition: transform 0.3s; }
+  .product-card:hover .product-img-container img { transform: scale(1.08); }
+
+  /* Info Area */
+  .product-info { @apply p-4 flex flex-col flex-grow; }
+
+  .product-title { @apply text-base font-semibold text-gray-800 mb-1; line-height: 1.4; height: 44px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+
+  .product-price { @apply text-lg font-bold; color: var(--price-green); }
+  .product-desc { @apply text-sm text-gray-400 mb-4; }
+
+  /* Buttons (Split Design) */
+  .product-actions { @apply flex mt-auto; }
+  .btn-custom { @apply flex-1 py-3 text-sm font-semibold uppercase text-white cursor-pointer transition-opacity; border: none; }
+  .btn-custom:hover { opacity: 0.9; }
+  .btn-details { background-color: var(--primary-cyan); }
+  .btn-cart { background-color: var(--primary-dark); }
+
+  /* Load More Button */
+  .loadmore-container { @apply text-center mt-10 mb-10; }
+  .btn-loadmore { @apply bg-white border border-gray-800 text-gray-800 px-6 py-2 rounded-full font-semibold transition; }
+  .btn-loadmore:hover { @apply bg-gray-800 text-white; }

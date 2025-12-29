@@ -3,7 +3,7 @@ import Layout from "./../../components/Layout/Layout";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
-import "../../styles/AuthStyles.css";
+// Auth styles are now imported globally from `index.css` (Tailwind @layer components).
 import { useAuth } from "../../context/auth";
 const Login = () => {
   const [email, setEmail] = useState("");

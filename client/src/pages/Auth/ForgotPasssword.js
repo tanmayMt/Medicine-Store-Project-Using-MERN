@@ -3,7 +3,7 @@ import Layout from "./../../components/Layout/Layout";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import "../../styles/AuthStyles.css";
+// Auth styles are now imported globally from `index.css` (Tailwind @layer components).
 
 const ForgotPasssword = () => {
   const [email, setEmail] = useState("");

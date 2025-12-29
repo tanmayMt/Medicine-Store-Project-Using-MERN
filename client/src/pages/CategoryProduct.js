@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout/Layout";
 import { useParams, useNavigate } from "react-router-dom";
-import "../styles/CategoryProductStyles.css";
+// Category product styles should be provided via Tailwind utilities or global components in `index.css`.
 import axios from "axios";
 const CategoryProduct = () => {
   const params = useParams();
