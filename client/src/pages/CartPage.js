@@ -6,15 +6,18 @@ import { useNavigate } from "react-router-dom";
 import DropIn from "braintree-web-drop-in-react";
 import axios from "axios";
 import toast from "react-hot-toast";
+
 const CartPage = () => {
   const [auth, setAuth] = useAuth();
   const [cart, setCart] = useCart();
   const [clientToken, setClientToken] = useState("");
   const [instance, setInstance] = useState("");
   const [loading, setLoading] = useState(false);
+  // NEW: State to track payment method (default to 'online')
+  const [paymentMethod, setPaymentMethod] = useState("online"); 
   const navigate = useNavigate();
 
-  //total price 
+  // Total price calculation
   const totalPrice = () => {
     try {
       let total = 0;
@@ -29,13 +32,14 @@ const CartPage = () => {
       console.log(error);
     }
   };
-  //detele item
+
+  // Delete item
   const removeCartItem = (pid) => {
     try {
       let myCart = [...cart];
       let index = myCart.findIndex((item) => item._id === pid);
       myCart.splice(index, 1);
-      toast.success("Item is Removed from Card");
+      toast.success("Item is Removed from Cart");
       setCart(myCart);
       localStorage.setItem("cart", JSON.stringify(myCart));
     } catch (error) {
@@ -43,7 +47,7 @@ const CartPage = () => {
     }
   };
 
-  //get payment gateway token
+  // Get payment gateway token
   const getToken = async () => {
     try {
       const { data } = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/v1/product/braintree/token`);
@@ -52,11 +56,12 @@ const CartPage = () => {
       console.log(error);
     }
   };
+
   useEffect(() => {
     getToken();
   }, [auth?.token]);
 
-  //handle payments
+  // Handle Online Payment (Braintree)
   const handlePayment = async () => {
     try {
       setLoading(true);
@@ -69,12 +74,33 @@ const CartPage = () => {
       localStorage.removeItem("cart");
       setCart([]);
       navigate("/dashboard/user/orders");
-      toast.success("Payment Completed Successfully ");
+      toast.success("Payment Completed Successfully");
     } catch (error) {
       console.log(error);
       setLoading(false);
+      toast.error("Payment Failed");
     }
   };
+
+  // NEW: Handle Cash on Delivery
+  const handleCOD = async () => {
+    try {
+      setLoading(true);
+      const { data } = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/v1/product/cod-order`, {
+        cart,
+      });
+      setLoading(false);
+      localStorage.removeItem("cart");
+      setCart([]);
+      navigate("/dashboard/user/orders");
+      toast.success("Order Placed Successfully (Cash on Delivery)");
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+      toast.error("Error Placing Order");
+    }
+  };
+
   return (
     <Layout>
       <div className="container mx-auto px-4">
@@ -122,11 +148,14 @@ const CartPage = () => {
               </div>
             ))}
           </div>
+          
           <div className="w-full md:w-1/3 text-center">
             <h2 className="text-2xl font-bold mb-4">Cart Summary</h2>
             <p className="mb-2">Total | Checkout | Payment</p>
             <hr className="mb-4" />
             <h4 className="text-xl font-semibold mb-4">Total : {totalPrice()} </h4>
+            
+            {/* Address Section */}
             {auth?.user?.address ? (
               <>
                 <div className="mb-3">
@@ -163,36 +192,81 @@ const CartPage = () => {
                 )}
               </div>
             )}
-            {/* After Implement Payment */}
+
+            {/* Payment Method Selection */}
+            {auth?.token && cart?.length > 0 && (
+              <div className="mt-4 mb-4">
+                 <h4 className="font-semibold mb-3">Select Payment Method:</h4>
+                 <div className="flex justify-center gap-4">
+                    <label className="flex items-center space-x-2 cursor-pointer">
+                      <input 
+                        type="radio" 
+                        name="payment" 
+                        value="online" 
+                        checked={paymentMethod === "online"} 
+                        onChange={(e) => setPaymentMethod(e.target.value)}
+                        className="form-radio text-blue-600"
+                      />
+                      <span>Online Payment</span>
+                    </label>
+                    
+                    <label className="flex items-center space-x-2 cursor-pointer">
+                      <input 
+                        type="radio" 
+                        name="payment" 
+                        value="cod" 
+                        checked={paymentMethod === "cod"} 
+                        onChange={(e) => setPaymentMethod(e.target.value)}
+                        className="form-radio text-blue-600"
+                      />
+                      <span>Cash on Delivery</span>
+                    </label>
+                 </div>
+              </div>
+            )}
+
+            {/* Payment Execution */}
             <div className="mt-2">
               {!clientToken || !cart?.length ? (
                 ""
               ) : (
                 <>
-                  <DropIn
-                    options={{
-                      authorization: clientToken,
-                      paypal: {
-                        flow: "vault",
-                      },
-                    }}
-                    onInstance={(instance) => setInstance(instance)}
-                  />
-
-                  <button
-                    className="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-4"
-                    onClick={handlePayment}
-                    disabled={loading || !instance || !auth?.user?.address}
-                  >
-                    {loading ? "Processing ...." : "Make Payment"}
-                  </button>
+                  {/* Conditional Rendering based on Payment Method */}
+                  {paymentMethod === "online" ? (
+                    <>
+                      <DropIn
+                        options={{
+                          authorization: clientToken,
+                          paypal: {
+                            flow: "vault",
+                          },
+                        }}
+                        onInstance={(instance) => setInstance(instance)}
+                      />
+                      <button
+                        className="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-4"
+                        onClick={handlePayment}
+                        disabled={loading || !instance || !auth?.user?.address}
+                      >
+                        {loading ? "Processing ...." : "Make Payment"}
+                      </button>
+                    </>
+                  ) : (
+                    /* COD BUTTON */
+                    <button
+                      className="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-4"
+                      onClick={handleCOD}
+                      disabled={loading || !auth?.user?.address}
+                    >
+                      {loading ? "Processing ...." : "Place COD Order"}
+                    </button>
+                  )}
                 </>
               )}
             </div>            
           </div>
         </div>
       </div>
-      
     </Layout>
   );
 };

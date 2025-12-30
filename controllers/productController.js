@@ -433,3 +433,75 @@ transporter.sendMail(mailOptions, function (error, info) {
     console.log(error);
   }
 };
+
+// ... imports (userModel, orderModel, nodemailer, etc)
+
+// CASH ON DELIVERY CONTROLLER
+export const createCodOrderController = async (req, res) => {
+  try {
+    const { cart } = req.body;
+    const u = await userModel.findById({ _id: req.user._id });
+
+    // Calculate total (optional, but good for verification)
+    let total = 0;
+    cart.map((i) => {
+      total += i.price;
+    });
+
+    // Create Order with COD status
+    const order = await new orderModel({
+      products: cart,
+      payment: {
+        success: true,
+        paymentMethod: "COD",
+      },
+      paymentMode: "COD", // <--- Add this
+      buyer: req.user._id,
+      totalAmount: total, // <--- Add this
+      shippingAddress: u.address, // <--- Add this (Get address from user object)
+      status: "Order Placed",
+    }).save();
+
+    // Send Email
+    var transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.SENDER_GMAIL,
+        pass: process.env.SENDER_GMAIL_PASSCODE,
+      },
+    });
+
+    var mailOptions = {
+      from: process.env.SENDER_GMAIL,
+      to: u.email,
+      subject: "Order Placed via Cash on Delivery - Medicure",
+      text: `Hi ${u.name},
+      
+      Your Cash on Delivery order has been successfully placed in Medicure. 
+      Total Amount to Pay on Delivery: Rs. ${total}
+      
+      We will try our best to deliver it as fast as possible.
+      
+      Thank You,
+      Team Medicure`,
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+        // Even if email fails, respond success because order is saved
+        res.json({ ok: true });
+      } else {
+        res.json({ ok: true });
+      }
+    });
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error in COD Order API",
+      error,
+    });
+  }
+};

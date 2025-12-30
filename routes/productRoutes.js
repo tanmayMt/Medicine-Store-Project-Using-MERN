@@ -15,6 +15,7 @@ import {
   realtedProductController,
   searchProductController,
   updateProductController,
+  createCodOrderController,
 } from "../controllers/productController.js";
 import { isAdmin, requireSignIn } from "../middlewares/authMiddleware.js";
 import formidable from "express-formidable";
@@ -76,5 +77,9 @@ router.get("/braintree/token", braintreeTokenController);
 
 //payments
 router.post("/braintree/payment", requireSignIn, brainTreePaymentController);
+
+//create cod order
+router.post("/cod-order", requireSignIn, createCodOrderController);
+
 
 export default router;
