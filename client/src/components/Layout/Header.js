@@ -49,47 +49,39 @@ const Header = () => {
             <Link to="/" className="flex items-center gap-2.5 group">
               <div className="relative">
                 <svg
-                  className="w-8 h-8"
+                  className="w-8 h-8 text-blue-600 group-hover:text-blue-700 transition-colors"
                   viewBox="0 0 24 24"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  {/* Shopping cart body - light grey */}
                   <path
-                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17"
-                    stroke="#9ca3af"
-                    strokeWidth="2"
+                    d="M6 4v16M6 12h6M18 4v16"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
-                  {/* Cart wheels - blue accents */}
-                  <circle
-                    cx="9"
-                    cy="19"
-                    r="1.5"
-                    fill="#3b82f6"
-                    stroke="#3b82f6"
-                    strokeWidth="1"
-                  />
-                  <circle
-                    cx="20"
-                    cy="19"
-                    r="1.5"
-                    fill="#3b82f6"
-                    stroke="#3b82f6"
-                    strokeWidth="1"
-                  />
-                  {/* Cart handle - blue accent */}
                   <path
-                    d="M5 3h2"
-                    stroke="#3b82f6"
+                    d="M14 8l2 2 4-4"
+                    stroke="#10b981"
                     strokeWidth="2"
                     strokeLinecap="round"
+                    strokeLinejoin="round"
+                    transform="rotate(-15 16 10)"
+                  />
+                  <circle
+                    cx="16"
+                    cy="10"
+                    r="3"
+                    fill="none"
+                    stroke="#10b981"
+                    strokeWidth="1.5"
+                    strokeDasharray="2 2"
                   />
                 </svg>
               </div>
               <span
-                className="text-xl font-bold text-black uppercase tracking-wide"
+                className="text-xl font-bold text-blue-600 uppercase tracking-wide"
                 style={{ fontFamily: "'Inter', sans-serif", letterSpacing: "1px" }}
               >
                 MEDICURE
