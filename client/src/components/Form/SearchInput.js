@@ -19,22 +19,26 @@ const SearchInput = () => {
     }
   };
   return (
-    <div>
+    <div className="w-full">
       <form
-        className="d-flex search-form"
+        className="flex items-center w-full"
         role="search"
         onSubmit={handleSubmit}
       >
         <input
-          className="form-control me-2"
+          className="flex-1 border border-gray-300 rounded-none px-3 py-2 outline-none bg-white text-gray-700 placeholder-gray-400"
           type="search"
           placeholder="Search"
           aria-label="Search"
           value={values.keyword}
           onChange={(e) => setValues({ ...values, keyword: e.target.value })}
         />
-        <button className="btn btn-outline-success" type="submit">
-          Search
+        <button
+          className="bg-black text-white rounded-none px-6 py-2 border-0 cursor-pointer relative"
+          type="submit"
+        >
+          <span className="relative z-10">Search</span>
+          <span className="absolute right-0 top-0 bottom-0 w-1 bg-green-500"></span>
         </button>
       </form>
     </div>

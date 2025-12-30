@@ -1,9 +1,19 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [],
+  content: ["./src/**/*.{js,jsx,ts,tsx}"],
+  corePlugins: {
+    preflight: false, // Disable Preflight to avoid conflicts with Bootstrap
+  },
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        playfair: ['"Playfair Display"', "serif"],
+        poppins: ['"Poppins"', "sans-serif"],
+      },
+    },
   },
   plugins: [],
 }
+
+
 

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Layout from "./../../components/Layout/Layout";
 import axios from "axios";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/auth";
 
@@ -13,14 +13,13 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // form function
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/v1/auth/login`, {
-        email,
-        password,
-      });
+      const res = await axios.post(
+        `${process.env.REACT_APP_API_BASE_URL}/api/v1/auth/login`,
+        { email, password }
+      );
       if (res && res.data.success) {
         toast.success(res.data && res.data.message);
         setAuth({
@@ -35,91 +34,100 @@ const Login = () => {
       }
     } catch (error) {
       console.log(error);
-      toast.error("Please Register");
+      toast.error("Something went wrong");
     }
   };
 
   return (
     <Layout title="Login - Medicine Store">
-      <div 
-        className="flex items-center justify-center px-4 sm:px-6 lg:px-8" 
-        style={{ 
-          minHeight: "calc(100vh - 200px)",
-          background: "linear-gradient(to bottom, #87CEEB 0%, #FFB6C1 100%)",
-          paddingTop: "80px",
-          paddingBottom: "80px"
-        }}
-      >
-        <div className="max-w-md w-full">
-          {/* Form Card */}
-          <div 
-            className="bg-white p-8 rounded-lg"
-            style={{ 
-              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)"
-            }}
-          >
-            <h2 
-              className="text-2xl font-bold mb-6 text-center uppercase"
-              style={{ 
-                fontFamily: "'Playfair Display', serif",
-                fontWeight: 700
-              }}
-            >
-              LOGIN FORM
-            </h2>
+      <div className="min-h-[80vh] flex items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8 font-poppins">
+        <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-2xl relative overflow-hidden">
+          
+          {/* Decorative Top Bar */}
+          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-cyan-500 to-blue-600"></div>
+
+          <div className="text-center">
+            {/* Optional: Add Logo Here */}
+            {/* <img className="mx-auto h-12 w-auto" src="/logo.png" alt="Logo" /> */}
             
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <h2 className="mt-2 text-3xl font-bold text-gray-900 font-playfair tracking-wide">
+              Welcome Back
+            </h2>
+            <p className="mt-2 text-sm text-gray-600">
+              Sign in to access your dashboard
+            </p>
+          </div>
+
+          <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+            <div className="rounded-md shadow-sm space-y-4">
               {/* Email Input */}
               <div>
+                <label htmlFor="email" className="sr-only">
+                  Email address
+                </label>
                 <input
-                  type="email"
                   id="email"
+                  name="email"
+                  type="email"
+                  required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="block w-full py-2 px-0 bg-transparent border-0 border-b-2 border-gray-300 focus:border-gray-900 focus:outline-none focus:ring-0 text-gray-900 placeholder-gray-400"
-                  placeholder="Enter Your Email"
-                  required
+                  className="appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 focus:z-10 sm:text-sm transition-all duration-200"
+                  placeholder="Email Address"
                 />
               </div>
 
               {/* Password Input */}
-              <div>
+              <div className="relative">
+                <label htmlFor="password" className="sr-only">
+                  Password
+                </label>
                 <input
-                  type="password"
                   id="password"
+                  name="password"
+                  type="password"
+                  required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="block w-full py-2 px-0 bg-transparent border-0 border-b-2 border-gray-300 focus:border-gray-900 focus:outline-none focus:ring-0 text-gray-900 placeholder-gray-400"
-                  placeholder="Enter Your Password"
-                  required
+                  className="appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 focus:z-10 sm:text-sm transition-all duration-200"
+                  placeholder="Password"
                 />
               </div>
+            </div>
 
-              {/* Buttons */}
-              <div className="space-y-3 pt-4">
-                <button
-                  type="submit"
-                  className="w-full py-3 px-6 text-white font-bold uppercase"
-                  style={{ 
-                    backgroundColor: "#000000"
-                  }}
-                >
-                  LOGIN
-                </button>
-                
+            {/* Forgot Password Link - Placed Strategically */}
+            <div className="flex items-center justify-end">
+              <div className="text-sm">
                 <button
                   type="button"
                   onClick={() => navigate("/forgot-password")}
-                  className="w-full py-3 px-6 text-white font-bold uppercase"
-                  style={{ 
-                    backgroundColor: "#000000"
-                  }}
+                  className="font-medium text-cyan-600 hover:text-cyan-500 transition-colors"
                 >
-                  Forgot Password
+                  Forgot your password?
                 </button>
               </div>
-            </form>
-          </div>
+            </div>
+
+            {/* Main Action Button */}
+            <div>
+              <button
+                type="submit"
+                className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold uppercase rounded-lg text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              >
+                Sign In
+              </button>
+            </div>
+            
+            {/* Register Link */}
+            <div className="text-center mt-4">
+               <p className="text-sm text-gray-600">
+                 Don't have an account?{" "}
+                 <Link to="/register" className="font-bold text-gray-900 hover:text-cyan-600 transition-colors">
+                   Sign Up
+                 </Link>
+               </p>
+            </div>
+          </form>
         </div>
       </div>
     </Layout>
