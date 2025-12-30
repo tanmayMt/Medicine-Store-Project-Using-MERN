@@ -19,6 +19,12 @@
     --text-gray: #4b5563;
 }
 
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
 body {
     background-color: var(--bg-light);
     font-family: 'Poppins', sans-serif;
@@ -81,6 +87,7 @@ body {
             #000000);
     /* Chrome 10-25, Safari 5.1-6 */
     background: linear-gradient(to right, #434343, #000000);
+    margin-top: auto;
 }
 
 .footer a {

@@ -5,7 +5,7 @@ import { Helmet } from "react-helmet";
 import { Toaster } from "react-hot-toast";
 const Layout = ({ children, title, description, keywords, author }) => {
   return (
-    <div>
+    <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       <Helmet>
         <meta charSet="utf-8" />
         <meta name="description" content={description} />
@@ -14,7 +14,7 @@ const Layout = ({ children, title, description, keywords, author }) => {
         <title>{title}</title>
       </Helmet>
       <Header />
-      <main style={{ minHeight: "70vh", paddingTop: "56px" }}>
+      <main style={{ minHeight: "70vh", paddingTop: "56px", flex: "1" }}>
         <Toaster />
 
         {children}
