@@ -5,8 +5,6 @@ import AdminMenu from "../../components/Layout/AdminMenu";
 import Layout from "../../components/Layout/Layout";
 import { useAuth } from "../../context/auth";
 import moment from "moment";
-import { Select } from "antd";
-const { Option } = Select;
 
 const AdminOrders = () => {
   const [status, setStatus] = useState([
@@ -45,64 +43,60 @@ const AdminOrders = () => {
   };
   return (
     <Layout title={"All Orders Data"}>
-      <div className="row dashboard">
-        <div className="col-md-3">
+      <div className="flex flex-col md:flex-row gap-6 dashboard">
+        <div className="w-full md:w-1/4">
           <AdminMenu />
         </div>
-        <div className="col-md-9">
+        <div className="w-full md:w-3/4">
           <h1 className="text-center">All Orders</h1>
           {orders?.map((o, i) => {
             return (
               <div className="border shadow">
-                <table className="table">
-                  <thead>
+                <table className="min-w-full bg-white border border-gray-200 rounded-lg">
+                  <thead className="bg-gray-50">
                     <tr>
-                      <th scope="col">Order ID</th>
-                      <th scope="col">Status</th>
-                      <th scope="col">Buyer</th>
-                      {/* <th scope="col"> date</th> */}
-                      <th scope="col">Payment</th>
-                      <th scope="col">Quantity</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Buyer</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="bg-white divide-y divide-gray-200">
                     <tr>
-                      <td>{o?._id}</td>
-                      <td>
-                        <Select
-                          bordered={false}
-                          onChange={(value) => handleChange(o._id, value)}
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{o?._id}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <select
+                          className="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          onChange={(e) => handleChange(o._id, e.target.value)}
                           defaultValue={o?.status}
                         >
                           {status.map((s, i) => (
-                            <Option key={i} value={s}>
+                            <option key={i} value={s}>
                               {s}
-                            </Option>
+                            </option>
                           ))}
-                        </Select>
+                        </select>
                       </td>
-                      <td>{o?.buyer?.name}</td>
-                      {/* <td>{moment(o?.createAt).fromNow()}</td> */}
-                      <td>{o?.payment.success ? "Success" : "Failed"}</td>
-                      <td>{o?.products?.length}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{o?.buyer?.name}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{o?.payment.success ? "Success" : "Failed"}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{o?.products?.length}</td>
                     </tr>
                   </tbody>
                 </table>
-                <div className="container">
+                <div className="container mx-auto">
                   {o?.products?.map((p, i) => (
-                    <div className="row mb-2 p-3 card flex-row" key={p._id}>
-                      <div className="col-md-4">
+                    <div className="flex flex-row mb-2 p-3 bg-white border border-gray-200 rounded shadow-sm" key={p._id}>
+                      <div className="w-1/3 md:w-1/4">
                         <img
                           src={`${process.env.REACT_APP_API_BASE_URL}/api/v1/product/product-photo/${p._id}`}
-                          className="card-img-top"
+                          className="w-full h-24 object-cover rounded"
                           alt={p.name}
-                          width="100px"
-                          height={"100px"}
                         />
                       </div>
-                      <div className="col-md-8">
-                        <b><h2>{p.name}</h2></b>
-                        <p>{p.description.substring(0, 30)}</p>
+                      <div className="w-2/3 md:w-3/4 pl-4">
+                        <h2 className="font-bold">{p.name}</h2>
+                        <p className="text-gray-600">{p.description.substring(0, 30)}</p>
                         <p>Price : <b>{p.price}</b></p>
                       </div>
                     </div>

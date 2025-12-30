@@ -5,7 +5,6 @@ import toast from "react-hot-toast";
 import SearchInput from "../Form/SearchInput";
 import useCategory from "../../hooks/useCategory";
 import { useCart } from "../../context/cart";
-import { Badge } from "antd";
 
 const Header = () => {
   const [auth, setAuth] = useAuth();
@@ -238,14 +237,17 @@ const Header = () => {
               <NavLink
                 to="/cart"
                 className={({ isActive }) =>
-                  `px-4 py-2 font-light text-gray-600 hover:text-black transition-colors no-underline ${
+                  `px-4 py-2 font-light text-gray-600 hover:text-black transition-colors no-underline relative ${
                     isActive ? "text-black border-b-2 border-black" : ""
                   }`
                 }
               >
-                <Badge count={cart?.length} showZero offset={[10, -5]}>
-                  CART
-                </Badge>
+                <span>CART</span>
+                {cart?.length > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    {cart.length}
+                  </span>
+                )}
               </NavLink>
             </div>
           </div>
@@ -345,15 +347,18 @@ const Header = () => {
                 <NavLink
                   to="/cart"
                   className={({ isActive }) =>
-                    `px-4 py-2 font-light text-gray-600 hover:text-black transition-colors no-underline ${
+                    `px-4 py-2 font-light text-gray-600 hover:text-black transition-colors no-underline relative ${
                       isActive ? "text-black border-b-2 border-black" : ""
                     }`
                   }
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  <Badge count={cart?.length} showZero offset={[10, -5]}>
-                    CART
-                  </Badge>
+                  <span>CART</span>
+                  {cart?.length > 0 && (
+                    <span className="absolute -top-1 left-12 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                      {cart.length}
+                    </span>
+                  )}
                 </NavLink>
               </div>
             </div>

@@ -26,55 +26,41 @@ const CategoryProduct = () => {
 
   return (
     <Layout>
-      <div className="container mt-3">
-        <h4 className="text-center">Category - {category?.name}</h4>
-        <h6 className="text-center">{products?.length} result found </h6>
-        <div className="row">
-          <div className="col-md-9 offset-1">
-            <div className="d-flex flex-wrap">
-              {products?.map((p) => (
-                <div
-                  className="card m-2"
-                  style={{ width: "18rem" }}
-                  key={p._id}
-                >
-                  <img
-                    src={`${process.env.REACT_APP_API_BASE_URL}/api/v1/product/product-photo/${p._id}`}
-                    className="card-img-top"
-                    alt={p.name}
-                  />
-                  <div className="card-body">
-                    <h5 className="card-title">{p.name}</h5>
-                    <p className="card-text">
-                      {p.description.substring(0, 30)}...
-                    </p>
-                    <p className="card-text">{p.price}</p>
+      <div className="container mx-auto mt-3 px-4">
+        <h4 className="text-center mb-2">Category - {category?.name}</h4>
+        <h6 className="text-center mb-4">{products?.length} result found </h6>
+        <div className="flex flex-col">
+          <div className="flex flex-wrap justify-center gap-4">
+            {products?.map((p) => (
+              <div
+                className="bg-white border border-gray-200 rounded-lg shadow-sm m-2 w-72"
+                key={p._id}
+              >
+                <img
+                  src={`${process.env.REACT_APP_API_BASE_URL}/api/v1/product/product-photo/${p._id}`}
+                  className="w-full h-48 object-cover rounded-t-lg"
+                  alt={p.name}
+                />
+                <div className="p-4">
+                  <h5 className="font-bold text-lg mb-2">{p.name}</h5>
+                  <p className="text-gray-600 mb-2">
+                    {p.description.substring(0, 30)}...
+                  </p>
+                  <p className="font-semibold text-blue-600 mb-3">{p.price}</p>
+                  <div className="flex gap-2">
                     <button
-                      className="btn btn-primary ms-1"
+                      className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded transition-colors"
                       onClick={() => navigate(`/product/${p.slug}`)}
                     >
                       More Details
                     </button>
-                    <button className="btn btn-secondary ms-1">
+                    <button className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded transition-colors">
                       ADD TO CART
                     </button>
                   </div>
                 </div>
-              ))}
-            </div>
-            <div className="m-2 p-3">
-            {/* {products && products.length < total && (
-              <button
-                className="btn btn-warning"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setPage(page + 1);
-                }}
-              >
-                {loading ? "Loading ..." : "Loadmore"}
-              </button>
-            )} */}
-          </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>

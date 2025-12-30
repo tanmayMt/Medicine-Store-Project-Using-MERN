@@ -2,7 +2,7 @@
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   corePlugins: {
-    preflight: false, // Disable Preflight to avoid conflicts with Bootstrap
+    preflight: true, // Enable Preflight now that Bootstrap is removed
   },
   theme: {
     extend: {

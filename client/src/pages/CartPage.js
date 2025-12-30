@@ -77,10 +77,10 @@ const CartPage = () => {
   };
   return (
     <Layout>
-      <div className="container">
-        <div className="row">
-          <div className="col-md-12">
-            <h1 className="text-center bg-light p-2 mb-1">
+      <div className="container mx-auto px-4">
+        <div className="mb-4">
+          <div className="w-full">
+            <h1 className="text-center bg-gray-100 p-2 mb-1 rounded">
               {`Hello ${auth?.token && auth?.user?.name}`}
             </h1>
             <h4 className="text-center">
@@ -92,37 +92,28 @@ const CartPage = () => {
             </h4>
           </div>
         </div>
-        <div className="row">
-          <div className="col-md-8">
+        <div className="flex flex-col md:flex-row gap-6">
+          <div className="w-full md:w-2/3">
             {cart?.map((p) => (
-              <div className="row mb-2 p-3 card flex-row">
-                <div className="col-md-4">
+              <div key={p._id} className="flex flex-row mb-2 p-3 bg-white border border-gray-200 rounded shadow-sm">
+                <div className="w-1/3 md:w-1/4">
                   <img
                     src={`${process.env.REACT_APP_API_BASE_URL}/api/v1/product/product-photo/${p._id}`}
-                    className="card-img-top"
+                    className="w-full h-48 object-cover rounded"
                     alt={p.name}
-                    width="20px"
-                    height={"180px"}
                   />
                 </div>
-                <div className="col-md-8">
-                  <p><b>{p.name}</b></p>
-                  <p className="text-primary">{p.description.substring(0, 30)}</p>
-                  <p className="text-success font-weight-bold"><b>Price : 
+                <div className="w-2/3 md:w-3/4 pl-4">
+                  <p className="font-bold text-lg mb-2">{p.name}</p>
+                  <p className="text-blue-600 mb-2">{p.description.substring(0, 30)}</p>
+                  <p className="text-green-600 font-bold mb-2">Price : 
                       {p.price.toLocaleString("en-US", {
                         style: "currency",
-                        // currency: "USD",
                         currency: "INR",
-                      })}</b>
+                      })}
                   </p>
-                  {/* <button
-                    className="btn btn-danger"
-                    onClick={() => removeCartItem(p._id)}
-                  >
-                    Remove
-                  </button> */}
                   <button
-                    className=" btn btn-danger bg-red-600 hover:bg-red-700 text-red font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300"
+                    className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300"
                     onClick={() => removeCartItem(p._id)}
                   >
                     ❌ <b>Remove</b>
@@ -131,19 +122,18 @@ const CartPage = () => {
               </div>
             ))}
           </div>
-          <div className="col-md-4 text-center">
-            <h2>Cart Summary</h2>
-            <p>Total | Checkout | Payment</p>
-            <hr />
-            <h4>Total : {totalPrice()} </h4>
+          <div className="w-full md:w-1/3 text-center">
+            <h2 className="text-2xl font-bold mb-4">Cart Summary</h2>
+            <p className="mb-2">Total | Checkout | Payment</p>
+            <hr className="mb-4" />
+            <h4 className="text-xl font-semibold mb-4">Total : {totalPrice()} </h4>
             {auth?.user?.address ? (
               <>
                 <div className="mb-3">
-                  <h4>Current Address</h4>
-                  <h5>{auth?.user?.address}</h5>
+                  <h4 className="font-semibold mb-2">Current Address</h4>
+                  <h5 className="mb-3">{auth?.user?.address}</h5>
                   <button
-                    className="btn btn-outline-warning"
-                    //onClick={() => navigate("/dashboard/user/profile")}
+                    className="px-4 py-2 border border-yellow-500 text-yellow-600 hover:bg-yellow-50 font-medium rounded transition-colors"
                     onClick={() => navigate("/dashboard/user/address-update")}
                   >
                     Update Address
@@ -154,26 +144,21 @@ const CartPage = () => {
               <div className="mb-3">
                 {auth?.token ? (
                   <button
-                    className="btn btn-outline-warning"
+                    className="px-4 py-2 border border-yellow-500 text-yellow-600 hover:bg-yellow-50 font-medium rounded transition-colors"
                     onClick={() => navigate("/dashboard/user/profile")}
-                    // onClick={() => navigate("/dashboard/user/address-update", {
-                    //     state: "/cart",})
-                    // }
-                      
-                    
                   >
                     Update Address
                   </button>
                 ) : (
                   <button
-                    className="btn btn-outline-warning"
+                    className="px-4 py-2 border border-yellow-500 text-yellow-600 hover:bg-yellow-50 font-medium rounded transition-colors"
                     onClick={() =>
                       navigate("/login", {
                         state: "/cart",
                       })
                     }
                   >
-                    Plase Login to checkout
+                    Please Login to checkout
                   </button>
                 )}
               </div>
@@ -195,7 +180,7 @@ const CartPage = () => {
                   />
 
                   <button
-                    className="btn btn-primary"
+                    className="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-4"
                     onClick={handlePayment}
                     disabled={loading || !instance || !auth?.user?.address}
                   >

@@ -3,9 +3,7 @@ import Layout from "./../../components/Layout/Layout";
 import AdminMenu from "./../../components/Layout/AdminMenu";
 import toast from "react-hot-toast";
 import axios from "axios";
-import { Select } from "antd";
 import { useNavigate } from "react-router-dom";
-const { Option } = Select;
 
 const CreateProduct = () => {
   const navigate = useNavigate();
@@ -65,39 +63,38 @@ const CreateProduct = () => {
 
   return (
     <Layout title={"Dashboard - Create Product"}>
-      <div className="container-fluid m-3 p-3 dashboard">
-        <div className="row">
-          <div className="col-md-3">
+      <div className="container mx-auto m-3 p-3 dashboard">
+        <div className="flex flex-col md:flex-row gap-6">
+          <div className="w-full md:w-1/4">
             <AdminMenu />
           </div>
-          <div className="col-md-9">
+          <div className="w-full md:w-3/4">
             <h1>Create Product</h1>
-            <div className="m-1 w-75">
-              <Select
-                bordered={false}
+            <div className="m-1 w-3/4">
+              <select
                 placeholder="Select a category"
-                size="large"
-                showSearch
-                className="form-select mb-3"
-                onChange={(value) => {
-                  setCategory(value);
+                className="w-full px-4 py-2 mb-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onChange={(e) => {
+                  setCategory(e.target.value);
                 }}
+                value={category}
               >
+                <option value="">Select a category</option>
                 {categories?.map((c) => (
-                  <Option key={c._id} value={c._id}>
+                  <option key={c._id} value={c._id}>
                     {c.name}
-                  </Option>
+                  </option>
                 ))}
-              </Select>
+              </select>
               <div className="mb-3">
-                <label className="btn btn-outline-secondary col-md-12">
+                <label className="block px-4 py-2 w-full border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50 text-center">
                   {photo ? photo.name : "Upload Photo"}
                   <input
                     type="file"
                     name="photo"
                     accept="image/*"
                     onChange={(e) => setPhoto(e.target.files[0])}
-                    hidden
+                    className="hidden"
                   />
                 </label>
               </div>
@@ -118,7 +115,7 @@ const CreateProduct = () => {
                   type="text"
                   value={name}
                   placeholder="write a name"
-                  className="form-control"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   onChange={(e) => setName(e.target.value)}
                 />
               </div>
@@ -127,8 +124,9 @@ const CreateProduct = () => {
                   type="text"
                   value={description}
                   placeholder="write a description"
-                  className="form-control"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   onChange={(e) => setDescription(e.target.value)}
+                  rows="4"
                 />
               </div>
 
@@ -137,7 +135,7 @@ const CreateProduct = () => {
                   type="number"
                   value={price}
                   placeholder="write a Price"
-                  className="form-control"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   onChange={(e) => setPrice(e.target.value)}
                 />
               </div>
@@ -146,27 +144,26 @@ const CreateProduct = () => {
                   type="number"
                   value={quantity}
                   placeholder="write a quantity"
-                  className="form-control"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   onChange={(e) => setQuantity(e.target.value)}
                 />
               </div>
               <div className="mb-3">
-                <Select
-                  bordered={false}
-                  placeholder="Select Shipping "
-                  size="large"
-                  showSearch
-                  className="form-select mb-3"
-                  onChange={(value) => {
-                    setShipping(value);
+                <select
+                  placeholder="Select Shipping"
+                  className="w-full px-4 py-2 mb-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  onChange={(e) => {
+                    setShipping(e.target.value);
                   }}
+                  value={shipping}
                 >
-                  <Option value="0">No</Option>
-                  <Option value="1">Yes</Option>
-                </Select>
+                  <option value="">Select Shipping</option>
+                  <option value="0">No</option>
+                  <option value="1">Yes</option>
+                </select>
               </div>
               <div className="mb-3">
-                <button className="btn btn-primary" onClick={handleCreate}>
+                <button className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded transition-colors" onClick={handleCreate}>
                   CREATE PRODUCT
                 </button>
               </div>

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Checkbox, Radio } from "antd";
 import { Prices } from "../components/Prices";
 import { useCart } from "../context/cart";
 import axios from "axios";
@@ -132,38 +131,44 @@ const HomePage = () => {
         />
       </div>
 
-      <div className="container-fluid home-page">
-        <div className="row">
+      <div className="container mx-auto px-4 home-page">
+        <div className="flex flex-col md:flex-row gap-6">
           {/* Filters Sidebar */}
-          <div className="col-md-3">
+          <div className="w-full md:w-1/4">
             <div className="filters">
-              <h4 className="text-center">Filter By Category</h4>
-              <div className="d-flex flex-column mb-4">
+              <h4 className="text-center mb-4">Filter By Category</h4>
+              <div className="flex flex-col mb-4 space-y-2">
                 {categories?.map((c) => (
-                  <Checkbox
-                    key={c._id}
-                    onChange={(e) => handleFilter(e.target.checked, c._id)}
-                  >
-                    {c.name}
-                  </Checkbox>
+                  <label key={c._id} className="flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                      onChange={(e) => handleFilter(e.target.checked, c._id)}
+                    />
+                    <span className="ml-2 text-gray-700">{c.name}</span>
+                  </label>
                 ))}
               </div>
 
-              <h4 className="text-center">Filter By Price</h4>
-              <div className="d-flex flex-column">
-                <Radio.Group onChange={(e) => setRadio(e.target.value)}>
-                  {Prices?.map((p) => (
-                    <div key={p._id}>
-                      <Radio value={p.array}>{p.name}</Radio>
-                    </div>
-                  ))}
-                </Radio.Group>
+              <h4 className="text-center mb-4">Filter By Price</h4>
+              <div className="flex flex-col space-y-2">
+                {Prices?.map((p) => (
+                  <label key={p._id} className="flex items-center cursor-pointer">
+                    <input
+                      type="radio"
+                      name="price"
+                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
+                      value={JSON.stringify(p.array)}
+                      onChange={(e) => setRadio(JSON.parse(e.target.value))}
+                    />
+                    <span className="ml-2 text-gray-700">{p.name}</span>
+                  </label>
+                ))}
               </div>
 
-              <div className="d-flex flex-column mt-4">
+              <div className="flex flex-col mt-4">
                 <button
-                  className="btn btn-danger w-100"
-                  style={{ borderRadius: "20px" }}
+                  className="w-full px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-medium rounded-full transition-colors"
                   onClick={() => window.location.reload()}
                 >
                   RESET FILTERS
@@ -173,7 +178,7 @@ const HomePage = () => {
           </div>
 
           {/* Products Section */}
-          <div className="col-md-9">
+          <div className="w-full md:w-3/4">
             <h1 className="all-products-title text-center">All Products</h1>
 
             {/* PRODUCT GRID START */}
