@@ -275,12 +275,21 @@ const AdminDashboard = () => {
                   <LineChart data={revenueData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                     <XAxis dataKey="date" stroke="#6b7280" />
-                    <YAxis stroke="#6b7280" />
+                    <YAxis 
+                      stroke="#6b7280" 
+                      tickFormatter={(value) => `₹${value.toLocaleString()}`}
+                    />
                     <Tooltip
                       contentStyle={{
                         backgroundColor: "#fff",
                         border: "1px solid #e5e7eb",
                         borderRadius: "8px",
+                      }}
+                      formatter={(value, name) => {
+                        if (name === "Revenue" || name === "Order") {
+                          return [`₹${value.toLocaleString()}`, name];
+                        }
+                        return [value, name];
                       }}
                     />
                     <Legend />

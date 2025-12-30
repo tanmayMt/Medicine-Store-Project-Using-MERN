@@ -25,6 +25,11 @@ import Categories from "./pages/Categories";
 import CategoryProduct from "./pages/CategoryProduct";
 import CartPage from "./pages/CartPage";
 import AdminOrders from "./pages/Admin/AdminOrders";
+import Reports from "./pages/Admin/Reports";
+import Discounts from "./pages/Admin/Discounts";
+import Integrations from "./pages/Admin/Integrations";
+import Help from "./pages/Admin/Help";
+import Settings from "./pages/Admin/Settings";
 
 function App() {
   return (
@@ -51,6 +56,11 @@ function App() {
           <Route path="admin/products" element={<Products />} />
           <Route path="admin/users" element={<Users />} />
           <Route path="admin/orders" element={<AdminOrders />} />
+          <Route path="admin/reports" element={<Reports />} />
+          <Route path="admin/discounts" element={<Discounts />} />
+          <Route path="admin/integrations" element={<Integrations />} />
+          <Route path="admin/help" element={<Help />} />
+          <Route path="admin/settings" element={<Settings />} />
           <Route path="admin/address-update" element={<AddressForm/>}/>
         </Route>
         <Route path="/register" element={<Register />} />

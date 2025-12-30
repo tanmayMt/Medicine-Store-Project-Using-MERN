@@ -48,10 +48,44 @@ const AdminMenu = () => {
         {/* Logo */}
         <div className="p-6 border-b border-gray-700">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
-              <FiShoppingCart className="w-5 h-5 text-white" />
+            <div className="relative transform transition-transform duration-200">
+              {/* Custom SVG: Shopping Cart with Medical Cross */}
+              <svg
+                className="w-8 h-8" 
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                {/* Cart Body - Grey */}
+                <path
+                  d="M3 3H5L5.4 5M5.4 5H21L17 13H7M5.4 5L7 13M7 13L4.707 15.293C4.077 15.923 4.523 17 5.414 17H17"
+                  stroke="#e5e7eb" 
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                {/* Wheels - Orange */}
+                <circle cx="9" cy="21" r="1.5" fill="#ea580c" />
+                <circle cx="20" cy="21" r="1.5" fill="#ea580c" />
+                
+                {/* Medical Cross inside Cart - Orange */}
+                <path 
+                  d="M11 9H15M13 7V11" 
+                  stroke="#ea580c" 
+                  strokeWidth="2.5" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round"
+                />
+              </svg>
             </div>
-            <span className="text-xl font-bold">EzMart</span>
+            <span 
+              className="text-xl font-black text-white"
+              style={{ 
+                fontFamily: "'Inter', sans-serif",
+              }}
+            >
+              Medicure
+            </span>
           </div>
         </div>
 
