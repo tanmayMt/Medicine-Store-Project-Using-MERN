@@ -38,14 +38,13 @@ const Header = () => {
             {/* ================= LEFT: BRANDING ================= */}
             <Link to="/" className="flex items-center gap-2.5 group">
               <div className="relative">
-                {/* Stylized logo icon - H with checkmark swirl */}
+                {/* Stylized logo icon */}
                 <svg 
                   className="w-8 h-8 text-blue-600 group-hover:text-blue-700 transition-colors" 
                   viewBox="0 0 24 24" 
                   fill="none" 
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  {/* Blue H letter */}
                   <path 
                     d="M6 4v16M6 12h6M18 4v16" 
                     stroke="currentColor" 
@@ -53,7 +52,6 @@ const Header = () => {
                     strokeLinecap="round" 
                     strokeLinejoin="round"
                   />
-                  {/* Green checkmark swirl */}
                   <path 
                     d="M14 8l2 2 4-4" 
                     stroke="#10b981" 
@@ -104,21 +102,10 @@ const Header = () => {
                 <NavLink 
                   to="/" 
                   className={({ isActive }) => 
-                    `px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors ${isActive ? "text-gray-900 font-semibold" : ""}`
+                    `px-3 py-2 text-sm font-semibold text-gray-700 hover:text-green-600 transition-colors ${isActive ? "text-green-600" : ""}`
                   }
                 >
                   Home
-                </NavLink>
-                
-                <div className="w-px h-5 bg-gray-300 mx-1"></div>
-
-                <NavLink 
-                  to="/about" 
-                  className={({ isActive }) => 
-                    `px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors ${isActive ? "text-gray-900 font-semibold" : ""}`
-                  }
-                >
-                  About
                 </NavLink>
                 
                 <div className="w-px h-5 bg-gray-300 mx-1"></div>
@@ -129,7 +116,7 @@ const Header = () => {
                   onMouseEnter={() => setCategoriesDropdownOpen(true)}
                   onMouseLeave={() => setCategoriesDropdownOpen(false)}
                 >
-                  <button className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors focus:outline-none">
+                  <button className="flex items-center px-3 py-2 text-sm font-semibold text-gray-700 hover:text-green-600 transition-colors focus:outline-none">
                     Categories
                     <svg className="w-3.5 h-3.5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
@@ -140,7 +127,7 @@ const Header = () => {
                     <div className="absolute top-full right-0 mt-1 w-56 bg-white border border-gray-100 shadow-xl py-2 z-50 rounded-md">
                       <Link 
                         to="/categories" 
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600"
+                        className="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-green-600"
                         onClick={() => setCategoriesDropdownOpen(false)}
                       >
                         All Categories
@@ -149,7 +136,7 @@ const Header = () => {
                         <Link 
                           key={c._id}
                           to={`/category/${c.slug}`}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600"
+                          className="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-green-600"
                           onClick={() => setCategoriesDropdownOpen(false)}
                         >
                           {c.name}
@@ -164,7 +151,7 @@ const Header = () => {
                 <NavLink 
                   to="/cart" 
                   className={({ isActive }) => 
-                    `relative px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors ${isActive ? "text-gray-900 font-semibold" : ""}`
+                    `relative px-3 py-2 text-sm font-semibold text-gray-700 hover:text-green-600 transition-colors ${isActive ? "text-green-600" : ""}`
                   }
                 >
                   Cart
@@ -211,14 +198,14 @@ const Header = () => {
                         </div>
                         <NavLink 
                           to={`/dashboard/${auth?.user?.role === 1 ? "admin" : "user"}`}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                          className="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-green-600"
                           onClick={() => setUserDropdownOpen(false)}
                         >
                           Dashboard
                         </NavLink>
                         <button 
                           onClick={() => { handleLogout(); setUserDropdownOpen(false); }}
-                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                          className="block w-full text-left px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-green-600"
                         >
                           Logout
                         </button>
@@ -263,21 +250,20 @@ const Header = () => {
             >
               Shop Now
             </Link>
-            <NavLink to="/" onClick={() => setMobileMenuOpen(false)} className="text-base font-medium text-gray-800 hover:text-gray-900">Home</NavLink>
-            <NavLink to="/about" onClick={() => setMobileMenuOpen(false)} className="text-base font-medium text-gray-800 hover:text-gray-900">About</NavLink>
-            <NavLink to="/categories" onClick={() => setMobileMenuOpen(false)} className="text-base font-medium text-gray-800 hover:text-gray-900">Categories</NavLink>
+            <NavLink to="/" onClick={() => setMobileMenuOpen(false)} className="text-base font-semibold text-gray-800 hover:text-green-600">Home</NavLink>
+            <NavLink to="/categories" onClick={() => setMobileMenuOpen(false)} className="text-base font-semibold text-gray-800 hover:text-green-600">Categories</NavLink>
             {!auth?.user ? (
               <>
-                <NavLink to="/register" onClick={() => setMobileMenuOpen(false)} className="text-base font-medium text-gray-800 hover:text-gray-900">Register</NavLink>
-                <NavLink to="/login" onClick={() => setMobileMenuOpen(false)} className="text-base font-medium text-gray-800 hover:text-gray-900">Login</NavLink>
+                <NavLink to="/register" onClick={() => setMobileMenuOpen(false)} className="text-base font-semibold text-gray-800 hover:text-green-600">Register</NavLink>
+                <NavLink to="/login" onClick={() => setMobileMenuOpen(false)} className="text-base font-semibold text-gray-800 hover:text-green-600">Login</NavLink>
               </>
             ) : (
               <>
-                <NavLink to={`/dashboard/${auth?.user?.role === 1 ? "admin" : "user"}`} onClick={() => setMobileMenuOpen(false)} className="text-base font-medium text-gray-800 hover:text-gray-900">Dashboard</NavLink>
-                <button onClick={() => { handleLogout(); setMobileMenuOpen(false); }} className="text-base font-medium text-gray-800 hover:text-gray-900 text-left">Logout</button>
+                <NavLink to={`/dashboard/${auth?.user?.role === 1 ? "admin" : "user"}`} onClick={() => setMobileMenuOpen(false)} className="text-base font-semibold text-gray-800 hover:text-green-600">Dashboard</NavLink>
+                <button onClick={() => { handleLogout(); setMobileMenuOpen(false); }} className="text-base font-semibold text-gray-800 hover:text-green-600 text-left">Logout</button>
               </>
             )}
-            <NavLink to="/cart" onClick={() => setMobileMenuOpen(false)} className="text-base font-medium text-gray-800 hover:text-gray-900">
+            <NavLink to="/cart" onClick={() => setMobileMenuOpen(false)} className="text-base font-semibold text-gray-800 hover:text-green-600">
               Cart {cart?.length > 0 && `(${cart.length})`}
             </NavLink>
           </div>
