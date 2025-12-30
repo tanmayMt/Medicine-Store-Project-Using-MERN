@@ -131,10 +131,13 @@ const HomePage = () => {
         />
       </div>
 
-      <div className="container mx-auto px-4 home-page">
-        <div className="flex flex-col md:flex-row gap-6">
+      {/* CHANGED: px-6 to px-2 to move content to the edges */}
+      <div className="w-full px-2 home-page mt-4">
+        {/* CHANGED: gap-6 to gap-4 to pull columns closer */}
+        <div className="flex flex-col md:flex-row gap-4">
+          
           {/* Filters Sidebar */}
-          <div className="w-full md:w-1/4">
+          <div className="w-full md:w-2/12">
             <div className="filters">
               <h4 className="text-center mb-4">Filter By Category</h4>
               <div className="flex flex-col mb-4 space-y-2">
@@ -178,7 +181,7 @@ const HomePage = () => {
           </div>
 
           {/* Products Section */}
-          <div className="w-full md:w-3/4">
+          <div className="w-full md:w-10/12">
             <h1 className="all-products-title text-center">All Products</h1>
 
             {/* PRODUCT GRID START */}
