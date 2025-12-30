@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
-import Layout from "./../../components/Layout/Layout";
 import AdminMenu from "./../../components/Layout/AdminMenu";
 import toast from "react-hot-toast";
 import axios from "axios";
 import CategoryForm from "../../components/Form/CategoryForm";
+import { Helmet } from "react-helmet";
+import { FiX, FiEdit, FiTrash2, FiTag, FiPlus } from "react-icons/fi";
+
 const CreateCategory = () => {
   const [categories, setCategories] = useState([]);
   const [name, setName] = useState("");
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [updatedName, setUpdatedName] = useState("");
-  //handle Form
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -19,17 +21,17 @@ const CreateCategory = () => {
       });
       if (data?.success) {
         toast.success(`${name} is created`);
+        setName("");
         getAllCategory();
       } else {
         toast.error(data.message);
       }
     } catch (error) {
       console.log(error);
-      // toast.error("somthing went wrong in input form");
+      toast.error("Something went wrong");
     }
   };
 
-  //get all cat
   const getAllCategory = async () => {
     try {
       const { data } = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/v1/category/get-category`);
@@ -38,7 +40,7 @@ const CreateCategory = () => {
       }
     } catch (error) {
       console.log(error);
-      toast.error("Something wwent wrong in getting catgeory");
+      toast.error("Something went wrong in getting category");
     }
   };
 
@@ -46,7 +48,6 @@ const CreateCategory = () => {
     getAllCategory();
   }, []);
 
-  //update category
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
@@ -65,90 +66,128 @@ const CreateCategory = () => {
       }
     } catch (error) {
       console.log(error);
+      toast.error("Something went wrong");
     }
   };
-  //delete category
-  const handleDelete = async (pId) => {
-    try {
-      const { data } = await axios.delete(
-        `${process.env.REACT_APP_API_BASE_URL}/api/v1/category/delete-category/${pId}`
-      );
-      if (data.success) {
-        toast.success(`category is deleted`);
 
-        getAllCategory();
-      } else {
-        toast.error(data.message);
+  const handleDelete = async (pId) => {
+    if (window.confirm("Are you sure you want to delete this category?")) {
+      try {
+        const { data } = await axios.delete(
+          `${process.env.REACT_APP_API_BASE_URL}/api/v1/category/delete-category/${pId}`
+        );
+        if (data.success) {
+          toast.success("Category deleted successfully");
+          getAllCategory();
+        } else {
+          toast.error(data.message);
+        }
+      } catch (error) {
+        toast.error("Something went wrong");
       }
-    } catch (error) {
-      toast.error("Somtihing went wrong");
     }
   };
+
   return (
-    <Layout title={"Dashboard - Create Category"}>
-      <div className="container mx-auto m-3 p-3 dashboard">
-        <div className="flex flex-col md:flex-row gap-6">
-          <div className="w-full md:w-1/4">
-            <AdminMenu />
+    <>
+      <Helmet>
+        <title>Category Management - Admin Dashboard</title>
+      </Helmet>
+      <div className="flex min-h-screen bg-gray-50">
+        <AdminMenu />
+        
+        <div className="flex-1 ml-0 lg:ml-64">
+          {/* Header */}
+          <div className="bg-white border-b border-gray-200 px-4 lg:px-6 py-4 sticky top-0 z-10">
+            <h1 className="text-2xl font-bold text-gray-800">Category Management</h1>
+            <p className="text-sm text-gray-600 mt-1">Create and manage product categories</p>
           </div>
-          <div className="w-full md:w-3/4">
-            <h1>Manage Category</h1>
-            <div className="p-3 w-50">
-              <CategoryForm
-                handleSubmit={handleSubmit}
-                value={name}
-                setValue={setName}
-              />
-            </div>
-            <div className="w-3/4">
-              <table className="min-w-full bg-white border border-gray-200 rounded-lg">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {categories?.map((c) => (
-                    <tr key={c._id}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{c.name}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+
+          {/* Content */}
+          <div className="p-4 lg:p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Create Category Form */}
+              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+                <div className="flex items-center gap-2 mb-6">
+                  <FiPlus className="w-5 h-5 text-orange-500" />
+                  <h2 className="text-xl font-semibold text-gray-800">Create New Category</h2>
+                </div>
+                <CategoryForm
+                  handleSubmit={handleSubmit}
+                  value={name}
+                  setValue={setName}
+                />
+              </div>
+
+              {/* Categories List */}
+              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+                <div className="flex items-center gap-2 mb-6">
+                  <FiTag className="w-5 h-5 text-orange-500" />
+                  <h2 className="text-xl font-semibold text-gray-800">All Categories</h2>
+                  <span className="ml-auto px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm font-medium">
+                    {categories.length}
+                  </span>
+                </div>
+                
+                {categories.length === 0 ? (
+                  <div className="text-center py-12">
+                    <FiTag className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                    <p className="text-gray-600">No categories found</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3 max-h-96 overflow-y-auto">
+                    {categories.map((c) => (
+                      <div
+                        key={c._id}
+                        className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors"
+                      >
+                        <span className="font-medium text-gray-800">{c.name}</span>
+                        <div className="flex items-center gap-2">
                           <button
-                            className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded transition-colors ml-2"
+                            className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
                             onClick={() => {
                               setVisible(true);
                               setUpdatedName(c.name);
                               setSelected(c);
                             }}
+                            title="Edit"
                           >
-                            Edit
+                            <FiEdit className="w-4 h-4" />
                           </button>
                           <button
-                            className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-medium rounded transition-colors ml-2"
-                            onClick={() => {
-                              handleDelete(c._id);
-                            }}
+                            className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
+                            onClick={() => handleDelete(c._id)}
+                            title="Delete"
                           >
-                            Delete
+                            <FiTrash2 className="w-4 h-4" />
                           </button>
-                        </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            {visible && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <div className="bg-white rounded-lg p-6 w-full max-w-md">
-                  <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-bold">Edit Category</h2>
-                    <button
-                      onClick={() => setVisible(false)}
-                      className="text-gray-500 hover:text-gray-700 text-2xl"
-                    >
-                      ×
-                    </button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Edit Modal */}
+          {visible && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+              <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
+                <div className="flex items-center justify-between p-6 border-b border-gray-200">
+                  <h2 className="text-xl font-bold text-gray-800">Edit Category</h2>
+                  <button
+                    onClick={() => {
+                      setVisible(false);
+                      setSelected(null);
+                      setUpdatedName("");
+                    }}
+                    className="text-gray-500 hover:text-gray-700 transition-colors"
+                  >
+                    <FiX className="w-6 h-6" />
+                  </button>
+                </div>
+                <div className="p-6">
                   <CategoryForm
                     value={updatedName}
                     setValue={setUpdatedName}
@@ -156,11 +195,11 @@ const CreateCategory = () => {
                   />
                 </div>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 

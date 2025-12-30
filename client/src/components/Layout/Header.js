@@ -32,7 +32,7 @@ const Header = () => {
         : "text-gray-700 hover:bg-green-500 hover:text-white"
     }`;
 
-  const dropdownButtonClasses = 
+  const dropdownButtonClasses =
     "flex items-center px-4 py-2 rounded-full text-base font-semibold text-gray-700 hover:bg-green-500 hover:text-white transition-all duration-200 focus:outline-none";
 
   return (
@@ -40,51 +40,56 @@ const Header = () => {
       <nav
         className="fixed top-0 left-0 right-0 z-50 shadow-sm font-sans"
         style={{
-          background: "linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 50%, #ffffff 100%)",
+          background:
+            "linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 50%, #ffffff 100%)",
         }}
       >
         <div className="w-full px-6 lg:px-8">
           <div className="flex items-center justify-between h-[70px]">
-            {/* ================= LEFT: BRANDING ================= */}
-            <Link to="/" className="flex items-center gap-2.5 group">
-              <div className="relative">
+            
+            {/* ================= LEFT: BRANDING (RESIZED) ================= */}
+            <Link to="/" className="flex items-center gap-2 group">
+              <div className="relative transform group-hover:scale-105 transition-transform duration-200">
+                {/* Custom SVG: Shopping Cart with Medical Cross - BACK TO w-8 h-8 */}
                 <svg
-                  className="w-8 h-8 text-blue-600 group-hover:text-blue-700 transition-colors"
+                  className="w-8 h-8" 
                   viewBox="0 0 24 24"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
+                  {/* Cart Body - Grey */}
                   <path
-                    d="M6 4v16M6 12h6M18 4v16"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M14 8l2 2 4-4"
-                    stroke="#10b981"
+                    d="M3 3H5L5.4 5M5.4 5H21L17 13H7M5.4 5L7 13M7 13L4.707 15.293C4.077 15.923 4.523 17 5.414 17H17"
+                    stroke="#64748b" 
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    transform="rotate(-15 16 10)"
                   />
-                  <circle
-                    cx="16"
-                    cy="10"
-                    r="3"
-                    fill="none"
-                    stroke="#10b981"
-                    strokeWidth="1.5"
-                    strokeDasharray="2 2"
+                  {/* Wheels - Blue */}
+                  <circle cx="9" cy="21" r="1.5" fill="#3b82f6" />
+                  <circle cx="20" cy="21" r="1.5" fill="#3b82f6" />
+                  
+                  {/* Medical Cross inside Cart - Blue */}
+                  <path 
+                    d="M11 9H15M13 7V11" 
+                    stroke="#3b82f6" 
+                    strokeWidth="2.5" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
                   />
                 </svg>
               </div>
+              
+              {/* Text with 3D Shadow Effect - RESIZED to text-2xl */}
               <span
-                className="text-xl font-bold text-blue-600 uppercase tracking-wide"
-                style={{ fontFamily: "'Inter', sans-serif", letterSpacing: "1px" }}
+                className="text-2xl font-black text-black"
+                style={{ 
+                    fontFamily: "'Inter', sans-serif",
+                    // Adjusted shadow for smaller text size
+                    // textShadow: "1.5px 1.5px 0px #3b82f6" 
+                }}
               >
-                MEDICURE
+                Medicure
               </span>
             </Link>
 
@@ -97,7 +102,6 @@ const Header = () => {
 
             {/* ================= RIGHT: NAVIGATION ================= */}
             <div className="hidden lg:flex items-center gap-3">
-              
               {/* Navigation Links Group */}
               <div className="flex items-center gap-1 ml-2">
                 <NavLink to="/" className={navItemClasses}>
@@ -113,7 +117,7 @@ const Header = () => {
                   <button className={dropdownButtonClasses}>
                     Categories
                     <svg
-                      className="w-4 h-4 ml-1" 
+                      className="w-4 h-4 ml-1"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -284,7 +288,6 @@ const Header = () => {
             <div className="w-full mb-4">
               <SearchInput />
             </div>
-            {/* Removed 'Shop Now' button from Mobile Menu as well */}
             <NavLink
               to="/"
               onClick={() => setMobileMenuOpen(false)}

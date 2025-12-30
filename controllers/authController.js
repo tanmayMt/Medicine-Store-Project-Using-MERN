@@ -1,5 +1,7 @@
 import userModel from "../models/userModel.js";
 import orderModel from "../models/orderModel.js";
+import productModel from "../models/productModel.js";
+import categoryModel from "../models/categoryModel.js";
 
 import { comparePassword, hashPassword } from "./../helpers/authHelper.js";
 import JWT from "jsonwebtoken";
@@ -349,6 +351,157 @@ export const getAllUsersController = async (req, res) => {
     });
   }
 }
+
+//Dashboard Stats
+export const getDashboardStatsController = async (req, res) => {
+  try {
+    // Get all orders
+    const orders = await orderModel
+      .find({})
+      .populate("products", "price category")
+      .sort({ createdAt: -1 });
+
+    // Calculate total sales (sum of all order totalAmount)
+    const totalSales = orders.reduce((sum, order) => {
+      return sum + (order.totalAmount || 0);
+    }, 0);
+
+    // Get total orders count
+    const totalOrders = orders.length;
+
+    // Get total users (customers only, role 0)
+    const totalUsers = await userModel.countDocuments({ role: "0" });
+
+    // Get total products
+    const totalProducts = await productModel.countDocuments();
+
+    // Get total categories
+    const totalCategories = await categoryModel.countDocuments();
+
+    // Calculate revenue for last 8 days
+    const last8Days = [];
+    const today = new Date();
+    for (let i = 7; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      date.setHours(0, 0, 0, 0);
+      const nextDate = new Date(date);
+      nextDate.setDate(nextDate.getDate() + 1);
+
+      const dayOrders = orders.filter(order => {
+        const orderDate = new Date(order.createdAt);
+        return orderDate >= date && orderDate < nextDate;
+      });
+
+      const dayRevenue = dayOrders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
+      const dayOrderCount = dayOrders.length;
+
+      last8Days.push({
+        date: date.toLocaleDateString("en-GB", { day: "numeric", month: "short" }),
+        revenue: dayRevenue,
+        order: dayOrderCount,
+      });
+    }
+
+    // Calculate monthly revenue and target
+    const currentMonth = new Date();
+    currentMonth.setDate(1);
+    currentMonth.setHours(0, 0, 0, 0);
+    const monthlyOrders = orders.filter(order => {
+      const orderDate = new Date(order.createdAt);
+      return orderDate >= currentMonth;
+    });
+    const monthlyRevenue = monthlyOrders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
+    const monthlyTarget = 600000; // Monthly target in rupees - You can make this configurable
+    const monthlyTargetPercentage = Math.round((monthlyRevenue / monthlyTarget) * 100);
+
+    // Get category-wise sales
+    // First, get all orders with products populated with category
+    const ordersWithCategories = await orderModel
+      .find({})
+      .populate({
+        path: "products",
+        populate: {
+          path: "category",
+          model: "Category"
+        }
+      });
+
+    const categorySales = {};
+    ordersWithCategories.forEach(order => {
+      if (order.products && Array.isArray(order.products)) {
+        order.products.forEach(product => {
+          if (product.category && product.category._id) {
+            const catId = product.category._id.toString();
+            const catName = product.category.name || "Unknown";
+            if (!categorySales[catId]) {
+              categorySales[catId] = { total: 0, name: catName };
+            }
+            categorySales[catId].total += product.price || 0;
+          }
+        });
+      }
+    });
+
+    // Convert to array and sort
+    const categoryData = Object.values(categorySales)
+      .map(cat => ({
+        name: cat.name,
+        value: cat.total,
+      }))
+      .sort((a, b) => b.value - a.value);
+
+    // Calculate percentage changes (simplified - comparing with previous period)
+    const previousWeekOrders = orders.filter(order => {
+      const orderDate = new Date(order.createdAt);
+      const weekAgo = new Date();
+      weekAgo.setDate(weekAgo.getDate() - 14);
+      const lastWeek = new Date();
+      lastWeek.setDate(lastWeek.getDate() - 7);
+      return orderDate >= weekAgo && orderDate < lastWeek;
+    });
+    const previousWeekSales = previousWeekOrders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
+    const currentWeekOrders = orders.filter(order => {
+      const orderDate = new Date(order.createdAt);
+      const lastWeek = new Date();
+      lastWeek.setDate(lastWeek.getDate() - 7);
+      return orderDate >= lastWeek;
+    });
+    const currentWeekSales = currentWeekOrders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
+    
+    const salesChange = previousWeekSales > 0 
+      ? (((currentWeekSales - previousWeekSales) / previousWeekSales) * 100).toFixed(2)
+      : "0";
+    const ordersChange = previousWeekOrders.length > 0
+      ? (((currentWeekOrders.length - previousWeekOrders.length) / previousWeekOrders.length) * 100).toFixed(2)
+      : "0";
+
+    res.json({
+      success: true,
+      stats: {
+        totalSales,
+        totalOrders,
+        totalUsers,
+        totalProducts,
+        totalCategories,
+        monthlyRevenue,
+        monthlyTarget,
+        monthlyTargetPercentage,
+        salesChange: salesChange > 0 ? `+${salesChange}` : salesChange,
+        ordersChange: ordersChange > 0 ? `+${ordersChange}` : ordersChange,
+        revenueData: last8Days,
+        categoryData: categoryData.slice(0, 4), // Top 4 categories
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error While Getting Dashboard Stats",
+      error,
+    });
+  }
+};
 
 
 
