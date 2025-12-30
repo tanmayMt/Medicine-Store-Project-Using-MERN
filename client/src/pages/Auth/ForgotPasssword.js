@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Layout from "./../../components/Layout/Layout";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
 
 const ForgotPasssword = () => {
@@ -34,87 +34,77 @@ const ForgotPasssword = () => {
 
   return (
     <Layout title="Forgot Password - Medicine Store">
-      <div 
-        className="flex items-center justify-center px-4 sm:px-6 lg:px-8" 
-        style={{ 
-          minHeight: "calc(100vh - 200px)",
-          background: "linear-gradient(to bottom, #87CEEB 0%, #FFB6C1 100%)",
-          paddingTop: "80px",
-          paddingBottom: "80px"
-        }}
-      >
-        <div className="max-w-md w-full">
-          {/* Form Card */}
-          <div 
-            className="bg-white p-8 rounded-lg"
-            style={{ 
-              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)"
-            }}
-          >
-            <h2 
-              className="text-2xl font-bold mb-6 text-center uppercase"
-              style={{ 
-                fontFamily: "'Playfair Display', serif",
-                fontWeight: 700
-              }}
-            >
-              RESET PASSWORD
+      <div className="min-h-[80vh] flex items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8 font-poppins">
+        <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-2xl relative overflow-hidden">
+          
+          {/* Decorative Top Bar */}
+          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-cyan-500 to-blue-600"></div>
+
+          <div className="text-center">
+            <h2 className="mt-2 text-3xl font-bold text-gray-900 font-playfair tracking-wide">
+              Reset Password
             </h2>
-            
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Email Input */}
-              <div>
-                <input
-                  type="email"
-                  id="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="block w-full py-2 px-0 bg-transparent border-0 border-b-2 border-gray-300 focus:border-gray-900 focus:outline-none focus:ring-0 text-gray-900 placeholder-gray-400"
-                  placeholder="Enter Your Email"
-                  required
-                />
-              </div>
-
-              {/* Security Question Input */}
-              <div>
-                <input
-                  type="text"
-                  id="answer"
-                  value={answer}
-                  onChange={(e) => setAnswer(e.target.value)}
-                  className="block w-full py-2 px-0 bg-transparent border-0 border-b-2 border-gray-300 focus:border-gray-900 focus:outline-none focus:ring-0 text-gray-900 placeholder-gray-400"
-                  placeholder="Enter Your favorite Sport Name"
-                  required
-                />
-              </div>
-
-              {/* New Password Input */}
-              <div>
-                <input
-                  type="password"
-                  id="newPassword"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  className="block w-full py-2 px-0 bg-transparent border-0 border-b-2 border-gray-300 focus:border-gray-900 focus:outline-none focus:ring-0 text-gray-900 placeholder-gray-400"
-                  placeholder="Enter Your Password"
-                  required
-                />
-              </div>
-
-              {/* Submit Button */}
-              <div className="pt-4">
-                <button
-                  type="submit"
-                  className="w-full py-3 px-6 text-white font-bold uppercase"
-                  style={{ 
-                    backgroundColor: "#000000"
-                  }}
-                >
-                  RESET
-                </button>
-              </div>
-            </form>
+            <p className="mt-2 text-sm text-gray-600">
+              Enter your details to reset your password
+            </p>
           </div>
+
+          <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
+            
+            {/* Email Input */}
+            <div>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 focus:z-10 sm:text-sm transition-all duration-200"
+                placeholder="Email Address"
+                required
+              />
+            </div>
+
+            {/* Security Question Input */}
+            <div>
+              <input
+                type="text"
+                value={answer}
+                onChange={(e) => setAnswer(e.target.value)}
+                className="appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 focus:z-10 sm:text-sm transition-all duration-200"
+                placeholder="Security Answer (Favorite Sport)"
+                required
+              />
+            </div>
+
+            {/* New Password Input */}
+            <div>
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 focus:z-10 sm:text-sm transition-all duration-200"
+                placeholder="New Password"
+                required
+              />
+            </div>
+
+            {/* Submit Button */}
+            <div className="pt-2">
+              <button
+                type="submit"
+                className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold uppercase rounded-lg text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              >
+                Reset Password
+              </button>
+            </div>
+
+            {/* Back to Login Link */}
+            <div className="text-center mt-4">
+               <Link to="/login" className="font-medium text-sm text-gray-600 hover:text-cyan-600 transition-colors">
+                 &larr; Back to Login
+               </Link>
+            </div>
+
+          </form>
         </div>
       </div>
     </Layout>
