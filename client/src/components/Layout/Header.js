@@ -26,192 +26,148 @@ const Header = () => {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 font-poppins text-[17px] leading-[26px] uppercase shadow-[0_8px_6px_-6px_gray] border-b border-gray-400 bg-white">
-        <div className="w-full px-4 mx-auto max-w-7xl">
-          <div className="flex items-center justify-between py-3">
-            {/* Mobile menu button */}
-            <button
-              className="lg:hidden p-2 text-gray-600 hover:text-gray-900"
-              type="button"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-label="Toggle navigation"
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+      <nav className="fixed top-0 left-0 right-0 z-50 font-poppins text-[15px] uppercase shadow-md border-b border-gray-200 bg-white">
+        <div className="w-full px-4 lg:px-6">
+          {/* CHANGED: Reduced vertical padding from py-4 to py-2 to decrease height */}
+          <div className="flex items-center justify-between py-2">
+            
+            {/* ================= LEFT SIDE: Mobile Button + Brand ================= */}
+            <div className="flex items-center gap-4">
+              {/* Mobile menu button */}
+              <button
+                className="lg:hidden p-2 text-gray-600 hover:text-gray-900"
+                type="button"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               >
-                {mobileMenuOpen ? (
-                  <path d="M6 18L18 6M6 6l12 12" />
-                ) : (
-                  <path d="M4 6h16M4 12h16M4 18h16" />
-                )}
-              </svg>
-            </button>
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  {mobileMenuOpen ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                  )}
+                </svg>
+              </button>
 
-            {/* Left Section: Cart Icon + Brand */}
-            <div className="flex items-center gap-3">
-              {/* Shopping Cart Icon - Light Gray with Blue Wheels */}
-              <svg
-                className="w-8 h-8"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                {/* Cart Body - Light Gray */}
-                <path
-                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17"
-                  stroke="#9CA3AF"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                {/* Left Wheel - Blue */}
-                <circle cx="9" cy="19" r="2" fill="#3B82F6" />
-                {/* Right Wheel - Blue */}
-                <circle cx="20" cy="19" r="2" fill="#3B82F6" />
-              </svg>
-              {/* Brand Name */}
-              <Link
-                to="/"
-                className="font-bold text-[17px] leading-[26px] uppercase tracking-[3px] text-black hidden sm:block"
-                style={{ fontFamily: "roboto, sans-serif" }}
-              >
-                MEDICURE
-              </Link>
-            </div>
-
-            {/* Middle Section: Search Bar */}
-            <div className="hidden lg:flex flex-1 justify-center max-w-md mx-8">
-              <SearchInput />
-            </div>
-
-            {/* Right Section: Navigation Links */}
-            <div className="hidden lg:flex items-center gap-1">
-              <NavLink
-                to="/"
-                className={({ isActive }) =>
-                  `px-4 py-2 font-light text-gray-600 hover:text-black transition-colors no-underline ${
-                    isActive ? "text-black border-b-2 border-black" : ""
-                  }`
-                }
-              >
-                HOME
-              </NavLink>
-
-              {/* Categories Dropdown */}
-              <div className="relative group">
-                <button
-                  type="button"
-                  className="px-4 py-2 font-light text-gray-600 hover:text-black transition-colors flex items-center no-underline"
-                  onMouseEnter={() => setCategoriesDropdownOpen(true)}
-                  onMouseLeave={() => setCategoriesDropdownOpen(false)}
+              {/* Brand Logo & Icon */}
+              <div className="flex items-center gap-2">
+                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <circle cx="9" cy="19" r="2" fill="#3B82F6" />
+                  <circle cx="20" cy="19" r="2" fill="#3B82F6" />
+                </svg>
+                <Link
+                  to="/"
+                  className="font-bold text-xl tracking-[1px] text-black"
+                  style={{ fontFamily: "roboto, sans-serif" }}
                 >
-                  CATEGORIES
-                  <svg
-                    className="ml-1 w-3 h-3"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-                {categoriesDropdownOpen && (
-                  <ul
-                    className="absolute left-0 mt-0 w-48 bg-white shadow-lg rounded-md py-1 z-50"
+                  MEDICURE
+                </Link>
+              </div>
+            </div>
+
+            {/* ================= RIGHT SIDE: Search + Navigation ================= */}
+            <div className="hidden lg:flex items-center gap-8">
+              
+              {/* Search Bar */}
+              <div className="w-[350px]">
+                <SearchInput />
+              </div>
+
+              {/* Navigation Links Group */}
+              <div className="flex items-center gap-6 font-medium text-gray-700">
+                <NavLink
+                  to="/"
+                  className={({ isActive }) =>
+                    `hover:text-black transition-colors ${isActive ? "text-black font-bold" : ""}`
+                  }
+                >
+                  HOME
+                </NavLink>
+
+                {/* Categories Dropdown */}
+                <div className="relative group">
+                  <button
+                    className="flex items-center hover:text-black transition-colors"
                     onMouseEnter={() => setCategoriesDropdownOpen(true)}
                     onMouseLeave={() => setCategoriesDropdownOpen(false)}
                   >
-                    <li>
-                      <Link
-                        className="block px-4 py-2 text-sm hover:bg-gray-100 no-underline"
-                        to="/categories"
-                        onClick={() => setCategoriesDropdownOpen(false)}
-                      >
-                        All Categories
-                      </Link>
-                    </li>
-                    {categories?.map((c) => (
-                      <li key={c._id}>
+                    CATEGORIES
+                    <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {categoriesDropdownOpen && (
+                    <ul
+                      className="absolute right-0 mt-0 w-48 bg-white shadow-xl border border-gray-100 py-2 z-50 normal-case"
+                      onMouseEnter={() => setCategoriesDropdownOpen(true)}
+                      onMouseLeave={() => setCategoriesDropdownOpen(false)}
+                    >
+                      <li>
                         <Link
-                          className="block px-4 py-2 text-sm hover:bg-gray-100 no-underline"
-                          to={`/category/${c.slug}`}
+                          className="block px-4 py-2 hover:bg-gray-50 hover:text-blue-600"
+                          to="/categories"
                           onClick={() => setCategoriesDropdownOpen(false)}
                         >
-                          {c.name}
+                          All Categories
                         </Link>
                       </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
+                      {categories?.map((c) => (
+                        <li key={c._id}>
+                          <Link
+                            className="block px-4 py-2 hover:bg-gray-50 hover:text-blue-600"
+                            to={`/category/${c.slug}`}
+                            onClick={() => setCategoriesDropdownOpen(false)}
+                          >
+                            {c.name}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
 
-              {!auth?.user ? (
-                <>
-                  <NavLink
-                    to="/register"
-                    className={({ isActive }) =>
-                      `px-4 py-2 font-light text-gray-600 hover:text-black transition-colors no-underline ${
-                        isActive ? "text-black border-b-2 border-black" : ""
-                      }`
-                    }
-                  >
-                    REGISTER
-                  </NavLink>
-                  <NavLink
-                    to="/login"
-                    className={({ isActive }) =>
-                      `px-4 py-2 font-light text-gray-600 hover:text-black transition-colors no-underline ${
-                        isActive ? "text-black border-b-2 border-black" : ""
-                      }`
-                    }
-                  >
-                    LOGIN
-                  </NavLink>
-                </>
-              ) : (
-                <>
-                  {/* User Dropdown */}
+                {/* Auth Links */}
+                {!auth?.user ? (
+                  <>
+                    <NavLink
+                      to="/register"
+                      className={({ isActive }) =>
+                        `hover:text-black transition-colors ${isActive ? "text-black font-bold" : ""}`
+                      }
+                    >
+                      REGISTER
+                    </NavLink>
+                    <NavLink
+                      to="/login"
+                      className={({ isActive }) =>
+                        `hover:text-black transition-colors ${isActive ? "text-black font-bold" : ""}`
+                      }
+                    >
+                      LOGIN
+                    </NavLink>
+                  </>
+                ) : (
                   <div className="relative group">
                     <button
-                      type="button"
-                      className="px-4 py-2 font-light text-gray-600 hover:text-black transition-colors flex items-center border-none no-underline"
+                      className="flex items-center hover:text-black transition-colors uppercase"
                       onMouseEnter={() => setUserDropdownOpen(true)}
                       onMouseLeave={() => setUserDropdownOpen(false)}
                     >
-                      {auth?.user?.name?.toUpperCase()}
-                      <svg
-                        className="ml-1 w-3 h-3"
-                        fill="none"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path d="M19 9l-7 7-7-7" />
+                      {auth?.user?.name}
+                      <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                       </svg>
                     </button>
                     {userDropdownOpen && (
                       <ul
-                        className="absolute right-0 mt-0 w-48 bg-white shadow-lg rounded-md py-1 z-50"
+                        className="absolute right-0 mt-0 w-48 bg-white shadow-xl border border-gray-100 py-2 z-50 normal-case"
                         onMouseEnter={() => setUserDropdownOpen(true)}
                         onMouseLeave={() => setUserDropdownOpen(false)}
                       >
                         <li>
                           <NavLink
-                            to={`/dashboard/${
-                              auth?.user?.role === 1 ? "admin" : "user"
-                            }`}
-                            className="block px-4 py-2 text-sm hover:bg-gray-100 no-underline"
+                            to={`/dashboard/${auth?.user?.role === 1 ? "admin" : "user"}`}
+                            className="block px-4 py-2 hover:bg-gray-50"
                             onClick={() => setUserDropdownOpen(false)}
                           >
                             Dashboard
@@ -224,7 +180,7 @@ const Header = () => {
                               setUserDropdownOpen(false);
                             }}
                             to="/login"
-                            className="block px-4 py-2 text-sm hover:bg-gray-100 no-underline"
+                            className="block px-4 py-2 hover:bg-gray-50"
                           >
                             Logout
                           </NavLink>
@@ -232,139 +188,57 @@ const Header = () => {
                       </ul>
                     )}
                   </div>
-                </>
-              )}
-              <NavLink
-                to="/cart"
-                className={({ isActive }) =>
-                  `px-4 py-2 font-light text-gray-600 hover:text-black transition-colors no-underline relative ${
-                    isActive ? "text-black border-b-2 border-black" : ""
-                  }`
-                }
-              >
-                <span>CART</span>
-                {cart?.length > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                    {cart.length}
-                  </span>
                 )}
-              </NavLink>
-            </div>
-          </div>
 
-          {/* Mobile Navigation */}
-          {mobileMenuOpen && (
-            <div className="lg:hidden py-4 border-t border-gray-200">
-              <div className="flex flex-col space-y-3">
-                {/* Mobile Search */}
-                <div className="px-4">
-                  <SearchInput />
-                </div>
-                
-                {/* Mobile Navigation Links */}
-                <NavLink
-                  to="/"
-                  className={({ isActive }) =>
-                    `px-4 py-2 font-light text-gray-600 hover:text-black transition-colors no-underline ${
-                      isActive ? "text-black border-b-2 border-black" : ""
-                    }`
-                  }
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  HOME
-                </NavLink>
-                
-                <Link
-                  to="/categories"
-                  className="px-4 py-2 font-light text-gray-600 hover:text-black transition-colors no-underline"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  CATEGORIES
-                </Link>
-                {categories?.map((c) => (
-                  <Link
-                    key={c._id}
-                    className="px-8 py-2 text-sm font-light text-gray-600 hover:bg-gray-100 no-underline"
-                    to={`/category/${c.slug}`}
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    {c.name}
-                  </Link>
-                ))}
-                
-                {!auth?.user ? (
-                  <>
-                    <NavLink
-                      to="/register"
-                      className={({ isActive }) =>
-                        `px-4 py-2 font-light text-gray-600 hover:text-black transition-colors no-underline ${
-                          isActive ? "text-black border-b-2 border-black" : ""
-                        }`
-                      }
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      REGISTER
-                    </NavLink>
-                    <NavLink
-                      to="/login"
-                      className={({ isActive }) =>
-                        `px-4 py-2 font-light text-gray-600 hover:text-black transition-colors no-underline ${
-                          isActive ? "text-black border-b-2 border-black" : ""
-                        }`
-                      }
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      LOGIN
-                    </NavLink>
-                  </>
-                ) : (
-                  <>
-                    <NavLink
-                      to={`/dashboard/${
-                        auth?.user?.role === 1 ? "admin" : "user"
-                      }`}
-                      className={({ isActive }) =>
-                        `px-4 py-2 font-light text-gray-600 hover:text-black transition-colors no-underline ${
-                          isActive ? "text-black border-b-2 border-black" : ""
-                        }`
-                      }
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      Dashboard
-                    </NavLink>
-                    <NavLink
-                      onClick={() => {
-                        handleLogout();
-                        setMobileMenuOpen(false);
-                      }}
-                      to="/login"
-                      className="px-4 py-2 font-light text-gray-600 hover:text-black transition-colors no-underline"
-                    >
-                      Logout
-                    </NavLink>
-                  </>
-                )}
+                {/* Cart Link */}
                 <NavLink
                   to="/cart"
                   className={({ isActive }) =>
-                    `px-4 py-2 font-light text-gray-600 hover:text-black transition-colors no-underline relative ${
-                      isActive ? "text-black border-b-2 border-black" : ""
-                    }`
+                    `relative hover:text-black transition-colors ${isActive ? "text-black font-bold" : ""}`
                   }
-                  onClick={() => setMobileMenuOpen(false)}
                 >
-                  <span>CART</span>
+                  CART
                   {cart?.length > 0 && (
-                    <span className="absolute -top-1 left-12 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    <span className="absolute -top-2 -right-3 bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
                       {cart.length}
                     </span>
                   )}
                 </NavLink>
               </div>
             </div>
-          )}
+
+          </div>
         </div>
+
+        {/* ================= MOBILE MENU ================= */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden bg-white border-t border-gray-200 py-4 px-6 shadow-inner h-screen">
+            <div className="flex flex-col space-y-6">
+              <div className="w-full mt-2">
+                <SearchInput />
+              </div>
+              <NavLink to="/" className="text-lg font-medium" onClick={() => setMobileMenuOpen(false)}>HOME</NavLink>
+              <NavLink to="/categories" className="text-lg font-medium" onClick={() => setMobileMenuOpen(false)}>CATEGORIES</NavLink>
+              {!auth?.user ? (
+                <>
+                  <NavLink to="/register" className="text-lg font-medium" onClick={() => setMobileMenuOpen(false)}>REGISTER</NavLink>
+                  <NavLink to="/login" className="text-lg font-medium" onClick={() => setMobileMenuOpen(false)}>LOGIN</NavLink>
+                </>
+              ) : (
+                <>
+                  <NavLink to={`/dashboard/${auth?.user?.role === 1 ? "admin" : "user"}`} className="text-lg font-medium" onClick={() => setMobileMenuOpen(false)}>DASHBOARD</NavLink>
+                  <NavLink className="text-lg font-medium" onClick={() => { handleLogout(); setMobileMenuOpen(false); }} to="/login">LOGOUT</NavLink>
+                </>
+              )}
+              <NavLink to="/cart" className="text-lg font-medium" onClick={() => setMobileMenuOpen(false)}>
+                CART ({cart?.length})
+              </NavLink>
+            </div>
+          </div>
+        )}
       </nav>
+      {/* Spacer updated to match new lower height */}
+      <div className="h-[60px]"></div>
     </>
   );
 };
