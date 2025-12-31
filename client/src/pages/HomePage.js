@@ -137,7 +137,7 @@ const HomePage = () => {
           <div className="flex flex-col md:flex-row gap-4">
             
             {/* Filters Sidebar */}
-            <div className="w-full md:w-2/12 bg-[#1f2937] p-4 rounded-3xl shadow-lg h-fit border border-gray-700">
+            <div className="w-full md:w-2/12 bg-[#1f2937] p-4 rounded-3xl shadow-lg h-fit border border-gray-700 sticky top-4">
               <h4 className="text-md font-bold mb-3 border-b border-gray-600 pb-2 text-gray-200">Category</h4>
               <div className="flex flex-col space-y-2 mb-6">
                 {categories?.map((c) => (
@@ -180,34 +180,47 @@ const HomePage = () => {
             <div className="w-full md:w-10/12">
               <h1 className="text-2xl font-bold text-center mb-6 text-gray-100 tracking-tight">All Products - Best Offers</h1>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {products?.map((p) => (
                   <div 
-                    className="bg-[#1e293b] rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer border border-gray-700/50 flex flex-col"
+                    className="
+                      bg-[#1e293b] 
+                      rounded-3xl 
+                      overflow-hidden 
+                      shadow-lg 
+                      relative
+                      flex flex-col
+                      group cursor-pointer 
+                      border border-gray-700/50 
+                      transition-all duration-500 ease-out
+                      hover:-translate-y-2 
+                      hover:shadow-2xl hover:shadow-indigo-500/20
+                      hover:border-indigo-500/50
+                    "
                     key={p._id}
                     onClick={() => navigate(`/product/${p.slug}`)}
                   >
-                    {/* Image Section - Balanced Height (h-48) */}
-                    <div className="relative h-48 w-full bg-gray-900 p-2">
+                    {/* Image Section */}
+                    <div className="relative h-48 w-full bg-gray-900 p-4">
                       <img
                         src={`${process.env.REACT_APP_API_BASE_URL}/api/v1/product/product-photo/${p._id}`}
                         alt={p.name}
-                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+                        className="w-full h-full object-contain transform transition-transform duration-500 group-hover:scale-110"
                       />
                     </div>
 
                     {/* Content Section */}
-                    <div className="p-4 flex flex-col flex-grow">
+                    <div className="p-5 flex flex-col flex-grow relative z-10 bg-[#1e293b]">
                       {/* Metadata Row */}
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="bg-red-500 p-1 rounded-full">
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="bg-red-500 p-1 rounded-full shadow-sm">
                            <FiShoppingCart className="w-2.5 h-2.5 text-white" />
                         </div>
-                        <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">Medicure • Ready to Ship</span>
+                        <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider group-hover:text-indigo-300 transition-colors">Medicure • Ready to Ship</span>
                       </div>
 
                       {/* Title */}
-                      <h5 className="text-white font-bold text-sm leading-snug mb-1 line-clamp-2">
+                      <h5 className="text-white font-bold text-sm leading-snug mb-2 line-clamp-2 group-hover:text-indigo-400 transition-colors">
                         {p.name}
                       </h5>
                       
@@ -219,16 +232,25 @@ const HomePage = () => {
                       {/* Stacked Layout: Price then Button */}
                       <div className="mt-auto">
                         
-                        {/* Price Block - Prominent Green */}
-                        <div className="mb-3">
-                           <span className="text-2xl font-bold text-green-500 tracking-tight">
+                        {/* Price Block */}
+                        <div className="mb-4">
+                           <span className="text-2xl font-extrabold text-green-400 tracking-tight drop-shadow-sm">
                               ₹ {p.price.toLocaleString("en-US")}
                            </span>
                         </div>
 
-                        {/* Button Block - Full Width Blue */}
+                        {/* Button Block */}
                         <button
-                          className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-3 rounded-xl transition-colors duration-200 shadow-md hover:shadow-lg uppercase tracking-wide"
+                          className="
+                            w-full 
+                            bg-blue-600 hover:bg-blue-500 
+                            text-white text-sm font-bold 
+                            py-3 rounded-xl 
+                            transition-all duration-300 
+                            shadow-md hover:shadow-blue-500/30 
+                            uppercase tracking-wide
+                            transform active:scale-95
+                          "
                           onClick={(e) => {
                             e.stopPropagation();
                             setCart([...cart, p]);
@@ -247,10 +269,10 @@ const HomePage = () => {
                 ))}
               </div>
 
-              <div className="mt-8 mb-10 text-center">
+              <div className="mt-12 mb-10 text-center">
                 {products && products.length < total && (
                   <button
-                    className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-8 rounded-full shadow-lg transition-transform transform hover:scale-105 flex items-center gap-2 mx-auto text-sm"
+                    className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2.5 px-8 rounded-full shadow-lg transition-transform transform hover:scale-105 flex items-center gap-2 mx-auto text-sm"
                     onClick={(e) => {
                       e.preventDefault();
                       setPage(page + 1);
