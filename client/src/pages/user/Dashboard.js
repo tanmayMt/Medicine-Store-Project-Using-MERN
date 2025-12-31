@@ -42,7 +42,7 @@ const Dashboard = () => {
             <div className="col-span-1 md:col-span-3">
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
                 <h1 className="text-3xl font-light text-gray-900 mb-2">Hello, <span className="font-bold">{auth?.user?.name}</span></h1>
-                <p className="text-gray-500 mb-8">From your account dashboard. you can easily check & view your recent orders, manage your shipping and billing addresses and edit your password and account details.</p>
+                <p className="text-gray-500 mb-8">View your recent orders, manage your shipping and billing addresses, and update your account details</p>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="p-6 border border-gray-200 rounded-lg hover:border-black transition-colors">
