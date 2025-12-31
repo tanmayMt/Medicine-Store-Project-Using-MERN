@@ -224,6 +224,7 @@ const Orders = () => {
                             <div>
                               <p className="text-xs text-gray-500 uppercase font-semibold tracking-wide mb-1">Order Date</p>
                               <p className="text-sm font-medium text-gray-900">{moment(o?.createAt).format("DD MMM YYYY")}</p>
+                              <p className="text-xs text-gray-500 mt-1">{moment(o?.createAt).format("hh:mm A")}</p>
                             </div>
                           </div>
                           
