@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/auth";
 import { 
   FiLayout, 
   FiShoppingCart, 
@@ -11,14 +12,27 @@ import {
   FiHelpCircle, 
   FiSettings,
   FiMenu,
-  FiX
+  FiX,
+  FiLogOut
 } from "react-icons/fi";
 
 const AdminMenu = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [auth, setAuth] = useAuth();
+  const navigate = useNavigate();
 
   const closeMobileMenu = () => {
     setMobileMenuOpen(false);
+  };
+
+  const handleLogout = () => {
+    setAuth({
+      ...auth,
+      user: null,
+      token: "",
+    });
+    localStorage.removeItem("auth");
+    navigate("/login");
   };
 
   return (
@@ -41,7 +55,7 @@ const AdminMenu = () => {
 
       {/* Sidebar */}
       <div
-        className={`h-screen bg-gray-800 text-white w-64 fixed left-0 top-0 overflow-y-auto z-40 transition-transform duration-300 ${
+        className={`h-screen bg-gray-800 text-white w-64 fixed left-0 top-0 overflow-y-auto z-40 transition-transform duration-300 flex flex-col ${
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       >
@@ -90,9 +104,10 @@ const AdminMenu = () => {
         </div>
 
         {/* Navigation Items */}
-        <nav className="p-4">
+        <nav className="p-4 flex-1">
           <NavLink
             to="/dashboard/admin"
+            end
             onClick={closeMobileMenu}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-3 mb-2 rounded-lg transition-colors ${
@@ -226,6 +241,17 @@ const AdminMenu = () => {
             <span>Settings</span>
           </NavLink>
         </nav>
+
+        {/* Logout Button */}
+        <div className="p-4 border-t border-gray-700">
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-red-500 hover:text-white transition-colors"
+          >
+            <FiLogOut className="w-5 h-5" />
+            <span>Logout</span>
+          </button>
+        </div>
       </div>
     </>
   );
