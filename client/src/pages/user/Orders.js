@@ -8,7 +8,6 @@ import toast from "react-hot-toast";
 import { 
   FiBox, 
   FiCalendar, 
-  FiDollarSign, 
   FiHash, 
   FiEye, 
   FiXCircle,
@@ -18,6 +17,8 @@ import {
   FiTruck,
   FiClock
 } from "react-icons/fi";
+// Import Rupee Icon from FontAwesome or similar package since Feather (fi) doesn't have it
+import { FaRupeeSign } from "react-icons/fa";
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
@@ -142,12 +143,14 @@ const Orders = () => {
                 <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all duration-300">
                   <div className="flex items-center justify-between mb-4">
                     <div className="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-lg text-white shadow-md">
-                      <FiDollarSign className="w-5 h-5" />
+                      {/* Replaced FiDollarSign with FaRupeeSign */}
+                      <FaRupeeSign className="w-5 h-5" />
                     </div>
                   </div>
                   <h3 className="text-gray-500 text-sm font-medium mb-1">Total Spent</h3>
                   <p className="text-2xl font-bold text-green-600">
-                    ${totalSpent.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    {/* Updated to Indian Currency Format */}
+                    {totalSpent.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}
                   </p>
                 </div>
               </div>
@@ -225,11 +228,13 @@ const Orders = () => {
                           </div>
                           
                           <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                            <FiDollarSign className="w-5 h-5 text-gray-400" />
+                            {/* Replaced FiDollarSign with FaRupeeSign */}
+                            <FaRupeeSign className="w-5 h-5 text-gray-400" />
                             <div>
                               <p className="text-xs text-gray-500 uppercase font-semibold tracking-wide mb-1">Total Amount</p>
                               <p className="text-sm font-bold text-gray-900">
-                                ${orderTotal.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                {/* Updated to Indian Currency Format */}
+                                {orderTotal.toLocaleString("en-IN", { style: "currency", currency: "INR" })}
                               </p>
                             </div>
                           </div>
