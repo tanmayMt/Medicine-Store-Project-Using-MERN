@@ -166,7 +166,7 @@ const ProductDetails = () => {
                   className="flex-1 bg-[#E80071] hover:bg-[#c2005f] text-white text-lg font-bold py-3.5 px-6 rounded-sm shadow-md transition-transform transform active:scale-95 flex items-center justify-center gap-2"
                   onClick={() => handleAddToCart(product)}
                 >
-                  <FiShoppingCart className="w-5 h-5" /> Add to Bag
+                  <FiShoppingCart className="w-5 h-5" /> Add to Cart
                 </button>
 
                 {/* Buy Now Button (Orange) */}
@@ -236,13 +236,13 @@ const ProductDetails = () => {
                     </h5>
                     
                     <div className="flex items-center gap-2 mt-2">
-                       <span className="text-xs text-gray-400 line-through">
-                        {(p.price * 1.1).toLocaleString("en-US", { style: "currency", currency: "INR", maximumFractionDigits: 0 })}
-                       </span>
-                       <span className="text-sm font-bold text-gray-900">
-                        {p.price.toLocaleString("en-US", { style: "currency", currency: "INR", maximumFractionDigits: 0 })}
-                       </span>
-                       <span className="text-xs text-green-600 font-bold">10% Off</span>
+                        <span className="text-xs text-gray-400 line-through">
+                         {(p.price * 1.1).toLocaleString("en-US", { style: "currency", currency: "INR", maximumFractionDigits: 0 })}
+                        </span>
+                        <span className="text-sm font-bold text-gray-900">
+                         {p.price.toLocaleString("en-US", { style: "currency", currency: "INR", maximumFractionDigits: 0 })}
+                        </span>
+                        <span className="text-xs text-green-600 font-bold">10% Off</span>
                     </div>
                   </div>
                 ))}
