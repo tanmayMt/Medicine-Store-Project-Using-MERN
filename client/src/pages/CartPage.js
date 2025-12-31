@@ -102,7 +102,7 @@ const CartPage = () => {
   };
 
   return (
-    <Layout>
+    <Layout title={"Cart - Medicure"}>
       <div className="container mx-auto px-4">
         <div className="mb-4">
           <div className="w-full">
