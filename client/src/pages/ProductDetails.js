@@ -10,7 +10,8 @@ import {
   FiCheckCircle, 
   FiRefreshCw, 
   FiStar,
-  FiChevronRight
+  FiChevronRight,
+  FiZap // Added Zap icon for Buy Now
 } from "react-icons/fi"; 
 
 const ProductDetails = () => {
@@ -58,6 +59,20 @@ const ProductDetails = () => {
     toast.success("Item Added to cart");
   };
 
+  // Handle Buy Now
+  const handleBuyNow = (item) => {
+    // Add to cart first (optional logic depending on your flow)
+    let myCart = [...cart];
+    const existingItem = myCart.find(i => i._id === item._id);
+    if(!existingItem) {
+        myCart = [...myCart, item];
+        setCart(myCart);
+        localStorage.setItem("cart", JSON.stringify(myCart));
+    }
+    // Navigate directly to cart or checkout
+    navigate("/cart");
+  };
+
   return (
     <Layout>
       <div className="bg-white min-h-screen font-sans text-gray-800">
@@ -65,9 +80,19 @@ const ProductDetails = () => {
         {/* Breadcrumbs */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center text-sm text-gray-500">
-            <span className="hover:text-pink-600 cursor-pointer">Home</span>
+            <span 
+                className="hover:text-pink-600 cursor-pointer"
+                onClick={() => navigate('/')}
+            >
+                Home
+            </span>
             <FiChevronRight className="mx-2" />
-            <span className="hover:text-pink-600 cursor-pointer">Category</span>
+            <span 
+                className="hover:text-pink-600 cursor-pointer"
+                onClick={() => navigate(`/category/${product?.category?.slug}`)}
+            >
+                {product?.category?.name}
+            </span>
             <FiChevronRight className="mx-2" />
             <span className="text-gray-900 font-medium truncate">{product.name}</span>
           </div>
@@ -95,7 +120,7 @@ const ProductDetails = () => {
                 {product.name}
               </h1>
 
-              {/* Fake Ratings (Visual only, matches reference) */}
+              {/* Fake Ratings */}
               <div className="flex items-center gap-2 mb-4">
                 <div className="flex text-gray-900">
                   {[...Array(4)].map((_, i) => <FiStar key={i} className="fill-gray-900 w-4 h-4" />)}
@@ -109,7 +134,6 @@ const ProductDetails = () => {
               {/* Price Section */}
               <div className="mb-1">
                 <span className="text-gray-400 line-through text-lg mr-2">
-                  {/* Fake MRP for demo, typically backend would provide MRP vs Selling Price */}
                   {(product?.price * 1.2)?.toLocaleString("en-US", { style: "currency", currency: "INR" })}
                 </span>
                 <span className="text-2xl font-bold text-gray-900 mr-2">
@@ -135,17 +159,26 @@ const ProductDetails = () => {
                  </span>
               </div>
 
-              {/* Add to Bag Button (Pink Style from Image) */}
-              <div className="mb-10">
+              {/* Action Buttons Row */}
+              <div className="flex flex-col sm:flex-row gap-4 mb-10">
+                {/* Add to Bag Button (Pink) */}
                 <button
-                  className="w-full sm:w-auto min-w-[250px] bg-[#E80071] hover:bg-[#c2005f] text-white text-lg font-bold py-4 px-8 rounded-sm shadow-md transition-transform transform active:scale-95 flex items-center justify-center gap-2"
+                  className="flex-1 bg-[#E80071] hover:bg-[#c2005f] text-white text-lg font-bold py-3.5 px-6 rounded-sm shadow-md transition-transform transform active:scale-95 flex items-center justify-center gap-2"
                   onClick={() => handleAddToCart(product)}
                 >
                   <FiShoppingCart className="w-5 h-5" /> Add to Bag
                 </button>
+
+                {/* Buy Now Button (Orange) */}
+                <button
+                  className="flex-1 bg-[#ff6f00] hover:bg-[#e65100] text-white text-lg font-bold py-3.5 px-6 rounded-sm shadow-md transition-transform transform active:scale-95 flex items-center justify-center gap-2"
+                  onClick={() => handleBuyNow(product)}
+                >
+                  <FiZap className="w-5 h-5" /> Buy Now
+                </button>
               </div>
 
-              {/* Policy Section (Gray Footer in Right Col) */}
+              {/* Policy Section */}
               <div className="bg-gray-50 border-t border-gray-100 p-4 flex gap-8">
                 <div className="flex gap-3">
                   <div className="mt-1">
@@ -153,7 +186,7 @@ const ProductDetails = () => {
                   </div>
                   <div>
                     <h5 className="font-bold text-sm text-gray-700">100% Genuine Products</h5>
-                    <p className="text-xs text-gray-500 mt-1">Sourced directly from brands.</p>
+                    <p className="text-xs text-gray-500 mt-1">The real deal, guaranteed.</p>
                   </div>
                 </div>
                 <div className="flex gap-3">
@@ -162,13 +195,13 @@ const ProductDetails = () => {
                   </div>
                   <div>
                     <h5 className="font-bold text-sm text-gray-700">Easy Return Policy</h5>
-                    <p className="text-xs text-gray-500 mt-1">Returns within 15 days of delivery.</p>
+                    <p className="text-xs text-gray-500 mt-1">Returns within 5 days of delivery.</p>
                   </div>
                 </div>
               </div>
               
               <div className="mt-2 text-xs text-gray-400">
-                Sold by: <span className="text-gray-600 font-medium">Nykaa E Retail Pvt Ltd</span>
+                Sold by: <span className="text-gray-600 font-medium">Meadicure</span>
               </div>
 
             </div>
