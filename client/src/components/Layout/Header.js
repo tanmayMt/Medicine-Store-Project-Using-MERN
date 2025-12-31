@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { NavLink, Link } from "react-router-dom";
 import { useAuth } from "../../context/auth";
 import toast from "react-hot-toast";
@@ -13,6 +13,7 @@ const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [categoriesDropdownOpen, setCategoriesDropdownOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const userDropdownRef = useRef(null);
 
   const handleLogout = () => {
     setAuth({
@@ -23,6 +24,23 @@ const Header = () => {
     localStorage.removeItem("auth");
     toast.success("Logout Successfully");
   };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userDropdownRef.current && !userDropdownRef.current.contains(event.target)) {
+        setUserDropdownOpen(false);
+      }
+    };
+
+    if (userDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [userDropdownOpen]);
 
   // Reusable nav item classes
   const navItemClasses = ({ isActive }) =>
@@ -192,11 +210,15 @@ const Header = () => {
                 <>
                   <div className="w-px h-6 bg-gray-300 mx-2"></div>
                   <div
+                    ref={userDropdownRef}
                     className="relative"
                     onMouseEnter={() => setUserDropdownOpen(true)}
                     onMouseLeave={() => setUserDropdownOpen(false)}
                   >
-                    <button className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 border-2 border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white transition-all duration-200 focus:outline-none">
+                    <button 
+                      onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                      className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 border-2 border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white transition-all duration-200 focus:outline-none"
+                    >
                       <svg
                         className="w-5 h-5"
                         fill="none"
@@ -212,7 +234,11 @@ const Header = () => {
                       </svg>
                     </button>
                     {userDropdownOpen && (
-                      <div className="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-100 shadow-xl py-2 z-50 rounded-md">
+                      <div 
+                        className="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-100 shadow-xl py-2 z-50 rounded-md"
+                        onMouseEnter={() => setUserDropdownOpen(true)}
+                        onMouseLeave={() => setUserDropdownOpen(false)}
+                      >
                         <div className="px-4 py-2 border-b border-gray-100">
                           <p className="text-sm font-semibold text-gray-900">
                             {auth?.user?.name}
