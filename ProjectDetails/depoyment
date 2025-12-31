@@ -5,6 +5,12 @@ Backend https://medicine-store-project-using-mern-ntc6.onrender.com
 
 
 Vercel Deployment Process:
+
+
+
+vercel --prod
+
+
 Vercel CLI (Manual Command)
 If you don't use GitHub or want to force a deploy from your computer:
 Install Vercel CLI (if you haven't):
