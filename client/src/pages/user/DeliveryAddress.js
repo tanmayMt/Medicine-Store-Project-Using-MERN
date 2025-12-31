@@ -4,6 +4,18 @@ import UserMenu from "../../components/Layout/UserMenu";
 import { useAuth } from "../../context/auth";
 import toast from "react-hot-toast";
 import axios from "axios";
+import { 
+  FiMapPin, 
+  FiUser, 
+  FiPhone, 
+  FiEdit3, 
+  FiTrash2, 
+  FiCheck, 
+  FiPlus,
+  FiHome,
+  FiBriefcase,
+  FiNavigation
+} from "react-icons/fi";
 
 const DeliveryAddress = () => {
   const [auth, setAuth] = useAuth();
@@ -235,77 +247,109 @@ const DeliveryAddress = () => {
 
   return (
     <Layout title={"Delivery Address"}>
-      <div className="bg-gray-50 min-h-screen py-10">
+      <div className="bg-gradient-to-br from-gray-50 via-white to-gray-50 min-h-screen py-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="col-span-1">
               <UserMenu />
             </div>
 
-            <div className="col-span-1 md:col-span-3">
-              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-8">
-                {/* Header */}
-                <div className="bg-blue-600 text-white px-6 py-4 rounded-t-lg mb-6">
-                  <h2 className="text-xl font-semibold">
-                    {addresses.length} DELIVERY ADDRESS
-                  </h2>
+            <div className="col-span-1 md:col-span-3 space-y-6">
+              {/* Header Section */}
+              <div className="bg-gradient-to-r from-green-600 via-green-700 to-emerald-700 rounded-2xl shadow-xl p-8 text-white relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center gap-4 mb-2">
+                    <div className="p-3 bg-white bg-opacity-20 rounded-lg backdrop-blur-sm">
+                      <FiMapPin className="w-6 h-6" />
+                    </div>
+                    <h1 className="text-3xl font-bold">Delivery Addresses</h1>
+                  </div>
+                  <p className="text-green-100 text-lg">
+                    Manage your delivery addresses for faster checkout
+                  </p>
                 </div>
+              </div>
+
+              {/* Main Content */}
+              <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 md:p-8">
 
                 {/* Existing Addresses */}
                 {!loading && addresses.length > 0 && (
-                  <div className="space-y-4 mb-6">
+                  <div className="space-y-4 mb-8">
                     {addresses.map((address) => (
                       <div
                         key={address._id}
-                        className="border border-gray-200 rounded-lg p-4 hover:border-blue-500 transition-colors"
+                        className={`border-2 rounded-xl p-6 transition-all duration-300 hover:shadow-lg ${
+                          address.isDefault 
+                            ? 'border-green-300 bg-gradient-to-br from-green-50 to-emerald-50' 
+                            : 'border-gray-200 bg-white hover:border-green-300'
+                        }`}
                       >
                         <div className="flex items-start gap-4">
-                          <input
-                            type="radio"
-                            name="selectedAddress"
-                            checked={selectedAddress === address._id}
-                            onChange={() => {
-                              setSelectedAddress(address._id);
-                              handleSetDefault(address._id);
-                            }}
-                            className="mt-1 w-5 h-5 text-blue-600"
-                          />
+                          <div className="mt-1">
+                            <input
+                              type="radio"
+                              name="selectedAddress"
+                              checked={selectedAddress === address._id}
+                              onChange={() => {
+                                setSelectedAddress(address._id);
+                                handleSetDefault(address._id);
+                              }}
+                              className="w-5 h-5 text-green-600 focus:ring-green-500"
+                            />
+                          </div>
                           <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                              <h3 className="font-semibold text-gray-900">
+                            <div className="flex items-center gap-3 mb-3 flex-wrap">
+                              <h3 className="text-lg font-bold text-gray-900">
                                 {address.name}
                               </h3>
-                              <span className="bg-amber-100 text-amber-800 text-xs font-medium px-2 py-1 rounded">
+                              <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${
+                                address.addressType === 'Home' 
+                                  ? 'bg-blue-100 text-blue-800' 
+                                  : 'bg-purple-100 text-purple-800'
+                              }`}>
+                                {address.addressType === 'Home' ? <FiHome className="w-3 h-3" /> : <FiBriefcase className="w-3 h-3" />}
                                 {address.addressType}
                               </span>
                               {address.isDefault && (
-                                <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded">
+                                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-green-500 text-white shadow-sm">
+                                  <FiCheck className="w-3 h-3" />
                                   DEFAULT
                                 </span>
                               )}
                             </div>
-                            <p className="text-gray-600 text-sm mb-1">
-                              {address.phone}
-                            </p>
-                            <p className="text-gray-600 text-sm">
-                              {address.address}, {address.locality}, {address.city}, {address.state} - {address.pincode}
-                            </p>
-                            {address.landmark && (
-                              <p className="text-gray-500 text-xs mt-1">
-                                Landmark: {address.landmark}
-                              </p>
-                            )}
-                            <div className="flex gap-4 mt-3">
+                            <div className="space-y-2 mb-4">
+                              <div className="flex items-center gap-2 text-gray-700">
+                                <FiPhone className="w-4 h-4 text-gray-400" />
+                                <span className="text-sm font-medium">{address.phone}</span>
+                              </div>
+                              <div className="flex items-start gap-2 text-gray-700">
+                                <FiNavigation className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                                <span className="text-sm leading-relaxed">
+                                  {address.address}, {address.locality}, {address.city}, {address.state} - {address.pincode}
+                                </span>
+                              </div>
+                              {address.landmark && (
+                                <div className="flex items-center gap-2 text-gray-600">
+                                  <FiMapPin className="w-4 h-4 text-gray-400" />
+                                  <span className="text-xs">Landmark: {address.landmark}</span>
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex gap-3 pt-4 border-t border-gray-200">
                               <button
                                 onClick={() => handleEdit(address)}
-                                className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg text-sm font-semibold transition-colors"
                               >
+                                <FiEdit3 className="w-4 h-4" />
                                 Edit
                               </button>
                               <button
                                 onClick={() => handleDelete(address._id)}
-                                className="text-red-600 hover:text-red-800 text-sm font-medium"
+                                className="inline-flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-sm font-semibold transition-colors"
                               >
+                                <FiTrash2 className="w-4 h-4" />
                                 Delete
                               </button>
                             </div>
@@ -317,28 +361,26 @@ const DeliveryAddress = () => {
                 )}
 
                 {/* Add New Address Section */}
-                <div className="border border-gray-200 rounded-lg p-4 mb-6">
-                  <div className="flex items-center gap-4 mb-4">
-                    <input
-                      type="radio"
-                      name="selectedAddress"
-                      checked={!selectedAddress && showAddForm}
-                      onChange={() => {
-                        setSelectedAddress(null);
-                        setShowAddForm(true);
-                      }}
-                      className="w-5 h-5 text-blue-600"
-                    />
-                    <label className="text-lg font-semibold text-gray-900">
-                      ADD A NEW ADDRESS
+                <div className={`border-2 rounded-xl p-6 transition-all duration-300 ${
+                  showAddForm 
+                    ? 'border-green-300 bg-gradient-to-br from-green-50 to-emerald-50' 
+                    : 'border-gray-200 bg-white hover:border-green-300'
+                }`}>
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="p-2 bg-green-100 rounded-lg">
+                      <FiPlus className="w-5 h-5 text-green-600" />
+                    </div>
+                    <label className="text-xl font-bold text-gray-900 cursor-pointer" onClick={() => setShowAddForm(!showAddForm)}>
+                      {showAddForm ? 'Adding New Address' : 'Add A New Address'}
                     </label>
                   </div>
 
                   {showAddForm && (
-                    <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                          <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
+                            <FiUser className="w-4 h-4 text-gray-400" />
                             Name <span className="text-red-500">*</span>
                           </label>
                           <input
@@ -346,13 +388,14 @@ const DeliveryAddress = () => {
                             name="name"
                             value={formData.name}
                             onChange={handleChange}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all bg-gray-50 focus:bg-white"
                             required
                           />
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                          <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
+                            <FiPhone className="w-4 h-4 text-gray-400" />
                             10-digit mobile number <span className="text-red-500">*</span>
                           </label>
                           <input
@@ -361,13 +404,14 @@ const DeliveryAddress = () => {
                             value={formData.phone}
                             onChange={handleChange}
                             maxLength="10"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all bg-gray-50 focus:bg-white"
                             required
                           />
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                          <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
+                            <FiMapPin className="w-4 h-4 text-gray-400" />
                             Pincode <span className="text-red-500">*</span>
                           </label>
                           <input
@@ -376,13 +420,14 @@ const DeliveryAddress = () => {
                             value={formData.pincode}
                             onChange={handleChange}
                             maxLength="6"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all bg-gray-50 focus:bg-white"
                             required
                           />
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                          <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
+                            <FiNavigation className="w-4 h-4 text-gray-400" />
                             Locality <span className="text-red-500">*</span>
                           </label>
                           <input
@@ -390,13 +435,14 @@ const DeliveryAddress = () => {
                             name="locality"
                             value={formData.locality}
                             onChange={handleChange}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all bg-gray-50 focus:bg-white"
                             required
                           />
                         </div>
 
                         <div className="md:col-span-2">
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                          <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
+                            <FiMapPin className="w-4 h-4 text-gray-400" />
                             Address (Area and Street) <span className="text-red-500">*</span>
                           </label>
                           <textarea
@@ -404,13 +450,14 @@ const DeliveryAddress = () => {
                             value={formData.address}
                             onChange={handleChange}
                             rows="3"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none resize-none"
+                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none resize-none transition-all bg-gray-50 focus:bg-white"
                             required
                           />
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                          <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
+                            <FiNavigation className="w-4 h-4 text-gray-400" />
                             City/District/Town <span className="text-red-500">*</span>
                           </label>
                           <input
@@ -418,20 +465,21 @@ const DeliveryAddress = () => {
                             name="city"
                             value={formData.city}
                             onChange={handleChange}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all bg-gray-50 focus:bg-white"
                             required
                           />
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                          <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
+                            <FiMapPin className="w-4 h-4 text-gray-400" />
                             State <span className="text-red-500">*</span>
                           </label>
                           <select
                             name="state"
                             value={formData.state}
                             onChange={handleChange}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all bg-gray-50 focus:bg-white"
                             required
                           >
                             <option value="">--Select State--</option>
@@ -444,7 +492,8 @@ const DeliveryAddress = () => {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                          <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
+                            <FiMapPin className="w-4 h-4 text-gray-400" />
                             Landmark (Optional)
                           </label>
                           <input
@@ -452,12 +501,13 @@ const DeliveryAddress = () => {
                             name="landmark"
                             value={formData.landmark}
                             onChange={handleChange}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all bg-gray-50 focus:bg-white"
                           />
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                          <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
+                            <FiPhone className="w-4 h-4 text-gray-400" />
                             Alternate Phone (Optional)
                           </label>
                           <input
@@ -466,65 +516,84 @@ const DeliveryAddress = () => {
                             value={formData.alternatePhone}
                             onChange={handleChange}
                             maxLength="10"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all bg-gray-50 focus:bg-white"
                           />
                         </div>
                       </div>
 
                       {/* Address Type */}
-                      <div className="mt-4">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <div className="pt-4 border-t border-gray-200">
+                        <label className="block text-sm font-semibold text-gray-700 mb-4">
                           Address Type
                         </label>
-                        <div className="flex gap-6">
-                          <label className="flex items-center gap-2">
+                        <div className="flex flex-wrap gap-4">
+                          <label className="flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-green-300 bg-gray-50 hover:bg-green-50 flex-1 min-w-[200px]">
                             <input
                               type="radio"
                               name="addressType"
                               value="Home"
                               checked={formData.addressType === "Home"}
                               onChange={handleChange}
-                              className="w-4 h-4 text-blue-600"
+                              className="w-5 h-5 text-green-600"
                             />
-                            <span className="text-sm text-gray-700">
-                              Home (All day delivery)
-                            </span>
+                            <div className="flex items-center gap-2">
+                              <FiHome className="w-5 h-5 text-blue-600" />
+                              <div>
+                                <span className="text-sm font-semibold text-gray-900 block">Home</span>
+                                <span className="text-xs text-gray-500">All day delivery</span>
+                              </div>
+                            </div>
                           </label>
-                          <label className="flex items-center gap-2">
+                          <label className="flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-green-300 bg-gray-50 hover:bg-green-50 flex-1 min-w-[200px]">
                             <input
                               type="radio"
                               name="addressType"
                               value="Work"
                               checked={formData.addressType === "Work"}
                               onChange={handleChange}
-                              className="w-4 h-4 text-blue-600"
+                              className="w-5 h-5 text-green-600"
                             />
-                            <span className="text-sm text-gray-700">
-                              Work (Delivery between 10 AM - 5 PM)
-                            </span>
+                            <div className="flex items-center gap-2">
+                              <FiBriefcase className="w-5 h-5 text-purple-600" />
+                              <div>
+                                <span className="text-sm font-semibold text-gray-900 block">Work</span>
+                                <span className="text-xs text-gray-500">10 AM - 5 PM delivery</span>
+                              </div>
+                            </div>
                           </label>
                         </div>
                       </div>
 
                       {/* Action Buttons */}
-                      <div className="flex gap-4 mt-6">
+                      <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
                         <button
                           type="submit"
                           disabled={loading}
-                          className="px-6 py-3 bg-orange-500 text-white font-semibold rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                          {loading
-                            ? "Saving..."
-                            : editingAddress
-                            ? "UPDATE ADDRESS"
-                            : "SAVE AND DELIVER HERE"}
+                          {loading ? (
+                            <>
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                              Saving...
+                            </>
+                          ) : editingAddress ? (
+                            <>
+                              <FiEdit3 className="w-5 h-5" />
+                              Update Address
+                            </>
+                          ) : (
+                            <>
+                              <FiCheck className="w-5 h-5" />
+                              Save and Deliver Here
+                            </>
+                          )}
                         </button>
                         <button
                           type="button"
                           onClick={resetForm}
-                          className="px-6 py-3 bg-white text-blue-600 font-semibold border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+                          className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-white text-gray-700 font-semibold border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-200"
                         >
-                          CANCEL
+                          Cancel
                         </button>
                       </div>
                     </form>
@@ -533,26 +602,33 @@ const DeliveryAddress = () => {
                   {!showAddForm && (
                     <button
                       onClick={() => setShowAddForm(true)}
-                      className="mt-4 text-blue-600 hover:text-blue-800 text-sm font-medium"
+                      className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-200 shadow-md hover:shadow-lg"
                     >
-                      + Add New Address
+                      <FiPlus className="w-5 h-5" />
+                      Add New Address
                     </button>
                   )}
                 </div>
 
                 {loading && addresses.length === 0 && (
-                  <div className="text-center py-8">
+                  <div className="text-center py-12">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
                     <p className="text-gray-500">Loading addresses...</p>
                   </div>
                 )}
 
                 {!loading && addresses.length === 0 && !showAddForm && (
-                  <div className="text-center py-8">
-                    <p className="text-gray-500 mb-4">No delivery addresses found</p>
+                  <div className="text-center py-12">
+                    <div className="w-20 h-20 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                      <FiMapPin className="w-10 h-10 text-gray-400" />
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">No Delivery Addresses</h3>
+                    <p className="text-gray-500 mb-6">Add your first delivery address to get started</p>
                     <button
                       onClick={() => setShowAddForm(true)}
-                      className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                      className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl"
                     >
+                      <FiPlus className="w-5 h-5" />
                       Add Your First Address
                     </button>
                   </div>
