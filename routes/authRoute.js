@@ -10,6 +10,11 @@ import {
   orderStatusController,
   getAllUsersController,
   getDashboardStatsController,
+  getDeliveryAddressesController,
+  addDeliveryAddressController,
+  updateDeliveryAddressController,
+  deleteDeliveryAddressController,
+  setDefaultAddressController,
 } from "../controllers/authController.js";
 import { isAdmin, requireSignIn } from "../middlewares/authMiddleware.js";
 
@@ -66,5 +71,12 @@ router.get("/users", requireSignIn,isAdmin,getAllUsersController);
 
 //dashboard stats
 router.get("/dashboard-stats", requireSignIn, isAdmin, getDashboardStatsController);
+
+// Delivery Address Management Routes
+router.get("/delivery-addresses", requireSignIn, getDeliveryAddressesController);
+router.post("/delivery-addresses", requireSignIn, addDeliveryAddressController);
+router.put("/delivery-addresses/:addressId", requireSignIn, updateDeliveryAddressController);
+router.delete("/delivery-addresses/:addressId", requireSignIn, deleteDeliveryAddressController);
+router.put("/delivery-addresses/:addressId/set-default", requireSignIn, setDefaultAddressController);
 
 export default router;

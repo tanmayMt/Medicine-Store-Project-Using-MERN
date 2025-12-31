@@ -17,6 +17,7 @@ import Users from "./pages/Admin/Users";
 import Orders from "./pages/user/Orders";
 import Profile from "./pages/user/Profile";
 import AddressForm from "./pages/user/AddressForm";
+import DeliveryAddress from "./pages/user/DeliveryAddress";
 import Products from "./pages/Admin/Products";
 import UpdateProduct from "./pages/Admin/UpdateProduct";
 import Search from "./pages/Search";
@@ -47,6 +48,7 @@ function App() {
           <Route path="user/orders" element={<Orders />} />
           <Route path="user/profile" element={<Profile />} />
           <Route path="user/address-update" element={<AddressForm/>}/>
+          <Route path="user/delivery-address" element={<DeliveryAddress/>}/>
         </Route>
         <Route path="/dashboard" element={<AdminRoute />}>
           <Route path="admin" element={<AdminDashboard />} />

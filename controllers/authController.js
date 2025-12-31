@@ -503,5 +503,229 @@ export const getDashboardStatsController = async (req, res) => {
   }
 };
 
+// Delivery Address Management Controllers
+
+// Get all delivery addresses
+export const getDeliveryAddressesController = async (req, res) => {
+  try {
+    const user = await userModel.findById(req.user._id);
+    res.status(200).send({
+      success: true,
+      addresses: user.deliveryAddresses || [],
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({
+      success: false,
+      message: "Error While Getting Addresses",
+      error,
+    });
+  }
+};
+
+// Add new delivery address
+export const addDeliveryAddressController = async (req, res) => {
+  try {
+    const {
+      name,
+      phone,
+      pincode,
+      locality,
+      address,
+      city,
+      state,
+      landmark,
+      alternatePhone,
+      addressType,
+      isDefault,
+    } = req.body;
+
+    // Validation
+    if (!name || !phone || !pincode || !locality || !address || !city || !state) {
+      return res.status(400).send({
+        success: false,
+        message: "All required fields must be provided",
+      });
+    }
+
+    const user = await userModel.findById(req.user._id);
+
+    // If this is set as default, unset all other defaults
+    if (isDefault) {
+      user.deliveryAddresses.forEach((addr) => {
+        addr.isDefault = false;
+      });
+    }
+
+    // If this is the first address, make it default
+    const newAddress = {
+      name,
+      phone,
+      pincode,
+      locality,
+      address,
+      city,
+      state,
+      landmark: landmark || "",
+      alternatePhone: alternatePhone || "",
+      addressType: addressType || "Home",
+      isDefault: isDefault || (user.deliveryAddresses.length === 0),
+    };
+
+    user.deliveryAddresses.push(newAddress);
+    await user.save();
+
+    res.status(200).send({
+      success: true,
+      message: "Address Added Successfully",
+      addresses: user.deliveryAddresses,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({
+      success: false,
+      message: "Error While Adding Address",
+      error,
+    });
+  }
+};
+
+// Update delivery address
+export const updateDeliveryAddressController = async (req, res) => {
+  try {
+    const { addressId } = req.params;
+    const {
+      name,
+      phone,
+      pincode,
+      locality,
+      address,
+      city,
+      state,
+      landmark,
+      alternatePhone,
+      addressType,
+      isDefault,
+    } = req.body;
+
+    const user = await userModel.findById(req.user._id);
+    const addressIndex = user.deliveryAddresses.findIndex(
+      (addr) => addr._id.toString() === addressId
+    );
+
+    if (addressIndex === -1) {
+      return res.status(404).send({
+        success: false,
+        message: "Address not found",
+      });
+    }
+
+    // If this is set as default, unset all other defaults
+    if (isDefault) {
+      user.deliveryAddresses.forEach((addr, index) => {
+        if (index !== addressIndex) {
+          addr.isDefault = false;
+        }
+      });
+    }
+
+    // Update the address
+    if (name) user.deliveryAddresses[addressIndex].name = name;
+    if (phone) user.deliveryAddresses[addressIndex].phone = phone;
+    if (pincode) user.deliveryAddresses[addressIndex].pincode = pincode;
+    if (locality) user.deliveryAddresses[addressIndex].locality = locality;
+    if (address) user.deliveryAddresses[addressIndex].address = address;
+    if (city) user.deliveryAddresses[addressIndex].city = city;
+    if (state) user.deliveryAddresses[addressIndex].state = state;
+    if (landmark !== undefined) user.deliveryAddresses[addressIndex].landmark = landmark;
+    if (alternatePhone !== undefined) user.deliveryAddresses[addressIndex].alternatePhone = alternatePhone;
+    if (addressType) user.deliveryAddresses[addressIndex].addressType = addressType;
+    if (isDefault !== undefined) user.deliveryAddresses[addressIndex].isDefault = isDefault;
+
+    await user.save();
+
+    res.status(200).send({
+      success: true,
+      message: "Address Updated Successfully",
+      addresses: user.deliveryAddresses,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({
+      success: false,
+      message: "Error While Updating Address",
+      error,
+    });
+  }
+};
+
+// Delete delivery address
+export const deleteDeliveryAddressController = async (req, res) => {
+  try {
+    const { addressId } = req.params;
+    const user = await userModel.findById(req.user._id);
+
+    user.deliveryAddresses = user.deliveryAddresses.filter(
+      (addr) => addr._id.toString() !== addressId
+    );
+
+    await user.save();
+
+    res.status(200).send({
+      success: true,
+      message: "Address Deleted Successfully",
+      addresses: user.deliveryAddresses,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({
+      success: false,
+      message: "Error While Deleting Address",
+      error,
+    });
+  }
+};
+
+// Set default delivery address
+export const setDefaultAddressController = async (req, res) => {
+  try {
+    const { addressId } = req.params;
+    const user = await userModel.findById(req.user._id);
+
+    // Unset all defaults
+    user.deliveryAddresses.forEach((addr) => {
+      addr.isDefault = false;
+    });
+
+    // Set the selected address as default
+    const address = user.deliveryAddresses.find(
+      (addr) => addr._id.toString() === addressId
+    );
+
+    if (!address) {
+      return res.status(404).send({
+        success: false,
+        message: "Address not found",
+      });
+    }
+
+    address.isDefault = true;
+    await user.save();
+
+    res.status(200).send({
+      success: true,
+      message: "Default Address Updated Successfully",
+      addresses: user.deliveryAddresses,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({
+      success: false,
+      message: "Error While Setting Default Address",
+      error,
+    });
+  }
+};
+
 
 

@@ -374,7 +374,7 @@ export const braintreeTokenController = async (req, res) => {
 export const brainTreePaymentController = async (req, res) => {
   try {
     const u = await userModel.findById({_id:req.user._id});
-    const { nonce, cart } = req.body;
+    const { nonce, cart, shippingAddress } = req.body;
     let total = 0;
     cart.map((i) => {
       total += i.price;
@@ -393,6 +393,10 @@ export const brainTreePaymentController = async (req, res) => {
             products: cart,
             payment: result,
             buyer: req.user._id,
+            paymentMode: "Online",
+            totalAmount: total,
+            shippingAddress: shippingAddress || u.address,
+            status: "Order Placed",
           }).save();
           
           //Order placing email//send email
@@ -439,7 +443,7 @@ transporter.sendMail(mailOptions, function (error, info) {
 // CASH ON DELIVERY CONTROLLER
 export const createCodOrderController = async (req, res) => {
   try {
-    const { cart } = req.body;
+    const { cart, shippingAddress } = req.body;
     const u = await userModel.findById({ _id: req.user._id });
 
     // Calculate total (optional, but good for verification)
@@ -455,10 +459,10 @@ export const createCodOrderController = async (req, res) => {
         success: true,
         paymentMethod: "COD",
       },
-      paymentMode: "COD", // <--- Add this
+      paymentMode: "COD",
       buyer: req.user._id,
-      totalAmount: total, // <--- Add this
-      shippingAddress: u.address, // <--- Add this (Get address from user object)
+      totalAmount: total,
+      shippingAddress: shippingAddress || u.address,
       status: "Order Placed",
     }).save();
 

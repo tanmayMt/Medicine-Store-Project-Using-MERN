@@ -15,7 +15,7 @@ const UserMenu = () => {
     { name: "Dashboard", path: "/dashboard/user", icon: <FiLayout /> },
     { name: "Profile", path: "/dashboard/user/profile", icon: <FiUser /> },
     { name: "Orders", path: "/dashboard/user/orders", icon: <FiBox /> },
-    // { name: "Addresses", path: "/dashboard/user/address", icon: <FiMapPin /> },
+    { name: "Delivery Address", path: "/dashboard/user/delivery-address", icon: <FiMapPin /> },
   ];
 
   return (

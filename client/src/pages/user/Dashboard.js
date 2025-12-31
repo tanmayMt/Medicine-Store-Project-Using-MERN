@@ -1,11 +1,34 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Layout from "../../components/Layout/Layout";
 import UserMenu from "../../components/Layout/UserMenu";
 import { useAuth } from "../../context/auth";
 import { NavLink } from "react-router-dom";
+import axios from "axios";
 
 const Dashboard = () => {
   const [auth] = useAuth();
+  const [addresses, setAddresses] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAddresses = async () => {
+      try {
+        const { data } = await axios.get(
+          `${process.env.REACT_APP_API_BASE_URL}/api/v1/auth/delivery-addresses`
+        );
+        if (data.success) {
+          setAddresses(data.addresses || []);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAddresses();
+  }, []);
+
+  const defaultAddress = addresses.find((addr) => addr.isDefault);
   
   return (
     <Layout title={"Dashboard - Ecommerce App"}>
@@ -29,10 +52,33 @@ const Dashboard = () => {
                         <NavLink to="/dashboard/user/profile" className="text-sm font-bold underline mt-4 inline-block hover:text-blue-600">Edit Account</NavLink>
                     </div>
                     
-                     <div className="p-6 border border-gray-200 rounded-lg hover:border-black transition-colors">
-                        <h3 className="text-lg font-bold mb-2">Shipping Address</h3>
-                        <p className="text-gray-600 text-sm mb-1">{auth?.user?.address || "No address set"}</p>
-                        <NavLink to="/dashboard/user/profile" className="text-sm font-bold underline mt-4 inline-block hover:text-blue-600">Edit Address</NavLink>
+                    <div className="p-6 border border-gray-200 rounded-lg hover:border-black transition-colors">
+                        <h3 className="text-lg font-bold mb-2">Delivery Addresses</h3>
+                        {loading ? (
+                          <p className="text-gray-600 text-sm">Loading...</p>
+                        ) : addresses.length > 0 ? (
+                          <div className="space-y-2">
+                            <p className="text-gray-600 text-sm font-semibold">
+                              {addresses.length} {addresses.length === 1 ? 'Address' : 'Addresses'} Saved
+                            </p>
+                            {defaultAddress && (
+                              <div className="mt-2 p-3 bg-gray-50 rounded border border-gray-200">
+                                <p className="text-gray-700 text-xs font-medium mb-1">
+                                  {defaultAddress.name} ({defaultAddress.addressType})
+                                </p>
+                                <p className="text-gray-600 text-xs">
+                                  {defaultAddress.address}, {defaultAddress.city}, {defaultAddress.state} - {defaultAddress.pincode}
+                                </p>
+                                <span className="inline-block mt-1 text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded">Default</span>
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <p className="text-gray-600 text-sm mb-1">No delivery addresses set</p>
+                        )}
+                        <NavLink to="/dashboard/user/delivery-address" className="text-sm font-bold underline mt-4 inline-block hover:text-blue-600">
+                          {addresses.length > 0 ? 'Manage Addresses' : 'Add Address'}
+                        </NavLink>
                     </div>
                 </div>
               </div>
