@@ -1,2 +1,18 @@
 Forntend(client) https://client-iota-liard.vercel.app
 Backend https://medicine-store-project-using-mern-ntc6.onrender.com
+
+
+
+
+Vercel Deployment Process:
+Vercel CLI (Manual Command)
+If you don't use GitHub or want to force a deploy from your computer:
+Install Vercel CLI (if you haven't):
+code
+Bash
+npm i -g vercel
+Run the production deploy command:
+code
+Bash
+vercel --prod
+It will ask a few questions (accept default settings). It will upload your local code directly to Vercel.
