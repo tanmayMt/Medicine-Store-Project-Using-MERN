@@ -9,7 +9,7 @@ import {
   FiPhone, 
   FiMapPin, 
   FiBox, 
-  FiDollarSign, 
+  FiDollarSign,
   FiUser, 
   FiEdit3,
   FiArrowRight,
@@ -73,7 +73,7 @@ const Dashboard = () => {
     },
     {
       title: "Total Spent",
-      value: `$${totalSpent.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      value: `₹${totalSpent.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
       icon: <FiDollarSign className="w-6 h-6" />,
       color: "from-green-500 to-green-600",
       bgColor: "bg-green-50",

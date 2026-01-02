@@ -5,6 +5,7 @@ import {
   FiLayout, 
   FiShoppingCart, 
   FiPackage, 
+  FiLayers, // Imported for Category icon
   FiUsers, 
   FiFileText, 
   FiPercent, 
@@ -70,7 +71,6 @@ const AdminMenu = () => {
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
               >
-                {/* Cart Body - Grey */}
                 <path
                   d="M3 3H5L5.4 5M5.4 5H21L17 13H7M5.4 5L7 13M7 13L4.707 15.293C4.077 15.923 4.523 17 5.414 17H17"
                   stroke="#e5e7eb" 
@@ -78,11 +78,8 @@ const AdminMenu = () => {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
-                {/* Wheels - Orange */}
                 <circle cx="9" cy="21" r="1.5" fill="#ea580c" />
                 <circle cx="20" cy="21" r="1.5" fill="#ea580c" />
-                
-                {/* Medical Cross inside Cart - Orange */}
                 <path 
                   d="M11 9H15M13 7V11" 
                   stroke="#ea580c" 
@@ -149,6 +146,22 @@ const AdminMenu = () => {
           >
             <FiPackage className="w-5 h-5" />
             <span>Products</span>
+          </NavLink>
+
+          {/* ADDED: Create Category Link */}
+          <NavLink
+            to="/dashboard/admin/create-category"
+            onClick={closeMobileMenu}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 mb-2 rounded-lg transition-colors ${
+                isActive
+                  ? "bg-orange-500 text-white"
+                  : "text-gray-300 hover:bg-gray-700"
+              }`
+            }
+          >
+            <FiLayers className="w-5 h-5" />
+            <span>Create Category</span>
           </NavLink>
 
           <NavLink
