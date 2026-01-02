@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import SearchInput from "../Form/SearchInput";
 import useCategory from "../../hooks/useCategory";
 import { useCart } from "../../context/cart";
+import { FiShoppingCart, FiUser, FiMenu, FiX, FiChevronDown, FiLogOut } from "react-icons/fi";
 
 const Header = () => {
   const [auth, setAuth] = useAuth();
@@ -50,21 +51,29 @@ const Header = () => {
     return "U";
   };
 
+  // Nav Item Styles (Dark text for light gradient bg)
   const navItemClasses = ({ isActive }) =>
     `px-4 py-2 rounded-full text-base font-semibold transition-all duration-200 flex items-center ${
       isActive
         ? "bg-blue-600 text-white shadow-md"
-        : "text-gray-600 hover:bg-blue-50 hover:text-blue-700"
+        : "text-slate-700 hover:bg-white hover:text-blue-700"
     }`;
 
   const dropdownButtonClasses =
-    "flex items-center px-4 py-2 rounded-full text-base font-semibold text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 focus:outline-none";
+    "flex items-center px-4 py-2 rounded-full text-base font-semibold text-slate-700 hover:bg-white hover:text-blue-700 transition-all duration-200 focus:outline-none";
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 shadow-sm font-sans bg-white border-b border-gray-100">
+      <nav
+        className="fixed top-0 left-0 right-0 z-50 shadow-sm font-sans border-b border-blue-100"
+        // RESTORED: Original Gradient Background
+        style={{
+          background: "linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 50%, #ffffff 100%)",
+        }}
+      >
         <div className="w-full px-6 lg:px-8">
           <div className="flex items-center justify-between h-[70px]">
+            
             {/* ================= LEFT: BRANDING ================= */}
             <Link to="/" className="flex items-center gap-2 group">
               <div className="relative transform group-hover:scale-105 transition-transform duration-200">
@@ -94,7 +103,7 @@ const Header = () => {
               </div>
 
               <span
-                className="text-2xl font-black text-gray-800"
+                className="text-2xl font-black text-slate-800"
                 style={{ fontFamily: "'Inter', sans-serif" }}
               >
                 Medicure
@@ -123,19 +132,7 @@ const Header = () => {
                 >
                   <button className={dropdownButtonClasses}>
                     Categories
-                    <svg
-                      className="w-4 h-4 ml-1"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M19 9l-7 7-7-7"
-                      ></path>
-                    </svg>
+                    <FiChevronDown className="w-4 h-4 ml-1" />
                   </button>
 
                   {categoriesDropdownOpen && (
@@ -174,39 +171,28 @@ const Header = () => {
               {/* ================= USER AUTH SECTION ================= */}
               {!auth?.user ? (
                 <>
-                  <div className="w-px h-6 bg-gray-300 mx-2"></div>
+                  <div className="w-px h-6 bg-slate-300 mx-2"></div>
                   <NavLink
                     to="/login"
                     className="flex items-center justify-center w-10 h-10 rounded-full border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-all duration-200"
                     title="Login"
                   >
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                      />
-                    </svg>
+                    <FiUser className="w-5 h-5" />
                   </NavLink>
                 </>
               ) : (
                 <>
-                  <div className="w-px h-6 bg-gray-300 mx-2"></div>
+                  <div className="w-px h-6 bg-slate-300 mx-2"></div>
                   <div
                     ref={userDropdownRef}
                     className="relative"
                     onMouseEnter={() => setUserDropdownOpen(true)}
                     onMouseLeave={() => setUserDropdownOpen(false)}
                   >
-                    {/* User Avatar - Matches "T" in blue circle from image */}
+                    {/* User Avatar */}
                     <button
-                      className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-50 text-blue-600 text-lg font-bold hover:bg-blue-100 transition-colors duration-200 focus:outline-none"
+                      onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                      className="flex items-center justify-center w-10 h-10 rounded-full bg-white border border-blue-200 text-blue-600 text-lg font-bold hover:bg-blue-50 transition-colors duration-200 focus:outline-none shadow-sm"
                     >
                       {getUserInitial()}
                     </button>
@@ -214,9 +200,8 @@ const Header = () => {
                     {/* Custom Dropdown */}
                     {userDropdownOpen && (
                       <div className="absolute top-full right-0 mt-3 w-72 bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] border border-gray-100 overflow-hidden z-50">
-                        
-                        {/* 1. Header Section: Name & Email */}
-                        <div className="px-6 py-5 border-b border-gray-50">
+                        {/* 1. Header Section */}
+                        <div className="px-6 py-5 border-b border-gray-50 bg-gray-50/30">
                           <h4 className="text-base font-bold text-gray-900 leading-tight">
                             {auth?.user?.name}
                           </h4>
@@ -234,19 +219,7 @@ const Header = () => {
                             className="flex items-center gap-3 px-6 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
                             onClick={() => setUserDropdownOpen(false)}
                           >
-                            {/* Dashboard Icon */}
-                            <svg 
-                              className="w-4 h-4" 
-                              viewBox="0 0 24 24" 
-                              fill="none" 
-                              stroke="currentColor" 
-                              strokeWidth="2" 
-                              strokeLinecap="round" 
-                              strokeLinejoin="round"
-                            >
-                              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                              <circle cx="12" cy="7" r="4"></circle>
-                            </svg>
+                            <FiUser className="w-4 h-4" />
                             Dashboard
                           </NavLink>
 
@@ -260,20 +233,7 @@ const Header = () => {
                             }}
                             className="w-full flex items-center gap-3 px-6 py-3 text-sm font-medium text-red-500 hover:bg-red-50 transition-colors text-left"
                           >
-                            {/* Logout Icon */}
-                            <svg 
-                              className="w-4 h-4" 
-                              viewBox="0 0 24 24" 
-                              fill="none" 
-                              stroke="currentColor" 
-                              strokeWidth="2" 
-                              strokeLinecap="round" 
-                              strokeLinejoin="round"
-                            >
-                              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                              <polyline points="16 17 21 12 16 7"></polyline>
-                              <line x1="21" y1="12" x2="9" y2="12"></line>
-                            </svg>
+                            <FiLogOut className="w-4 h-4" />
                             Logout
                           </button>
                         </div>
@@ -286,31 +246,10 @@ const Header = () => {
 
             {/* Mobile Menu Toggle */}
             <button
-              className="lg:hidden p-2 text-gray-600 hover:text-gray-900"
+              className="lg:hidden p-2 text-slate-700 hover:text-blue-600"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                {mobileMenuOpen ? (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                ) : (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                )}
-              </svg>
+              {mobileMenuOpen ? <FiX className="w-6 h-6" /> : <FiMenu className="w-6 h-6" />}
             </button>
           </div>
         </div>
