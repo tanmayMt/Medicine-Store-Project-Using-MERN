@@ -42,69 +42,61 @@ const Header = () => {
     };
   }, [userDropdownOpen]);
 
-  // Reusable nav item classes
+  // UPDATE 1: Changed Green to Blue to match the "Take a Test" button style
+  // Used 'text-gray-600' for better contrast on white background
   const navItemClasses = ({ isActive }) =>
     `px-4 py-2 rounded-full text-base font-semibold transition-all duration-200 flex items-center ${
       isActive
-        ? "bg-green-500 text-white shadow-md"
-        : "text-gray-700 hover:bg-green-500 hover:text-white"
+        ? "bg-blue-700 text-white shadow-md" 
+        : "text-gray-600 hover:bg-blue-50 hover:text-blue-700"
     }`;
 
   const dropdownButtonClasses =
-    "flex items-center px-4 py-2 rounded-full text-base font-semibold text-gray-700 hover:bg-green-500 hover:text-white transition-all duration-200 focus:outline-none";
+    "flex items-center px-4 py-2 rounded-full text-base font-semibold text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 focus:outline-none";
 
   return (
     <>
       <nav
-        className="fixed top-0 left-0 right-0 z-50 shadow-sm font-sans"
-        style={{
-          background:
-            "linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 50%, #ffffff 100%)",
-        }}
+        className="fixed top-0 left-0 right-0 z-50 shadow-sm font-sans bg-white border-b border-gray-100" 
+        // UPDATE 2: Removed gradient style to match the clean white background of the image
       >
         <div className="w-full px-6 lg:px-8">
           <div className="flex items-center justify-between h-[70px]">
             
-            {/* ================= LEFT: BRANDING (RESIZED) ================= */}
+            {/* ================= LEFT: BRANDING ================= */}
             <Link to="/" className="flex items-center gap-2 group">
               <div className="relative transform group-hover:scale-105 transition-transform duration-200">
-                {/* Custom SVG: Shopping Cart with Medical Cross - BACK TO w-8 h-8 */}
+                {/* SVG updated with Blue color to match theme */}
                 <svg
                   className="w-8 h-8" 
                   viewBox="0 0 24 24"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  {/* Cart Body - Grey */}
                   <path
                     d="M3 3H5L5.4 5M5.4 5H21L17 13H7M5.4 5L7 13M7 13L4.707 15.293C4.077 15.923 4.523 17 5.414 17H17"
-                    stroke="#64748b" 
+                    stroke="#1e293b" 
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
-                  {/* Wheels - Blue */}
-                  <circle cx="9" cy="21" r="1.5" fill="#3b82f6" />
-                  <circle cx="20" cy="21" r="1.5" fill="#3b82f6" />
+                  <circle cx="9" cy="21" r="1.5" fill="#1d4ed8" />
+                  <circle cx="20" cy="21" r="1.5" fill="#1d4ed8" />
                   
-                  {/* Medical Cross inside Cart - Blue */}
                   <path 
                     d="M11 9H15M13 7V11" 
-                    stroke="#3b82f6" 
+                    stroke="#1d4ed8" 
                     strokeWidth="2.5" 
                     strokeLinecap="round" 
-                    strokeLinejoin="round"
+                    strokeLinejoin="round" 
                   />
                 </svg>
               </div>
               
-              {/* Text with 3D Shadow Effect - RESIZED to text-2xl */}
               <span
-                className="text-2xl font-black text-black"
+                className="text-2xl font-black text-gray-800" // Darker text for white bg
                 style={{ 
                     fontFamily: "'Inter', sans-serif",
-                    // Adjusted shadow for smaller text size
-                    // textShadow: "1.5px 1.5px 0px #3b82f6" 
                 }}
               >
                 Medicure
@@ -112,6 +104,7 @@ const Header = () => {
             </Link>
 
             {/* ================= CENTER: SEARCH BAR ================= */}
+            {/* Search Input Container matches the clean look */}
             <div className="hidden lg:flex items-center justify-center flex-1 max-w-md mx-8">
               <div className="w-full">
                 <SearchInput />
@@ -153,7 +146,7 @@ const Header = () => {
                     <div className="absolute top-full right-0 mt-1 w-56 bg-white border border-gray-100 shadow-xl py-2 z-50 rounded-md">
                       <Link
                         to="/categories"
-                        className="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-green-600"
+                        className="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600"
                         onClick={() => setCategoriesDropdownOpen(false)}
                       >
                         All Categories
@@ -162,7 +155,7 @@ const Header = () => {
                         <Link
                           key={c._id}
                           to={`/category/${c.slug}`}
-                          className="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-green-600"
+                          className="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600"
                           onClick={() => setCategoriesDropdownOpen(false)}
                         >
                           {c.name}
@@ -175,7 +168,7 @@ const Header = () => {
                 <NavLink to="/cart" className={navItemClasses}>
                   Cart
                   {cart?.length > 0 && (
-                    <span className="ml-2 bg-red-500 text-white text-[10px] font-bold h-5 w-5 flex items-center justify-center rounded-full">
+                    <span className="ml-2 bg-blue-600 text-white text-[10px] font-bold h-5 w-5 flex items-center justify-center rounded-full">
                       {cart.length}
                     </span>
                   )}
@@ -188,7 +181,7 @@ const Header = () => {
                   <div className="w-px h-6 bg-gray-300 mx-2"></div>
                   <NavLink
                     to="/login"
-                    className="flex items-center justify-center w-10 h-10 rounded-full border-2 border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition-all duration-200"
+                    className="flex items-center justify-center w-10 h-10 rounded-full border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-all duration-200"
                     title="Login"
                   >
                     <svg
@@ -217,7 +210,7 @@ const Header = () => {
                   >
                     <button 
                       onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                      className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 border-2 border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white transition-all duration-200 focus:outline-none"
+                      className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-50 border-2 border-blue-200 text-blue-600 hover:bg-blue-600 hover:text-white transition-all duration-200 focus:outline-none"
                     >
                       <svg
                         className="w-5 h-5"
@@ -251,7 +244,7 @@ const Header = () => {
                           to={`/dashboard/${
                             auth?.user?.role === 1 ? "admin" : "user"
                           }`}
-                          className="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-green-600"
+                          className="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600"
                           onClick={() => setUserDropdownOpen(false)}
                         >
                           Dashboard
@@ -261,7 +254,7 @@ const Header = () => {
                             handleLogout();
                             setUserDropdownOpen(false);
                           }}
-                          className="block w-full text-left px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-green-600"
+                          className="block w-full text-left px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600"
                         >
                           Logout
                         </button>
@@ -307,9 +300,6 @@ const Header = () => {
         {mobileMenuOpen && (
           <div
             className="lg:hidden bg-white border-t border-gray-200 shadow-lg p-6 flex flex-col gap-4"
-            style={{
-              background: "linear-gradient(180deg, #ffffff 0%, #f0f9ff 100%)",
-            }}
           >
             <div className="w-full mb-4">
               <SearchInput />
@@ -317,30 +307,31 @@ const Header = () => {
             <NavLink
               to="/"
               onClick={() => setMobileMenuOpen(false)}
-              className="text-base font-semibold text-gray-800 hover:text-green-600"
+              className="text-base font-semibold text-gray-800 hover:text-blue-600"
             >
               Home
             </NavLink>
             <NavLink
               to="/categories"
               onClick={() => setMobileMenuOpen(false)}
-              className="text-base font-semibold text-gray-800 hover:text-green-600"
+              className="text-base font-semibold text-gray-800 hover:text-blue-600"
             >
               Categories
             </NavLink>
+            {/* ... rest of mobile menu logic updated with blue hover ... */}
             {!auth?.user ? (
               <>
                 <NavLink
                   to="/register"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="text-base font-semibold text-gray-800 hover:text-green-600"
+                  className="text-base font-semibold text-gray-800 hover:text-blue-600"
                 >
                   Register
                 </NavLink>
                 <NavLink
                   to="/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="text-base font-semibold text-gray-800 hover:text-green-600"
+                  className="text-base font-semibold text-gray-800 hover:text-blue-600"
                 >
                   Login
                 </NavLink>
@@ -350,7 +341,7 @@ const Header = () => {
                 <NavLink
                   to={`/dashboard/${auth?.user?.role === 1 ? "admin" : "user"}`}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="text-base font-semibold text-gray-800 hover:text-green-600"
+                  className="text-base font-semibold text-gray-800 hover:text-blue-600"
                 >
                   Dashboard
                 </NavLink>
@@ -359,7 +350,7 @@ const Header = () => {
                     handleLogout();
                     setMobileMenuOpen(false);
                   }}
-                  className="text-base font-semibold text-gray-800 hover:text-green-600 text-left"
+                  className="text-base font-semibold text-gray-800 hover:text-blue-600 text-left"
                 >
                   Logout
                 </button>
@@ -368,14 +359,14 @@ const Header = () => {
             <NavLink
               to="/cart"
               onClick={() => setMobileMenuOpen(false)}
-              className="text-base font-semibold text-gray-800 hover:text-green-600"
+              className="text-base font-semibold text-gray-800 hover:text-blue-600"
             >
               Cart {cart?.length > 0 && `(${cart.length})`}
             </NavLink>
           </div>
         )}
       </nav>
-      {/* Spacer div to push content down below fixed header */}
+      {/* Spacer div */}
       <div className="h-[70px]"></div>
     </>
   );
