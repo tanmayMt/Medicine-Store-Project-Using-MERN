@@ -95,10 +95,33 @@ const Settings = () => {
     });
   };
 
-  const handleSave = () => {
-    // Here you would typically save to backend
-    console.log("Saving settings:", settings);
-    alert("Settings saved successfully!");
+  const handleSave = async () => {
+    try {
+      setSaving(true);
+      const { data } = await axios.put(
+        `${process.env.REACT_APP_API_BASE_URL}/api/v1/settings/update-settings`,
+        {
+          general: settings.general,
+          payment: settings.payment,
+          shipping: settings.shipping,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${auth?.token}`,
+          },
+        }
+      );
+      if (data.success) {
+        toast.success(data.message || "Settings saved successfully!");
+      } else {
+        toast.error(data.message || "Failed to save settings");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response?.data?.message || "Something went wrong");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const tabs = [
@@ -127,10 +150,20 @@ const Settings = () => {
             
             <button
               onClick={handleSave}
-              className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+              disabled={saving}
+              className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <FiSave className="w-4 h-4" />
-              <span>Save Changes</span>
+              {saving ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  <span>Saving...</span>
+                </>
+              ) : (
+                <>
+                  <FiSave className="w-4 h-4" />
+                  <span>Save Changes</span>
+                </>
+              )}
             </button>
           </div>
 

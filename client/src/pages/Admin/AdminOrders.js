@@ -27,7 +27,14 @@ const AdminOrders = () => {
   const getOrders = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/v1/auth/all-orders`);
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/api/v1/auth/all-orders`,
+        {
+          headers: {
+            Authorization: `Bearer ${auth?.token}`,
+          },
+        }
+      );
       setOrders(data);
     } catch (error) {
       console.log(error);
@@ -43,9 +50,17 @@ const AdminOrders = () => {
 
   const handleChange = async (orderId, value) => {
     try {
-      await axios.put(`${process.env.REACT_APP_API_BASE_URL}/api/v1/auth/order-status-admin/${orderId}`, {
-        status: value,
-      });
+      await axios.put(
+        `${process.env.REACT_APP_API_BASE_URL}/api/v1/auth/order-status-admin/${orderId}`,
+        {
+          status: value,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${auth?.token}`,
+          },
+        }
+      );
       toast.success("Order status updated successfully");
       getOrders();
     } catch (error) {

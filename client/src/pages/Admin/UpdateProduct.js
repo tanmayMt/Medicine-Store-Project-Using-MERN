@@ -4,11 +4,13 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet";
+import { useAuth } from "../../context/auth";
 import { FiUpload, FiImage, FiPackage, FiDollarSign, FiBox, FiTruck, FiX, FiTrash2 } from "react-icons/fi";
 
 const UpdateProduct = () => {
   const navigate = useNavigate();
   const params = useParams();
+  const [auth] = useAuth();
   const [categories, setCategories] = useState([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -85,7 +87,13 @@ const UpdateProduct = () => {
 
       const { data } = await axios.put(
         `${process.env.REACT_APP_API_BASE_URL}/api/v1/product/update-product/${id}`,
-        productData
+        productData,
+        {
+          headers: {
+            Authorization: `Bearer ${auth?.token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
       
       if (data?.success) {
@@ -106,7 +114,12 @@ const UpdateProduct = () => {
     if (window.confirm("Are you sure you want to delete this product? This action cannot be undone.")) {
       try {
         const { data } = await axios.delete(
-          `${process.env.REACT_APP_API_BASE_URL}/api/v1/product/delete-product/${id}`
+          `${process.env.REACT_APP_API_BASE_URL}/api/v1/product/delete-product/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${auth?.token}`,
+            },
+          }
         );
         toast.success("Product Deleted Successfully");
         navigate("/dashboard/admin/products");

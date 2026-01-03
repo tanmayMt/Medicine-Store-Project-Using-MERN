@@ -15,7 +15,14 @@ const Users = () => {
   const getUsers = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/v1/auth/users`);
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/api/v1/auth/users`,
+        {
+          headers: {
+            Authorization: `Bearer ${auth?.token}`,
+          },
+        }
+      );
       setUsers(data);
     } catch (error) {
       console.log(error);

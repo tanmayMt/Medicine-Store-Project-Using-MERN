@@ -42,7 +42,12 @@ const AdminDashboard = () => {
       try {
         setLoading(true);
         const { data } = await axios.get(
-          `${process.env.REACT_APP_API_BASE_URL}/api/v1/auth/dashboard-stats`
+          `${process.env.REACT_APP_API_BASE_URL}/api/v1/auth/dashboard-stats`,
+          {
+            headers: {
+              Authorization: `Bearer ${auth?.token}`,
+            },
+          }
         );
         if (data.success) {
           setStats(data.stats);
