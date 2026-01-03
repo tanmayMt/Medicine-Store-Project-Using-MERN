@@ -11,6 +11,7 @@ const Settings = () => {
   const [activeTab, setActiveTab] = useState("general");
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
   const [settings, setSettings] = useState({
     general: {
       storeName: "Medicure",
@@ -112,7 +113,22 @@ const Settings = () => {
         }
       );
       if (data.success) {
-        toast.success(data.message || "Settings saved successfully!");
+        toast.success(data.message || "✅ Settings saved successfully!", {
+          duration: 4000,
+          position: "top-center",
+          style: {
+            background: "#10b981",
+            color: "#fff",
+            fontSize: "16px",
+            fontWeight: "bold",
+            padding: "16px",
+          },
+        });
+        // Show success message on page
+        setSaveSuccess(true);
+        setTimeout(() => {
+          setSaveSuccess(false);
+        }, 3000);
       } else {
         toast.error(data.message || "Failed to save settings");
       }
@@ -166,6 +182,31 @@ const Settings = () => {
               )}
             </button>
           </div>
+
+          {/* Success Confirmation Banner */}
+          {saveSuccess && (
+            <div className="mx-4 lg:mx-6 mt-4 bg-green-50 border-l-4 border-green-500 p-4 rounded-lg shadow-md animate-fade-in">
+              <div className="flex items-center gap-3">
+                <div className="flex-shrink-0">
+                  <svg className="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-green-800">Settings Saved Successfully!</p>
+                  <p className="text-sm text-green-700 mt-1">Your changes have been saved to the database.</p>
+                </div>
+                <button
+                  onClick={() => setSaveSuccess(false)}
+                  className="text-green-500 hover:text-green-700 transition-colors"
+                >
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Content */}
           <div className="p-4 lg:p-6">
