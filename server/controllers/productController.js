@@ -509,3 +509,75 @@ export const createCodOrderController = async (req, res) => {
     });
   }
 };
+
+// UPI PAYMENT CONTROLLER
+export const createUpiOrderController = async (req, res) => {
+  try {
+    const { cart, shippingAddress } = req.body;
+    const u = await userModel.findById({ _id: req.user._id });
+
+    // Calculate total
+    let total = 0;
+    cart.map((i) => {
+      total += i.price;
+    });
+
+    // Create Order with UPI status (pending payment confirmation)
+    const order = await new orderModel({
+      products: cart,
+      payment: {
+        success: false, // Will be updated when payment is verified
+        paymentMethod: "UPI",
+        status: "Pending",
+      },
+      paymentMode: "UPI",
+      buyer: req.user._id,
+      totalAmount: total,
+      shippingAddress: shippingAddress || u.address,
+      status: "Order Placed", // Will be confirmed after payment verification
+    }).save();
+
+    // Send Email
+    var transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.SENDER_GMAIL,
+        pass: process.env.SENDER_GMAIL_PASSCODE,
+      },
+    });
+
+    var mailOptions = {
+      from: process.env.SENDER_GMAIL,
+      to: u.email,
+      subject: "Order Placed via UPI Payment - Medicure",
+      text: `Hi ${u.name},
+      
+      Your order has been placed via UPI payment in Medicure. 
+      Total Amount: Rs. ${total}
+      
+      Please complete the payment using the QR code or UPI ID provided.
+      Once payment is confirmed, your order will be processed.
+      
+      Thank You,
+      Team Medicure`,
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+        // Even if email fails, respond success because order is saved
+        res.json({ ok: true, orderId: order._id });
+      } else {
+        res.json({ ok: true, orderId: order._id });
+      }
+    });
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error in UPI Order API",
+      error,
+    });
+  }
+};

@@ -1,10 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AdminMenu from "../../components/Layout/AdminMenu";
 import { Helmet } from "react-helmet";
 import { FiSettings, FiSave, FiUser, FiMail, FiPhone, FiMapPin, FiDollarSign, FiTruck, FiShield, FiBell } from "react-icons/fi";
+import axios from "axios";
+import { useAuth } from "../../context/auth";
+import toast from "react-hot-toast";
 
 const Settings = () => {
+  const [auth] = useAuth();
   const [activeTab, setActiveTab] = useState("general");
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState({
     general: {
       storeName: "Medicure",
@@ -18,6 +24,8 @@ const Settings = () => {
       stripeEnabled: true,
       paypalEnabled: true,
       cashOnDelivery: true,
+      upiEnabled: true,
+      upiId: "your-upi-id@paytm",
       stripeKey: "sk_test_...",
       paypalClientId: "client_id_..."
     },
@@ -25,7 +33,7 @@ const Settings = () => {
       freeShippingThreshold: 50,
       standardShipping: 5.99,
       expressShipping: 12.99,
-      shippingZones: ["US", "CA", "UK"]
+      shippingZones: ["US", "CA", "UK","IN"]
     },
     notifications: {
       emailNotifications: true,
@@ -40,6 +48,42 @@ const Settings = () => {
       ipWhitelist: false
     }
   });
+
+  // Fetch settings on component mount
+  useEffect(() => {
+    fetchSettings();
+  }, []);
+
+  const fetchSettings = async () => {
+    try {
+      setLoading(true);
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/api/v1/settings/get-settings`,
+        {
+          headers: {
+            Authorization: `Bearer ${auth?.token}`,
+          },
+        }
+      );
+      if (data.success && data.settings) {
+        // Merge fetched settings with existing state
+        setSettings((prev) => ({
+          ...prev,
+          general: { ...prev.general, ...data.settings.general },
+          payment: { ...prev.payment, ...data.settings.payment },
+          shipping: { ...prev.shipping, ...data.settings.shipping },
+        }));
+      }
+    } catch (error) {
+      console.log(error);
+      // Don't show error if settings don't exist yet (first time)
+      if (error.response?.status !== 404) {
+        toast.error("Failed to load settings");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleInputChange = (section, field, value) => {
     setSettings({
@@ -270,6 +314,36 @@ const Settings = () => {
                             <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-500"></div>
                           </label>
                         </div>
+
+                        <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                          <div>
+                            <h3 className="font-medium text-gray-900">UPI Payment</h3>
+                            <p className="text-sm text-gray-600">Accept UPI payments via QR code</p>
+                          </div>
+                          <label className="relative inline-flex items-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={settings.payment.upiEnabled}
+                              onChange={(e) => handleInputChange("payment", "upiEnabled", e.target.checked)}
+                              className="sr-only peer"
+                            />
+                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-500"></div>
+                          </label>
+                        </div>
+
+                        {settings.payment.upiEnabled && (
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">UPI ID</label>
+                            <input
+                              type="text"
+                              value={settings.payment.upiId}
+                              onChange={(e) => handleInputChange("payment", "upiId", e.target.value)}
+                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                              placeholder="your-upi-id@paytm"
+                            />
+                            <p className="text-xs text-gray-500 mt-1">Place your UPI QR code image at: client/public/images/upi-qr-code.png</p>
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}

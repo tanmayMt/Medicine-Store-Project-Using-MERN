@@ -20,10 +20,10 @@ const orderSchema = new mongoose.Schema(
     */
     payment: {}, // Stores the Braintree response or your COD object
     
-    // NEW: To distinguish between COD and Card easily
+    // NEW: To distinguish between COD, Card, and UPI easily
     paymentMode: {
       type: String,
-      enum: ["Online", "COD"], 
+      enum: ["Online", "COD", "UPI"], 
       default: "Online",
     },
 

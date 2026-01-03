@@ -7,7 +7,7 @@ import DropIn from "braintree-web-drop-in-react";
 import axios from "axios";
 import toast from "react-hot-toast";
 // FIXED: Added FiShoppingCart and FiPhone to the import list
-import { FiMapPin, FiTruck, FiShield, FiCreditCard, FiTrash2, FiPlus, FiShoppingCart, FiPhone } from "react-icons/fi";
+import { FiMapPin, FiTruck, FiShield, FiCreditCard, FiTrash2, FiPlus, FiShoppingCart, FiPhone, FiSmartphone } from "react-icons/fi";
 
 const CartPage = () => {
   const [auth, setAuth] = useAuth();
@@ -135,6 +135,30 @@ const CartPage = () => {
       setCart([]);
       navigate("/dashboard/user/orders");
       toast.success("Order Placed Successfully (Cash on Delivery)");
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+      toast.error("Error Placing Order");
+    }
+  };
+
+  const handleUPI = async () => {
+    if (!selectedAddress) {
+      toast.error("Please select a delivery address");
+      return;
+    }
+    try {
+      setLoading(true);
+      const selectedAddr = addresses.find((addr) => addr._id === selectedAddress);
+      const { data } = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/v1/product/upi-order`, {
+        cart,
+        shippingAddress: selectedAddr,
+      });
+      setLoading(false);
+      localStorage.removeItem("cart");
+      setCart([]);
+      navigate("/dashboard/user/orders");
+      toast.success("Order Placed Successfully! Please complete UPI payment.");
     } catch (error) {
       console.log(error);
       setLoading(false);
@@ -353,7 +377,18 @@ const CartPage = () => {
                           onChange={(e) => setPaymentMethod(e.target.value)} 
                           className="text-blue-600 focus:ring-blue-500"
                         />
-                        <span className="font-medium text-gray-700">Pay Online (Card/Wallet/UPI)</span>
+                        <span className="font-medium text-gray-700">Pay Online (Card/Wallet)</span>
+                      </label>
+
+                      <label className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-all ${paymentMethod === "upi" ? "border-blue-500 bg-blue-50/50 ring-1 ring-blue-500" : "border-gray-200 hover:border-gray-300"}`}>
+                        <input 
+                          type="radio" name="payment" value="upi" 
+                          checked={paymentMethod === "upi"} 
+                          onChange={(e) => setPaymentMethod(e.target.value)} 
+                          className="text-blue-600 focus:ring-blue-500"
+                        />
+                        <FiSmartphone className="text-blue-600" size={20} />
+                        <span className="font-medium text-gray-700">UPI Payment (Scan QR Code)</span>
                       </label>
 
                       <label className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-all ${paymentMethod === "cod" ? "border-blue-500 bg-blue-50/50 ring-1 ring-blue-500" : "border-gray-200 hover:border-gray-300"}`}>
@@ -386,8 +421,52 @@ const CartPage = () => {
                           ) : `Pay ${totalPrice()}`}
                         </button>
                       </div>
-                    ) : (
-                       paymentMethod === "cod" && (
+                    ) : paymentMethod === "upi" ? (
+                      <div className="space-y-4">
+                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                          <p className="text-sm text-gray-600 mb-3 text-center">Scan the QR code to pay via UPI</p>
+                          
+                          {/* QR Code Display */}
+                          <div className="flex justify-center mb-4">
+                            <div className="bg-white p-4 rounded-lg border-2 border-gray-300 shadow-sm">
+                              <img 
+                                src="/images/upi-qr-code.png" 
+                                alt="UPI QR Code" 
+                                className="w-64 h-64 object-contain"
+                                onError={(e) => {
+                                  e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Crect width='256' height='256' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='14' fill='%236b7280' text-anchor='middle' dominant-baseline='middle'%3EUpload your QR code%3C/text%3E%3C/svg%3E";
+                                }}
+                              />
+                            </div>
+                          </div>
+
+                          {/* UPI ID Display (Optional) */}
+                          <div className="text-center">
+                            <p className="text-xs text-gray-500 mb-1">Or send money to UPI ID:</p>
+                            <p className="text-sm font-semibold text-gray-800 bg-white px-3 py-2 rounded border border-gray-300 inline-block">
+                              your-upi-id@paytm
+                            </p>
+                            <p className="text-xs text-gray-400 mt-2 italic">Please update this in admin settings</p>
+                          </div>
+                        </div>
+
+                        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                          <p className="text-xs text-yellow-800 text-center">
+                            <strong>Note:</strong> After payment, your order will be processed. Please keep the payment screenshot for reference.
+                          </p>
+                        </div>
+
+                        <button
+                          className="w-full bg-green-600 text-white py-3.5 text-base font-bold uppercase rounded-lg shadow hover:bg-green-700 hover:shadow-lg transition-all transform active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
+                          onClick={handleUPI}
+                          disabled={loading}
+                        >
+                          {loading ? (
+                             <span className="flex items-center justify-center gap-2"><span className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span> Placing Order...</span>
+                          ) : `Confirm Order - Pay ${totalPrice()}`}
+                        </button>
+                      </div>
+                    ) : paymentMethod === "cod" ? (
                         <button
                           className="w-full bg-orange-600 text-white py-3.5 text-base font-bold uppercase rounded-lg shadow hover:bg-orange-700 hover:shadow-lg transition-all transform active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
                           onClick={handleCOD}
@@ -397,8 +476,8 @@ const CartPage = () => {
                              <span className="flex items-center justify-center gap-2"><span className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span> Placing Order...</span>
                           ) : "Place Order"}
                         </button>
-                       )
-                    )}
+                       ) : null
+                    }
                   </div>
                 ) : (
                    <div className="text-sm text-gray-500 italic text-center mt-4">

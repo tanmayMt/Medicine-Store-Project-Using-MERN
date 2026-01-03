@@ -16,6 +16,7 @@ import {
   searchProductController,
   updateProductController,
   createCodOrderController,
+  createUpiOrderController,
 } from "../controllers/productController.js";
 import { isAdmin, requireSignIn } from "../middlewares/authMiddleware.js";
 import formidable from "express-formidable";
@@ -80,6 +81,9 @@ router.post("/braintree/payment", requireSignIn, brainTreePaymentController);
 
 //create cod order
 router.post("/cod-order", requireSignIn, createCodOrderController);
+
+//create upi order
+router.post("/upi-order", requireSignIn, createUpiOrderController);
 
 
 export default router;
