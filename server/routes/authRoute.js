@@ -4,6 +4,8 @@ import {
   loginController,
   testController,
   forgotPasswordController,
+  sendOtpController,
+  resetPasswordWithOtpController,
   updateProfileController,
   getOrdersController,
   getAllOrdersController,
@@ -30,6 +32,12 @@ router.post("/login", loginController);
 
 //Forgot Password || POST
 router.post("/forgot-password", forgotPasswordController);
+
+// Send OTP
+router.post("/send-otp", sendOtpController);
+
+// Reset password with OTP
+router.post("/reset-password-otp", resetPasswordWithOtpController);
 
 //test routes
 router.get("/test", requireSignIn, isAdmin, testController);
@@ -67,7 +75,7 @@ router.put(
 
 
 //all users
-router.get("/users", requireSignIn,isAdmin,getAllUsersController);
+router.get("/users", requireSignIn, isAdmin, getAllUsersController);
 
 //dashboard stats
 router.get("/dashboard-stats", requireSignIn, isAdmin, getDashboardStatsController);

@@ -198,6 +198,84 @@ export const forgotPasswordController = async (req, res) => {
   }
 };
 
+// Send OTP for password reset
+export const sendOtpController = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).send({ success: false, message: "Email is required" });
+    }
+    const user = await userModel.findOne({ email });
+    if (!user) {
+      return res.status(404).send({ success: false, message: "User not found" });
+    }
+
+    // Generate a 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    user.resetOtp = otp;
+    user.resetOtpExpire = Date.now() + 10 * 60 * 1000; // 10 minutes expiry
+    await user.save();
+
+    // Send email
+    var transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.SENDER_GMAIL,
+        pass: process.env.SENDER_GMAIL_PASSCODE,
+      }
+    });
+
+    var mailOptions = {
+      from: process.env.SENDER_GMAIL,
+      to: email,
+      subject: 'Password Reset OTP - Medicure',
+      text: `Your OTP for password reset is: ${otp}. It is valid for 10 minutes.`,
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+        return res.status(500).send({ success: false, message: "Failed to send OTP email" });
+      }
+      res.status(200).send({ success: true, message: "OTP sent successfully" });
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ success: false, message: "Something went wrong", error });
+  }
+};
+
+// Reset password with OTP
+export const resetPasswordWithOtpController = async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+    if (!email || !otp || !newPassword) {
+      return res.status(400).send({ success: false, message: "Email, OTP, and new password are required" });
+    }
+    const user = await userModel.findOne({ email });
+    if (!user) {
+      return res.status(404).send({ success: false, message: "User not found" });
+    }
+    if (user.resetOtp !== otp) {
+      return res.status(400).send({ success: false, message: "Invalid OTP" });
+    }
+    if (user.resetOtpExpire < Date.now()) {
+      return res.status(400).send({ success: false, message: "OTP has expired" });
+    }
+
+    const hashed = await hashPassword(newPassword);
+    user.password = hashed;
+    user.resetOtp = undefined;
+    user.resetOtpExpire = undefined;
+    await user.save();
+
+    res.status(200).send({ success: true, message: "Password Reset Successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ success: false, message: "Something went wrong", error });
+  }
+};
+
 //test controller
 export const testController = (req, res) => {
   try {

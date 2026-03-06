@@ -41,6 +41,13 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    resetOtp: {
+      type: String,
+      default: "",
+    },
+    resetOtpExpire: {
+      type: Date,
+    },
     role: {
       type: Number,
       default: 0,  //Admin-1 or user -0
