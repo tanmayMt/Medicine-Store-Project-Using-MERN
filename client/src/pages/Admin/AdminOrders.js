@@ -69,30 +69,30 @@ const AdminOrders = () => {
 
   const filteredOrders = orders.filter(order => {
     const searchLower = searchTerm.toLowerCase();
-    const addressStr = typeof order.shippingAddress === 'object' 
+    const addressStr = typeof order.shippingAddress === 'object'
       ? `${order.shippingAddress?.address || ''} ${order.shippingAddress?.city || ''} ${order.shippingAddress?.state || ''}`.toLowerCase()
       : (order.shippingAddress || '').toLowerCase();
-    
+
     const matchesSearch = (
       order._id.toLowerCase().includes(searchLower) ||
       order.buyer?.name?.toLowerCase().includes(searchLower) ||
       order.status?.toLowerCase().includes(searchLower) ||
       addressStr.includes(searchLower)
     );
-    
+
     const matchesStatus = statusFilter === "All orders" || order.status === statusFilter;
-    
+
     return matchesSearch && matchesStatus;
   });
 
   // Format address for display
   const formatAddress = (address) => {
     if (!address) return "No address provided";
-    
+
     if (typeof address === 'string') {
       return address;
     }
-    
+
     // Object format (new delivery address)
     const parts = [];
     if (address.address) parts.push(address.address);
@@ -100,7 +100,7 @@ const AdminOrders = () => {
     if (address.city) parts.push(address.city);
     if (address.state) parts.push(address.state);
     if (address.pincode) parts.push(address.pincode);
-    
+
     return parts.length > 0 ? parts.join(', ') : "No address provided";
   };
 
@@ -115,6 +115,19 @@ const AdminOrders = () => {
     };
   };
 
+  // Helper function to map payment mode to desired display UI strings
+  const getPaymentModeDisplay = (mode) => {
+    if (!mode) return "N/A";
+    switch (mode.toLowerCase()) {
+      case 'online': return 'Online';
+      case 'cod': return 'COD';
+      case 'upi': return 'UPI';
+      case 'qr':
+      case 'qrcode': return 'QR';
+      default: return mode;
+    }
+  };
+
   return (
     <>
       <Helmet>
@@ -122,7 +135,7 @@ const AdminOrders = () => {
       </Helmet>
       <div className="flex min-h-screen bg-gray-50">
         <AdminMenu />
-        
+
         <div className="flex-1 ml-0 lg:ml-64">
           {/* Header */}
           <div className="bg-white border-b border-gray-200 px-4 lg:px-6 py-4 sticky top-0 z-10">
@@ -131,7 +144,7 @@ const AdminOrders = () => {
                 <h1 className="text-2xl font-bold text-gray-800">Order</h1>
                 <p className="text-sm text-gray-500 mt-1">{filteredOrders.length} Orders found</p>
               </div>
-              
+
               <div className="flex items-center gap-3">
                 <div className="relative w-full lg:w-64">
                   <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -161,18 +174,17 @@ const AdminOrders = () => {
                 </div>
               </div>
             </div>
-            
+
             {/* Status Tabs */}
             <div className="flex gap-2 border-b border-gray-200">
               {["All orders", "Order Placed", "Processing", "Shipped", "Delivered", "Cancelled"].map((status) => (
                 <button
                   key={status}
                   onClick={() => setStatusFilter(status)}
-                  className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-                    statusFilter === status
+                  className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${statusFilter === status
                       ? "border-orange-500 text-orange-600"
                       : "border-transparent text-gray-600 hover:text-gray-800"
-                  }`}
+                    }`}
                 >
                   {status}
                 </button>
@@ -209,10 +221,10 @@ const AdminOrders = () => {
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                       {filteredOrders.map((order, index) => {
-                        const orderTotal = order.totalAmount || 
+                        const orderTotal = order.totalAmount ||
                           (order.products?.reduce((sum, p) => sum + (p.price || 0), 0) || 0);
                         const firstProduct = order.products?.[0];
-                        
+
                         return (
                           <tr key={order._id} className="hover:bg-gray-50">
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{index + 1}</td>
@@ -295,9 +307,9 @@ const AdminOrders = () => {
             ) : (
               <div className="space-y-6">
                 {filteredOrders.map((order) => {
-                  const orderTotal = order.totalAmount || 
+                  const orderTotal = order.totalAmount ||
                     (order.products?.reduce((sum, p) => sum + (p.price || 0), 0) || 0);
-                  
+
                   return (
                     <div key={order._id} className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
                       {/* Order Header */}
@@ -325,7 +337,7 @@ const AdminOrders = () => {
                               </div>
                               <div className="flex items-center gap-2 text-gray-600">
                                 <FiMapPin className="w-4 h-4" />
-                                <span><strong>Payment:</strong> {order.paymentMode || "N/A"}</span>
+                                <span><strong>Payment:</strong> {getPaymentModeDisplay(order.paymentMode)}</span>
                               </div>
                             </div>
                           </div>
@@ -430,16 +442,15 @@ const AdminOrders = () => {
                         <div className="mt-6 pt-6 border-t border-gray-200">
                           <div className="flex items-center justify-between">
                             <span className="text-sm text-gray-600">Payment Status:</span>
-                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                              order.payment?.success ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-                            }`}>
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${order.payment?.success ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+                              }`}>
                               {order.payment?.success ? "Success" : "Failed"}
                             </span>
                           </div>
                           {order.paymentMode && (
                             <div className="flex items-center justify-between mt-2">
                               <span className="text-sm text-gray-600">Payment Mode:</span>
-                              <span className="text-sm font-medium text-gray-800">{order.paymentMode}</span>
+                              <span className="text-sm font-medium text-gray-800">{getPaymentModeDisplay(order.paymentMode)}</span>
                             </div>
                           )}
                         </div>
