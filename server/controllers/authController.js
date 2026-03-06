@@ -50,40 +50,52 @@ export const registerController = async (req, res) => {
       answer,
     }).save();
 
-    //Welcome Email
-var transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.SENDER_GMAIL,
-    pass: process.env.SENDER_GMAIL_PASSCODE,
-  }
-});
+    //token
+    const token = await JWT.sign({ _id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
 
-var mailOptions = {
-  from: process.env.SENDER_GMAIL,
-  to: email,
-  subject: 'Welcome to Medicure',
-  text: `Hi ${name},
+    //Welcome Email
+    var transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.SENDER_GMAIL,
+        pass: process.env.SENDER_GMAIL_PASSCODE,
+      }
+    });
+
+    var mailOptions = {
+      from: process.env.SENDER_GMAIL,
+      to: email,
+      subject: 'Welcome to Medicure',
+      text: `Hi ${name},
     Welcome to Medicure, your one-stop point to buy all medicines. We hope you a very good health. Your account has been successfully created in Medicure. 
 Thank You,
 Team Medicure`,
-  // html: '<h1>Hi Smartherd</h1><p>Your Messsage</p>'        
-};
+      // html: '<h1>Hi Smartherd</h1><p>Your Messsage</p>'        
+    };
 
-transporter.sendMail(mailOptions, function (error, info) {
-  if (error) {
-    console.log(error);
-  } else {
-    res.status(201).send({
-      success: true,
-      message: "User Register Successfully",
-      user,
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+      }
+      res.status(201).send({
+        success: true,
+        message: "User Register Successfully",
+        user: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          address: user.address,
+          role: user.role,
+        },
+        token,
+      });
     });
-  }
-});
     // Welcome email ends
 
-    
+
   } catch (error) {
     console.log(error);
     res.status(500).send({
@@ -235,7 +247,7 @@ export const updateProfileController = async (req, res) => {
 export const getOrdersController = async (req, res) => {
   try {
     const orders = await orderModel
-      .find({ buyer: req.user._id }).sort({createdAt: -1})
+      .find({ buyer: req.user._id }).sort({ createdAt: -1 })
       .populate("products", "-photo")
       .populate("buyer", "name");
     res.json(orders);
@@ -251,13 +263,13 @@ export const getOrdersController = async (req, res) => {
 //orders --admin
 export const getAllOrdersController = async (req, res) => {
   try {
-    
+
     const orders = await orderModel
       .find({})
       .populate("products", "-photo")
       .populate("buyer", "name")
       .sort({ createdAt: -1 });
-      
+
     res.json(orders);
   } catch (error) {
     console.log(error);
@@ -279,49 +291,50 @@ export const orderStatusController = async (req, res) => {
       { status },
       { new: true }
     );
-    if(orders){
-     // console.log("Hi78");
-      const order = await orderModel.findById({_id:orderId});
+    if (orders) {
+      // console.log("Hi78");
+      const order = await orderModel.findById({ _id: orderId });
 
       const rt = order.buyer.toString();
       // console.log(order.buyer);
       //console.log(rt);
-      const user = await userModel.findById({_id:rt});
-     // console.log("Hello1");
+      const user = await userModel.findById({ _id: rt });
+      // console.log("Hello1");
       //console.log(user.email);
-// Order Status Update email
-var transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.SENDER_GMAIL,
-    pass: process.env.SENDER_GMAIL_PASSCODE,
-  }
-});
+      // Order Status Update email
+      var transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.SENDER_GMAIL,
+          pass: process.env.SENDER_GMAIL_PASSCODE,
+        }
+      });
 
-var mailOptions = {
-  from: process.env.SENDER_GMAIL,
-  to: user.email,
-  subject: 'Order Status update from Medicure',
-  text: `Hi ${user.name},
+      var mailOptions = {
+        from: process.env.SENDER_GMAIL,
+        to: user.email,
+        subject: 'Order Status update from Medicure',
+        text: `Hi ${user.name},
    This is to inform you that your order with Order ID ${order._id} has been ${status}.
 Thank You,
 Team Medicure`,
-  // html: '<h1>Hi Smartherd</h1><p>Your Messsage</p>'        
-};
+        // html: '<h1>Hi Smartherd</h1><p>Your Messsage</p>'        
+      };
 
-transporter.sendMail(mailOptions, function (error, info) {
-  if (error) {
-    console.log(error);
-  } else {
-    return res.status(201).send({success: true, message :`Order ${status} successfully`});
-  }
-});
+      transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+          console.log(error);
+        } else {
+          return res.status(201).send({ success: true, message: `Order ${status} successfully` });
+        }
+      });
 
-    //email body ends
+      //email body ends
 
-    return res.status(201).send({success: true, message : "Order cancelled successfully"});}
-    else{
-      return res.status(200).send({success: false, message: "Failed to cancel the order"});
+      return res.status(201).send({ success: true, message: "Order cancelled successfully" });
+    }
+    else {
+      return res.status(200).send({ success: false, message: "Failed to cancel the order" });
     }
   } catch (error) {
     console.log(error);
@@ -338,9 +351,9 @@ export const getAllUsersController = async (req, res) => {
   try {
     console.log("Hi");
     const users = await userModel
-      .find({role:"0"});
-      console.log("Hello");
-      console.log(users);
+      .find({ role: "0" });
+    console.log("Hello");
+    console.log(users);
     res.json(users);
   } catch (error) {
     console.log(error);
@@ -468,8 +481,8 @@ export const getDashboardStatsController = async (req, res) => {
       return orderDate >= lastWeek;
     });
     const currentWeekSales = currentWeekOrders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
-    
-    const salesChange = previousWeekSales > 0 
+
+    const salesChange = previousWeekSales > 0
       ? (((currentWeekSales - previousWeekSales) / previousWeekSales) * 100).toFixed(2)
       : "0";
     const ordersChange = previousWeekOrders.length > 0
