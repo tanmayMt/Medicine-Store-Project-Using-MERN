@@ -53,10 +53,9 @@ const Header = () => {
 
   // Nav Item Styles (Dark text for light gradient bg)
   const navItemClasses = ({ isActive }) =>
-    `px-4 py-2 rounded-full text-base font-semibold transition-all duration-200 flex items-center ${
-      isActive
-        ? "bg-blue-600 text-white shadow-md"
-        : "text-slate-700 hover:bg-white hover:text-blue-700"
+    `px-4 py-2 rounded-full text-base font-semibold transition-all duration-200 flex items-center ${isActive
+      ? "bg-blue-600 text-white shadow-md"
+      : "text-slate-700 hover:bg-white hover:text-blue-700"
     }`;
 
   const dropdownButtonClasses =
@@ -73,7 +72,7 @@ const Header = () => {
       >
         <div className="w-full px-6 lg:px-8">
           <div className="flex items-center justify-between h-[70px]">
-            
+
             {/* ================= LEFT: BRANDING ================= */}
             <Link to="/" className="flex items-center gap-2 group">
               <div className="relative transform group-hover:scale-105 transition-transform duration-200">
@@ -136,24 +135,26 @@ const Header = () => {
                   </button>
 
                   {categoriesDropdownOpen && (
-                    <div className="absolute top-full right-0 mt-1 w-56 bg-white border border-gray-100 shadow-xl py-2 z-50 rounded-md">
-                      <Link
-                        to="/categories"
-                        className="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600"
-                        onClick={() => setCategoriesDropdownOpen(false)}
-                      >
-                        All Categories
-                      </Link>
-                      {categories?.map((c) => (
+                    <div className="absolute top-full right-0 pt-1 z-50">
+                      <div className="w-56 bg-white border border-gray-100 shadow-xl py-2 rounded-md">
                         <Link
-                          key={c._id}
-                          to={`/category/${c.slug}`}
+                          to="/categories"
                           className="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600"
                           onClick={() => setCategoriesDropdownOpen(false)}
                         >
-                          {c.name}
+                          All Categories
                         </Link>
-                      ))}
+                        {categories?.map((c) => (
+                          <Link
+                            key={c._id}
+                            to={`/category/${c.slug}`}
+                            className="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600"
+                            onClick={() => setCategoriesDropdownOpen(false)}
+                          >
+                            {c.name}
+                          </Link>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -199,43 +200,44 @@ const Header = () => {
 
                     {/* Custom Dropdown */}
                     {userDropdownOpen && (
-                      <div className="absolute top-full right-0 mt-3 w-72 bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] border border-gray-100 overflow-hidden z-50">
-                        {/* 1. Header Section */}
-                        <div className="px-6 py-5 border-b border-gray-50 bg-gray-50/30">
-                          <h4 className="text-base font-bold text-gray-900 leading-tight">
-                            {auth?.user?.name}
-                          </h4>
-                          <p className="text-sm text-gray-500 mt-1 break-words">
-                            {auth?.user?.email}
-                          </p>
-                        </div>
+                      <div className="absolute top-full right-0 pt-3 z-50">
+                        <div className="w-72 bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] border border-gray-100 overflow-hidden">
+                          {/* 1. Header Section */}
+                          <div className="px-6 py-5 border-b border-gray-50 bg-gray-50/30">
+                            <h4 className="text-base font-bold text-gray-900 leading-tight">
+                              {auth?.user?.name}
+                            </h4>
+                            <p className="text-sm text-gray-500 mt-1 break-words">
+                              {auth?.user?.email}
+                            </p>
+                          </div>
 
-                        {/* 2. Menu Items */}
-                        <div className="py-2">
-                          <NavLink
-                            to={`/dashboard/${
-                              auth?.user?.role === 1 ? "admin" : "user"
-                            }`}
-                            className="flex items-center gap-3 px-6 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
-                            onClick={() => setUserDropdownOpen(false)}
-                          >
-                            <FiUser className="w-4 h-4" />
-                            Dashboard
-                          </NavLink>
+                          {/* 2. Menu Items */}
+                          <div className="py-2">
+                            <NavLink
+                              to={`/dashboard/${auth?.user?.role === 1 ? "admin" : "user"
+                                }`}
+                              className="flex items-center gap-3 px-6 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                              onClick={() => setUserDropdownOpen(false)}
+                            >
+                              <FiUser className="w-4 h-4" />
+                              Dashboard
+                            </NavLink>
 
-                          <div className="h-px bg-gray-50 mx-6 my-1"></div>
+                            <div className="h-px bg-gray-50 mx-6 my-1"></div>
 
-                          {/* 3. Logout Item */}
-                          <button
-                            onClick={() => {
-                              handleLogout();
-                              setUserDropdownOpen(false);
-                            }}
-                            className="w-full flex items-center gap-3 px-6 py-3 text-sm font-medium text-red-500 hover:bg-red-50 transition-colors text-left"
-                          >
-                            <FiLogOut className="w-4 h-4" />
-                            Logout
-                          </button>
+                            {/* 3. Logout Item */}
+                            <button
+                              onClick={() => {
+                                handleLogout();
+                                setUserDropdownOpen(false);
+                              }}
+                              className="w-full flex items-center gap-3 px-6 py-3 text-sm font-medium text-red-500 hover:bg-red-50 transition-colors text-left"
+                            >
+                              <FiLogOut className="w-4 h-4" />
+                              Logout
+                            </button>
+                          </div>
                         </div>
                       </div>
                     )}

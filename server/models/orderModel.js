@@ -19,11 +19,11 @@ const orderSchema = new mongoose.Schema(
     ],
     */
     payment: {}, // Stores the Braintree response or your COD object
-    
-    // NEW: To distinguish between COD, Card, and UPI easily
+
+    // NEW: To distinguish between COD and Card easily
     paymentMode: {
       type: String,
-      enum: ["Online", "COD", "UPI"], 
+      enum: ["Online", "COD", "qrcode", "upi"],
       default: "Online",
     },
 
@@ -31,7 +31,7 @@ const orderSchema = new mongoose.Schema(
       type: mongoose.ObjectId,
       ref: "users",
     },
-    
+
     // NEW: Save the address specifically for this order
     shippingAddress: {
       type: Object, // Or String, depending on how you store address
@@ -49,11 +49,11 @@ const orderSchema = new mongoose.Schema(
       default: "Not Processed",
       enum: [
         "Not Processed",
-        "Order Placed", 
+        "Order Placed",
         "Processing",
-        "Shipped", 
-        "Delivered", 
-        "Cancelled", 
+        "Shipped",
+        "Delivered",
+        "Cancelled",
         "Returned"
       ],
     },

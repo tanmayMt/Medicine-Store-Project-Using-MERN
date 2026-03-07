@@ -3,6 +3,7 @@ import Layout from "./../../components/Layout/Layout";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
+import { useAuth } from "../../context/auth";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -11,6 +12,7 @@ const Register = () => {
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [answer, setAnswer] = useState("");
+  const [auth, setAuth] = useAuth();
   const navigate = useNavigate();
 
   // form function
@@ -27,7 +29,13 @@ const Register = () => {
       });
       if (res && res.data.success) {
         toast.success("User Register Successfully");
-        navigate("/login");
+        setAuth({
+          ...auth,
+          user: res.data.user,
+          token: res.data.token,
+        });
+        localStorage.setItem("auth", JSON.stringify(res.data));
+        navigate("/");
       } else {
         toast.error(res.data.message);
       }
@@ -41,7 +49,7 @@ const Register = () => {
     <Layout title="Register - Medicine Store">
       <div className="min-h-[80vh] flex items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8 font-poppins">
         <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-2xl relative overflow-hidden">
-          
+
           {/* Decorative Top Bar */}
           <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-cyan-500 to-blue-600"></div>
 
@@ -55,7 +63,7 @@ const Register = () => {
           </div>
 
           <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
-            
+
             {/* Name Input */}
             <div>
               <input
@@ -138,15 +146,15 @@ const Register = () => {
                 Register
               </button>
             </div>
-            
+
             {/* Login Link */}
             <div className="text-center mt-4">
-               <p className="text-sm text-gray-600">
-                 Already have an account?{" "}
-                 <Link to="/login" className="font-bold text-gray-900 hover:text-cyan-600 transition-colors">
-                   Sign In
-                 </Link>
-               </p>
+              <p className="text-sm text-gray-600">
+                Already have an account?{" "}
+                <Link to="/login" className="font-bold text-gray-900 hover:text-cyan-600 transition-colors">
+                  Sign In
+                </Link>
+              </p>
             </div>
 
           </form>
