@@ -10,7 +10,7 @@ import toast from "react-hot-toast";
 import { FiMapPin, FiTruck, FiShield, FiCreditCard, FiTrash2, FiPlus, FiShoppingCart, FiPhone, FiSmartphone } from "react-icons/fi";
 
 const CartPage = () => {
-  const [auth, setAuth] = useAuth();
+  const [auth] = useAuth();
   const [cart, setCart] = useCart();
   const [clientToken, setClientToken] = useState("");
   const [instance, setInstance] = useState("");
@@ -25,7 +25,7 @@ const CartPage = () => {
   const totalPrice = () => {
     try {
       let total = 0;
-      cart?.map((item) => {
+      cart?.forEach((item) => {
         total = total + item.price;
       });
       return total.toLocaleString("en-IN", {
@@ -64,6 +64,7 @@ const CartPage = () => {
   useEffect(() => {
     getToken();
     fetchAddresses();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auth?.token]);
 
   // Fetch delivery addresses
@@ -101,7 +102,7 @@ const CartPage = () => {
       setLoading(true);
       const { nonce } = await instance.requestPaymentMethod();
       const selectedAddr = addresses.find((addr) => addr._id === selectedAddress);
-      const { data } = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/v1/product/braintree/payment`, {
+      await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/v1/product/braintree/payment`, {
         nonce,
         cart,
         shippingAddress: selectedAddr,
@@ -126,7 +127,7 @@ const CartPage = () => {
     try {
       setLoading(true);
       const selectedAddr = addresses.find((addr) => addr._id === selectedAddress);
-      const { data } = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/v1/product/cod-order`, {
+      await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/v1/product/cod-order`, {
         cart,
         shippingAddress: selectedAddr,
       });
@@ -142,6 +143,7 @@ const CartPage = () => {
     }
   };
 
+  // eslint-disable-next-line no-unused-vars
   const handleUPI = async () => {
     if (!selectedAddress) {
       toast.error("Please select a delivery address");
@@ -150,7 +152,7 @@ const CartPage = () => {
     try {
       setLoading(true);
       const selectedAddr = addresses.find((addr) => addr._id === selectedAddress);
-      const { data } = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/v1/product/upi-order`, {
+      await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/v1/product/upi-order`, {
         cart,
         shippingAddress: selectedAddr,
       });
@@ -381,10 +383,10 @@ const CartPage = () => {
                       </label>
 
                       <label className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-all ${paymentMethod === "upi" ? "border-blue-500 bg-blue-50/50 ring-1 ring-blue-500" : "border-gray-200 hover:border-gray-300"}`}>
-                        <input 
-                          type="radio" name="payment" value="upi" 
-                          checked={paymentMethod === "upi"} 
-                          onChange={(e) => setPaymentMethod(e.target.value)} 
+                        <input
+                          type="radio" name="payment" value="upi"
+                          checked={paymentMethod === "upi"}
+                          onChange={(e) => setPaymentMethod(e.target.value)}
                           className="text-blue-600 focus:ring-blue-500"
                         />
                         <FiSmartphone className="text-blue-600" size={20} />

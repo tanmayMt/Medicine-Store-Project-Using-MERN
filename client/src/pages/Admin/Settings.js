@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import AdminMenu from "../../components/Layout/AdminMenu";
 import { Helmet } from "react-helmet";
-import { FiSettings, FiSave, FiUser, FiMail, FiPhone, FiMapPin, FiDollarSign, FiTruck, FiShield, FiBell } from "react-icons/fi";
+import { FiSettings, FiSave, FiMail, FiPhone, FiMapPin, FiDollarSign, FiTruck, FiShield, FiBell } from "react-icons/fi";
 import axios from "axios";
 import { useAuth } from "../../context/auth";
 import toast from "react-hot-toast";
@@ -9,7 +9,7 @@ import toast from "react-hot-toast";
 const Settings = () => {
   const [auth] = useAuth();
   const [activeTab, setActiveTab] = useState("general");
-  const [loading, setLoading] = useState(false);
+  const [, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [settings, setSettings] = useState({
@@ -34,7 +34,7 @@ const Settings = () => {
       freeShippingThreshold: 50,
       standardShipping: 5.99,
       expressShipping: 12.99,
-      shippingZones: ["US", "CA", "UK","IN"]
+      shippingZones: ["US", "CA", "UK", "IN"]
     },
     notifications: {
       emailNotifications: true,
@@ -53,6 +53,7 @@ const Settings = () => {
   // Fetch settings on component mount
   useEffect(() => {
     fetchSettings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchSettings = async () => {
@@ -155,7 +156,7 @@ const Settings = () => {
       </Helmet>
       <div className="flex min-h-screen bg-gray-50">
         <AdminMenu />
-        
+
         <div className="flex-1 ml-0 lg:ml-64">
           {/* Header */}
           <div className="bg-white border-b border-gray-200 px-4 lg:px-6 py-4 flex flex-col lg:flex-row items-start lg:items-center justify-between sticky top-0 z-10 gap-4">
@@ -163,7 +164,7 @@ const Settings = () => {
               <h1 className="text-2xl font-bold text-gray-800">Settings</h1>
               <p className="text-sm text-gray-600 mt-1">Manage your store configuration</p>
             </div>
-            
+
             <button
               onClick={handleSave}
               disabled={saving}
@@ -220,11 +221,10 @@ const Settings = () => {
                       <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
-                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors mb-2 ${
-                          activeTab === tab.id
+                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors mb-2 ${activeTab === tab.id
                             ? "bg-orange-500 text-white"
                             : "text-gray-700 hover:bg-gray-100"
-                        }`}
+                          }`}
                       >
                         <Icon className="w-5 h-5" />
                         <span className="font-medium">{tab.label}</span>
@@ -241,7 +241,7 @@ const Settings = () => {
                   {activeTab === "general" && (
                     <div className="space-y-6">
                       <h2 className="text-xl font-bold text-gray-900 mb-4">General Settings</h2>
-                      
+
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">Store Name</label>
                         <input
@@ -326,7 +326,7 @@ const Settings = () => {
                   {activeTab === "payment" && (
                     <div className="space-y-6">
                       <h2 className="text-xl font-bold text-gray-900 mb-4">Payment Settings</h2>
-                      
+
                       <div className="space-y-4">
                         <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                           <div>
@@ -426,7 +426,7 @@ const Settings = () => {
                   {activeTab === "shipping" && (
                     <div className="space-y-6">
                       <h2 className="text-xl font-bold text-gray-900 mb-4">Shipping Settings</h2>
-                      
+
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">Free Shipping Threshold (₹)</label>
                         <input
@@ -466,7 +466,7 @@ const Settings = () => {
                   {activeTab === "notifications" && (
                     <div className="space-y-6">
                       <h2 className="text-xl font-bold text-gray-900 mb-4">Notification Settings</h2>
-                      
+
                       <div className="space-y-4">
                         {[
                           { key: "emailNotifications", label: "Email Notifications", desc: "Receive email updates" },
@@ -498,7 +498,7 @@ const Settings = () => {
                   {activeTab === "security" && (
                     <div className="space-y-6">
                       <h2 className="text-xl font-bold text-gray-900 mb-4">Security Settings</h2>
-                      
+
                       <div className="space-y-4">
                         <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                           <div>

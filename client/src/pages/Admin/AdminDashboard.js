@@ -5,8 +5,6 @@ import axios from "axios";
 import {
   LineChart,
   Line,
-  BarChart,
-  Bar,
   PieChart,
   Pie,
   Cell,
@@ -129,14 +127,14 @@ const AdminDashboard = () => {
         <title>Admin Dashboard - EzMart</title>
       </Helmet>
       <div className="flex min-h-screen bg-gray-50">
-            <AdminMenu />
-        
+        <AdminMenu />
+
         {/* Main Content Area */}
         <div className="flex-1 ml-0 lg:ml-64">
           {/* Header */}
           <div className="bg-white border-b border-gray-200 px-4 lg:px-6 py-4 flex flex-col lg:flex-row items-start lg:items-center justify-between sticky top-0 z-10 gap-4">
             <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
-            
+
             <div className="flex items-center gap-2 lg:gap-4 w-full lg:w-auto">
               {/* Search Bar */}
               <div className="relative flex-1 lg:flex-initial">
@@ -213,9 +211,8 @@ const AdminDashboard = () => {
                 <p className="text-2xl lg:text-3xl font-bold text-gray-800 mb-2">
                   ₹{totalSales.toLocaleString()}
                 </p>
-                <p className={`text-sm font-medium ${
-                  stats?.salesChange?.startsWith("+") ? "text-green-600" : "text-red-600"
-                }`}>
+                <p className={`text-sm font-medium ${stats?.salesChange?.startsWith("+") ? "text-green-600" : "text-red-600"
+                  }`}>
                   {stats?.salesChange || "0%"} vs last week
                 </p>
               </div>
@@ -233,9 +230,8 @@ const AdminDashboard = () => {
                 <p className="text-2xl lg:text-3xl font-bold text-gray-800 mb-2">
                   {totalOrders.toLocaleString()}
                 </p>
-                <p className={`text-sm font-medium ${
-                  stats?.ordersChange?.startsWith("+") ? "text-green-600" : "text-red-600"
-                }`}>
+                <p className={`text-sm font-medium ${stats?.ordersChange?.startsWith("+") ? "text-green-600" : "text-red-600"
+                  }`}>
                   {stats?.ordersChange || "0%"} vs last week
                 </p>
               </div>
@@ -280,8 +276,8 @@ const AdminDashboard = () => {
                   <LineChart data={revenueData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                     <XAxis dataKey="date" stroke="#6b7280" />
-                    <YAxis 
-                      stroke="#6b7280" 
+                    <YAxis
+                      stroke="#6b7280"
                       tickFormatter={(value) => `₹${value.toLocaleString()}`}
                     />
                     <Tooltip
@@ -384,9 +380,9 @@ const AdminDashboard = () => {
               <div className="bg-white rounded-lg shadow-sm p-4 lg:p-6 border border-gray-100">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-gray-800">Top Categories</h3>
-                  <a href="#" className="text-sm text-orange-500 hover:underline">
+                  <button className="text-sm text-orange-500 hover:underline">
                     See All
-                  </a>
+                  </button>
                 </div>
                 {formattedCategoryData.length > 0 ? (
                   <>
@@ -491,9 +487,8 @@ const AdminDashboard = () => {
                               {item.value.toLocaleString()}
                             </span>
                             <span
-                              className={`text-xs font-medium ${
-                                item.trend.startsWith("+") ? "text-green-600" : "text-red-600"
-                              }`}
+                              className={`text-xs font-medium ${item.trend.startsWith("+") ? "text-green-600" : "text-red-600"
+                                }`}
                             >
                               {item.trend}
                             </span>

@@ -36,6 +36,7 @@ const HomePage = () => {
   useEffect(() => {
     getAllCategory();
     getTotal();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Get products
@@ -68,6 +69,7 @@ const HomePage = () => {
   useEffect(() => {
     if (page === 1) return;
     loadMore();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
   // Load more
@@ -98,10 +100,12 @@ const HomePage = () => {
 
   useEffect(() => {
     if (!checked.length || !radio.length) getAllProducts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [checked.length, radio.length]);
 
   useEffect(() => {
     if (checked.length || radio.length) filterProduct();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [checked, radio]);
 
   // Get filtered product
@@ -135,7 +139,7 @@ const HomePage = () => {
       <div className="w-full min-h-screen bg-[#111827] pt-6 pb-12">
         <div className="w-full px-2">
           <div className="flex flex-col md:flex-row gap-4">
-            
+
             {/* Filters Sidebar */}
             <div className="w-full md:w-2/12 bg-[#1f2937] p-4 rounded-3xl shadow-lg h-fit border border-gray-700 sticky top-4">
               <h4 className="text-md font-bold mb-3 border-b border-gray-600 pb-2 text-gray-200">Category</h4>
@@ -182,7 +186,7 @@ const HomePage = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {products?.map((p) => (
-                  <div 
+                  <div
                     className="
                       bg-[#1e293b] 
                       rounded-3xl 
@@ -214,7 +218,7 @@ const HomePage = () => {
                       {/* Metadata Row */}
                       <div className="flex items-center gap-2 mb-3">
                         <div className="bg-red-500 p-1 rounded-full shadow-sm">
-                           <FiShoppingCart className="w-2.5 h-2.5 text-white" />
+                          <FiShoppingCart className="w-2.5 h-2.5 text-white" />
                         </div>
                         <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider group-hover:text-indigo-300 transition-colors">Medicure • Ready to Ship</span>
                       </div>
@@ -223,7 +227,7 @@ const HomePage = () => {
                       <h5 className="text-white font-bold text-sm leading-snug mb-2 line-clamp-2 group-hover:text-indigo-400 transition-colors">
                         {p.name}
                       </h5>
-                      
+
                       {/* Description */}
                       <p className="text-gray-400 text-xs line-clamp-2 leading-relaxed mb-4">
                         {p.description.substring(0, 50)}...
@@ -231,12 +235,12 @@ const HomePage = () => {
 
                       {/* Stacked Layout: Price then Button */}
                       <div className="mt-auto">
-                        
+
                         {/* Price Block */}
                         <div className="mb-4">
-                           <span className="text-2xl font-extrabold text-green-400 tracking-tight drop-shadow-sm">
-                              ₹ {p.price.toLocaleString("en-US")}
-                           </span>
+                          <span className="text-2xl font-extrabold text-green-400 tracking-tight drop-shadow-sm">
+                            ₹ {p.price.toLocaleString("en-US")}
+                          </span>
                         </div>
 
                         {/* Button Block */}

@@ -46,6 +46,7 @@ const AdminOrders = () => {
 
   useEffect(() => {
     if (auth?.token) getOrders();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auth?.token]);
 
   const handleChange = async (orderId, value) => {
@@ -119,16 +120,7 @@ const AdminOrders = () => {
     return parts.length > 0 ? parts.join(', ') : "No address provided";
   };
 
-  // Get address details for display
-  const getAddressDetails = (address) => {
-    if (!address) return null;
-    if (typeof address === 'string') return null;
-    return {
-      name: address.name || '',
-      phone: address.phone || '',
-      addressType: address.addressType || '',
-    };
-  };
+
 
   // Helper function to map payment mode to desired display UI strings
   const getPaymentModeDisplay = (mode) => {
@@ -197,8 +189,8 @@ const AdminOrders = () => {
                   key={status}
                   onClick={() => setStatusFilter(status)}
                   className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${statusFilter === status
-                      ? "border-orange-500 text-orange-600"
-                      : "border-transparent text-gray-600 hover:text-gray-800"
+                    ? "border-orange-500 text-orange-600"
+                    : "border-transparent text-gray-600 hover:text-gray-800"
                     }`}
                 >
                   {status}

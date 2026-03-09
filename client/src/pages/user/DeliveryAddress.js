@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../../components/Layout/Layout";
 import UserMenu from "../../components/Layout/UserMenu";
-import { useAuth } from "../../context/auth";
+// import { useAuth } from "../../context/auth";
 import toast from "react-hot-toast";
 import axios from "axios";
-import { 
-  FiMapPin, 
-  FiUser, 
-  FiPhone, 
-  FiEdit3, 
-  FiTrash2, 
-  FiCheck, 
+import {
+  FiMapPin,
+  FiUser,
+  FiPhone,
+  FiEdit3,
+  FiTrash2,
+  FiCheck,
   FiPlus,
   FiHome,
   FiBriefcase,
@@ -18,7 +18,7 @@ import {
 } from "react-icons/fi";
 
 const DeliveryAddress = () => {
-  const [auth, setAuth] = useAuth();
+  // const [auth, setAuth] = useAuth();
   const [addresses, setAddresses] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -280,11 +280,10 @@ const DeliveryAddress = () => {
                     {addresses.map((address) => (
                       <div
                         key={address._id}
-                        className={`border-2 rounded-xl p-6 transition-all duration-300 hover:shadow-lg ${
-                          address.isDefault 
-                            ? 'border-green-300 bg-gradient-to-br from-green-50 to-emerald-50' 
-                            : 'border-gray-200 bg-white hover:border-green-300'
-                        }`}
+                        className={`border-2 rounded-xl p-6 transition-all duration-300 hover:shadow-lg ${address.isDefault
+                          ? 'border-green-300 bg-gradient-to-br from-green-50 to-emerald-50'
+                          : 'border-gray-200 bg-white hover:border-green-300'
+                          }`}
                       >
                         <div className="flex items-start gap-4">
                           <div className="mt-1">
@@ -304,11 +303,10 @@ const DeliveryAddress = () => {
                               <h3 className="text-lg font-bold text-gray-900">
                                 {address.name}
                               </h3>
-                              <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${
-                                address.addressType === 'Home' 
-                                  ? 'bg-blue-100 text-blue-800' 
-                                  : 'bg-purple-100 text-purple-800'
-                              }`}>
+                              <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${address.addressType === 'Home'
+                                ? 'bg-blue-100 text-blue-800'
+                                : 'bg-purple-100 text-purple-800'
+                                }`}>
                                 {address.addressType === 'Home' ? <FiHome className="w-3 h-3" /> : <FiBriefcase className="w-3 h-3" />}
                                 {address.addressType}
                               </span>
@@ -361,11 +359,10 @@ const DeliveryAddress = () => {
                 )}
 
                 {/* Add New Address Section */}
-                <div className={`border-2 rounded-xl p-6 transition-all duration-300 ${
-                  showAddForm 
-                    ? 'border-green-300 bg-gradient-to-br from-green-50 to-emerald-50' 
-                    : 'border-gray-200 bg-white hover:border-green-300'
-                }`}>
+                <div className={`border-2 rounded-xl p-6 transition-all duration-300 ${showAddForm
+                  ? 'border-green-300 bg-gradient-to-br from-green-50 to-emerald-50'
+                  : 'border-gray-200 bg-white hover:border-green-300'
+                  }`}>
                   <div className="flex items-center gap-4 mb-6">
                     <div className="p-2 bg-green-100 rounded-lg">
                       <FiPlus className="w-5 h-5 text-green-600" />

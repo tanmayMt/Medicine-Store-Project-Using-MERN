@@ -95,7 +95,7 @@ const UpdateProduct = () => {
           },
         }
       );
-      
+
       if (data?.success) {
         toast.success("Product Updated Successfully");
         navigate("/dashboard/admin/products");
@@ -113,7 +113,7 @@ const UpdateProduct = () => {
   const handleDelete = async () => {
     if (window.confirm("Are you sure you want to delete this product? This action cannot be undone.")) {
       try {
-        const { data } = await axios.delete(
+        await axios.delete(
           `${process.env.REACT_APP_API_BASE_URL}/api/v1/product/delete-product/${id}`,
           {
             headers: {
@@ -148,7 +148,7 @@ const UpdateProduct = () => {
       </Helmet>
       <div className="flex min-h-screen bg-gray-50">
         <AdminMenu />
-        
+
         <div className="flex-1 ml-0 lg:ml-64">
           {/* Header */}
           <div className="bg-white border-b border-gray-200 px-4 lg:px-6 py-4 sticky top-0 z-10">

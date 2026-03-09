@@ -3,8 +3,7 @@ import AdminMenu from "../../components/Layout/AdminMenu";
 import axios from "axios";
 import { useAuth } from "../../context/auth";
 import { Helmet } from "react-helmet";
-import { FiSearch, FiUser, FiMail, FiPhone, FiShield, FiShieldOff } from "react-icons/fi";
-import moment from "moment";
+import { FiSearch, FiUser, FiPhone, FiShield, FiShieldOff } from "react-icons/fi";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -33,6 +32,7 @@ const Users = () => {
 
   useEffect(() => {
     if (auth?.token) getUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auth?.token]);
 
   const filteredUsers = users.filter(user => {
@@ -52,7 +52,7 @@ const Users = () => {
       </Helmet>
       <div className="flex min-h-screen bg-gray-50">
         <AdminMenu />
-        
+
         <div className="flex-1 ml-0 lg:ml-64">
           {/* Header */}
           <div className="bg-white border-b border-gray-200 px-4 lg:px-6 py-4 flex flex-col lg:flex-row items-start lg:items-center justify-between sticky top-0 z-10 gap-4">
@@ -60,7 +60,7 @@ const Users = () => {
               <h1 className="text-2xl font-bold text-gray-800">Customers Management</h1>
               <p className="text-sm text-gray-600 mt-1">Total Customers: {users.length}</p>
             </div>
-            
+
             <div className="relative w-full lg:w-64">
               <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
@@ -127,7 +127,7 @@ const Users = () => {
                             </div>
                             {user.address && (
                               <div className="text-xs text-gray-500 mt-1">
-                                {typeof user.address === 'string' 
+                                {typeof user.address === 'string'
                                   ? user.address.substring(0, 30) + (user.address.length > 30 ? '...' : '')
                                   : 'Address available'}
                               </div>

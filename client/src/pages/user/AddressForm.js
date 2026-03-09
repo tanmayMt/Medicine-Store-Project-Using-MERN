@@ -8,12 +8,12 @@ import axios from "axios";
 import { FiMapPin, FiSave, FiNavigation, FiHome } from "react-icons/fi";
 
 const AddressForm = () => {
- //context
+  //context
   const [auth, setAuth] = useAuth();
   //state
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [password] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
 
@@ -93,7 +93,7 @@ const AddressForm = () => {
             <div className="col-span-1">
               <UserMenu />
             </div>
-            
+
             <div className="col-span-1 md:col-span-3">
               {/* Header Section */}
               <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 rounded-2xl shadow-xl p-8 text-white mb-6 relative overflow-hidden">

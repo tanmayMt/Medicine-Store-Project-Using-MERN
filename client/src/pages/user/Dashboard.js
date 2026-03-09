@@ -4,13 +4,13 @@ import UserMenu from "../../components/Layout/UserMenu";
 import { useAuth } from "../../context/auth";
 import { NavLink } from "react-router-dom";
 import axios from "axios";
-import { 
-  FiMail, 
-  FiPhone, 
-  FiMapPin, 
-  FiBox, 
+import {
+  FiMail,
+  FiPhone,
+  FiMapPin,
+  FiBox,
   FiDollarSign,
-  FiUser, 
+  FiUser,
   FiEdit3,
   FiArrowRight,
   FiShoppingBag,
@@ -22,7 +22,7 @@ const Dashboard = () => {
   const [addresses, setAddresses] = useState([]);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [ordersLoading, setOrdersLoading] = useState(true);
+  const [, setOrdersLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -52,13 +52,13 @@ const Dashboard = () => {
   }, []);
 
   const defaultAddress = addresses.find((addr) => addr.isDefault);
-  
+
   // Calculate statistics
   const totalOrders = orders.length;
   const totalSpent = orders.reduce((sum, order) => {
     return sum + (order.products?.reduce((acc, item) => acc + (item.price || 0), 0) || 0);
   }, 0);
-  const pendingOrders = orders.filter(order => 
+  const pendingOrders = orders.filter(order =>
     order.status && !['Delivered', 'Cancelled'].includes(order.status)
   ).length;
 
@@ -96,7 +96,7 @@ const Dashboard = () => {
       textColor: "text-purple-600"
     }
   ];
-  
+
   return (
     <Layout title={"Dashboard - Ecommerce App"}>
       <div className="bg-gradient-to-br from-gray-50 via-white to-gray-50 min-h-screen py-10">
@@ -105,7 +105,7 @@ const Dashboard = () => {
             <div className="col-span-1">
               <UserMenu />
             </div>
-            
+
             <div className="col-span-1 md:col-span-3 space-y-6">
               {/* Welcome Header */}
               <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 rounded-2xl shadow-xl p-8 text-white relative overflow-hidden">
@@ -152,7 +152,7 @@ const Dashboard = () => {
                       <h3 className="text-xl font-bold text-gray-800">Account Information</h3>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-4 mb-6">
                     <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                       <FiMail className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
@@ -161,7 +161,7 @@ const Dashboard = () => {
                         <p className="text-sm font-medium text-gray-800 truncate">{auth?.user?.email || 'Not provided'}</p>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                       <FiPhone className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
                       <div className="flex-1 min-w-0">
@@ -171,8 +171,8 @@ const Dashboard = () => {
                     </div>
                   </div>
 
-                  <NavLink 
-                    to="/dashboard/user/profile" 
+                  <NavLink
+                    to="/dashboard/user/profile"
                     className="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors group-hover:gap-3 duration-300"
                   >
                     <FiEdit3 className="w-4 h-4" />
@@ -180,7 +180,7 @@ const Dashboard = () => {
                     <FiArrowRight className="w-4 h-4" />
                   </NavLink>
                 </div>
-                
+
                 {/* Delivery Addresses Card */}
                 <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 group">
                   <div className="flex items-center justify-between mb-6">
@@ -191,7 +191,7 @@ const Dashboard = () => {
                       <h3 className="text-xl font-bold text-gray-800">Delivery Addresses</h3>
                     </div>
                   </div>
-                  
+
                   {loading ? (
                     <div className="flex items-center justify-center py-8">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
@@ -203,7 +203,7 @@ const Dashboard = () => {
                           <span className="font-bold text-gray-800">{addresses.length}</span> {addresses.length === 1 ? 'Address' : 'Addresses'} Saved
                         </p>
                       </div>
-                      
+
                       {defaultAddress && (
                         <div className="p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg border-2 border-green-200 relative overflow-hidden">
                           <div className="absolute top-0 right-0 w-20 h-20 bg-green-200 opacity-20 rounded-full -mr-10 -mt-10"></div>
@@ -236,9 +236,9 @@ const Dashboard = () => {
                       <p className="text-gray-500 text-sm">No delivery addresses set</p>
                     </div>
                   )}
-                  
-                  <NavLink 
-                    to="/dashboard/user/delivery-address" 
+
+                  <NavLink
+                    to="/dashboard/user/delivery-address"
                     className="inline-flex items-center gap-2 text-sm font-semibold text-green-600 hover:text-green-700 transition-colors group-hover:gap-3 duration-300"
                   >
                     {addresses.length > 0 ? (

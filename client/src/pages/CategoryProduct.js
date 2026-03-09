@@ -11,6 +11,7 @@ const CategoryProduct = () => {
 
   useEffect(() => {
     if (params?.slug) getPrductsByCat();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params?.slug]);
   const getPrductsByCat = async () => {
     try {
