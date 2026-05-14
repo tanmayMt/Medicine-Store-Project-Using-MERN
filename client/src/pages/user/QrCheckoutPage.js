@@ -6,8 +6,7 @@ import Layout from "../../components/Layout/Layout";
 import UserMenu from "../../components/Layout/UserMenu";
 import { useAuth } from "../../context/auth";
 import { FiUpload, FiArrowLeft } from "react-icons/fi";
-
-const PAYMENT_APPS = ["PhonePe", "Google Pay", "Paytm", "Other"];
+import { UPI_PAYMENT_APP_OPTIONS, UPI_UTR_REGEX } from "../../constants/upiPaymentApps";
 
 const QrCheckoutPage = () => {
   const { orderId } = useParams();
@@ -43,7 +42,11 @@ const QrCheckoutPage = () => {
   }, [auth?.token, loadOrder]);
 
   useEffect(() => {
-    if (order?.paymentProofSubmittedAt) {
+    if (!order) return;
+    const hasProof =
+      order.paymentProofSubmittedAt ||
+      ((order.upiTransactionId || order.transactionId) && order.paymentScreenshotFilename);
+    if (hasProof) {
       navigate(`/dashboard/user/order-confirmation/${orderId}`, { replace: true });
     }
   }, [order, orderId, navigate]);
@@ -63,8 +66,8 @@ const QrCheckoutPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const digits = utr.replace(/\D/g, "");
-    if (digits.length !== 12) {
-      toast.error("Enter the 12-digit UPI reference / UTR");
+    if (!UPI_UTR_REGEX.test(digits)) {
+      toast.error("Enter exactly 12 digits for the UPI / UTR reference");
       return;
     }
     if (!file) {
@@ -74,6 +77,7 @@ const QrCheckoutPage = () => {
     try {
       setSubmitting(true);
       const fd = new FormData();
+      fd.append("upiTransactionId", digits);
       fd.append("transactionId", digits);
       fd.append("paymentAppName", paymentApp);
       fd.append("screenshot", file);
@@ -179,7 +183,9 @@ const QrCheckoutPage = () => {
                         maxLength={14}
                         value={utr}
                         onChange={(e) => setUtr(e.target.value.replace(/\D/g, "").slice(0, 12))}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                        className={`w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 ${
+                          utr.length > 0 && !UPI_UTR_REGEX.test(utr.replace(/\D/g, "")) ? "border-red-300 bg-red-50" : ""
+                        }`}
                         placeholder="Enter 12 digits"
                         required
                       />
@@ -191,7 +197,7 @@ const QrCheckoutPage = () => {
                         onChange={(e) => setPaymentApp(e.target.value)}
                         className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500"
                       >
-                        {PAYMENT_APPS.map((a) => (
+                        {UPI_PAYMENT_APP_OPTIONS.map((a) => (
                           <option key={a} value={a}>
                             {a}
                           </option>

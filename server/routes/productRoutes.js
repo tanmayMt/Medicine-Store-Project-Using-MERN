@@ -88,7 +88,7 @@ router.post("/braintree/payment", requireSignIn, brainTreePaymentController);
 router.post("/cod-order", requireSignIn, createCodOrderController);
 
 // UPI / QR professional checkout
-router.post("/qr-order-init", requireSignIn, qrOrderInitController);
+router.post("/qr-order-init", requireSignIn, formidable(), qrOrderInitController);
 router.get("/qr-order/:orderId", requireSignIn, getQrOrderByIdController);
 router.post(
   "/qr-order/:orderId/submit-proof",

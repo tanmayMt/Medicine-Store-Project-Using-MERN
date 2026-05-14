@@ -10,6 +10,8 @@ import {
   getOrdersController,
   getAllOrdersController,
   orderStatusController,
+  getAdminUnreadOrdersCountController,
+  markAdminOrdersSeenController,
   getAllUsersController,
   getDashboardStatsController,
   getDeliveryAddressesController,
@@ -58,13 +60,25 @@ router.get("/admin-auth", requireSignIn, isAdmin, (req, res) => {
 //update profile
 router.put("/profile", requireSignIn, updateProfileController);
 
-//orders
-router.get("/orders", requireSignIn, getOrdersController);
-
 //all orders
 router.get("/all-orders", requireSignIn, isAdmin, getAllOrdersController);
 
-// order status update
+// Admin: new-order badge (unread count + mark seen)
+router.get(
+  "/orders/admin-unread-count",
+  requireSignIn,
+  isAdmin,
+  getAdminUnreadOrdersCountController
+);
+router.put(
+  "/orders/admin-mark-seen",
+  requireSignIn,
+  isAdmin,
+  markAdminOrdersSeenController
+);
+
+//orders (buyer)
+router.get("/orders", requireSignIn, getOrdersController);
 router.put(
   "/order-status/:orderId",
   requireSignIn,

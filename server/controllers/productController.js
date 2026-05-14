@@ -18,6 +18,7 @@ import {
   orderProductIdsFromCart,
   computeCartTotal,
 } from "../utils/cartStock.js";
+import { emitNewOrderCreated } from "../utils/adminOrderSocket.js";
 
 dotenv.config();
 
@@ -433,13 +434,14 @@ export const brainTreePaymentController = async (req, res) => {
         }
 
         try {
-          await new orderModel({
+          const savedOrder = await new orderModel({
             products: orderProductIdsFromCart(cart),
             payment: result,
             buyer: req.user._id,
             paymentMode: "Online",
             paymentStatus: "Success",
             paymentVerificationStatus: "NA",
+            adminSeen: false,
             totalAmount: total,
             shippingAddress: shippingAddress || u.address,
             status: "Order Placed",
@@ -449,6 +451,7 @@ export const brainTreePaymentController = async (req, res) => {
           } catch (invErr) {
             console.error("Inventory decrement failed after paid order", invErr);
           }
+          emitNewOrderCreated({ orderId: String(savedOrder._id) });
         } catch (saveErr) {
           console.log(saveErr);
           return res.status(500).send({
@@ -530,12 +533,14 @@ export const createCodOrderController = async (req, res) => {
         paymentMode,
         paymentStatus: "Pending",
         paymentVerificationStatus: "NA",
+        adminSeen: false,
         buyer: req.user._id,
         totalAmount: total,
         shippingAddress: shippingAddress || u.address,
         status: "Order Placed",
       }).save();
       await decrementInventoryForCart(cart);
+      emitNewOrderCreated({ orderId: String(order._id) });
     } catch (err) {
       console.log(err);
       if (order?._id) {

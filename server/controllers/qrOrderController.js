@@ -11,6 +11,8 @@ import {
 } from "../utils/cartStock.js";
 import { restoreInventoryFromProductIds } from "../utils/orderInventory.js";
 import { sendOrderEmail, notifySmsWhatsapp } from "../helpers/orderNotifications.js";
+import { emitNewOrderCreated } from "../utils/adminOrderSocket.js";
+import { isValidUpiPaymentApp } from "../constants/upiPaymentApps.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const UPLOAD_DIR = path.join(__dirname, "..", "uploads", "payment-proofs");
@@ -36,14 +38,88 @@ async function isAdminUser(userId) {
   return u && u.role === 1;
 }
 
+function syncUpiProofFields(order, utrDigits, app, relativeUrl) {
+  order.transactionId = utrDigits;
+  order.upiTransactionId = utrDigits;
+  order.paymentAppName = app;
+  order.paymentScreenshotURL = relativeUrl;
+  order.paymentScreenshotUrl = relativeUrl;
+}
+
+function parseCartAndAddress(req) {
+  const hasMultipartProof =
+    !!(req.files?.screenshot || req.files?.paymentScreenshot) ||
+    !!(req.fields?.cart && (req.fields?.upiTransactionId || req.fields?.transactionId));
+
+  if (Array.isArray(req.body?.cart) && !hasMultipartProof) {
+    return {
+      cart: req.body.cart,
+      shippingAddress: req.body.shippingAddress,
+      proofMode: "legacy_json",
+    };
+  }
+
+  let cart;
+  let shippingAddress;
+  try {
+    const cartRaw = req.fields?.cart;
+    const addrRaw = req.fields?.shippingAddress;
+    cart = typeof cartRaw === "string" ? JSON.parse(cartRaw) : cartRaw;
+    shippingAddress =
+      typeof addrRaw === "string" ? JSON.parse(addrRaw) : addrRaw;
+  } catch (e) {
+    return { error: "Invalid cart or address payload" };
+  }
+  if (!Array.isArray(cart) || cart.length === 0) {
+    return { error: "Invalid cart" };
+  }
+  return { cart, shippingAddress, proofMode: "multipart", fields: req.fields, files: req.files };
+}
+
+async function attachPaymentProofFromUpload(order, req) {
+  const rawUtr =
+    req.fields?.upiTransactionId ??
+    req.fields?.transactionId ??
+    "";
+  const utr = String(rawUtr).replace(/\D/g, "");
+  if (utr.length !== 12) {
+    return { error: "Enter a valid 12-digit UPI / UTR number" };
+  }
+  const app = (req.fields?.paymentAppName || "").toString();
+  if (!isValidUpiPaymentApp(app)) {
+    return { error: "Invalid payment app" };
+  }
+  const file = req.files?.screenshot || req.files?.paymentScreenshot;
+  if (!file) {
+    return { error: "Payment screenshot is required" };
+  }
+
+  ensureUploadDir();
+  const ext = path.extname(file.name || "") || ".jpg";
+  const safeName = `${order._id}${ext}`;
+  const dest = path.join(UPLOAD_DIR, safeName);
+  fs.writeFileSync(dest, fs.readFileSync(file.path));
+  try {
+    fs.unlinkSync(file.path);
+  } catch (_) {}
+
+  const relativeUrl = `/api/v1/product/payment-proof/${order._id}`;
+  order.paymentScreenshotFilename = safeName;
+  syncUpiProofFields(order, utr, app, relativeUrl);
+  order.paymentProofSubmittedAt = new Date();
+  return { ok: true };
+}
+
 /** POST — create QR order, reserve stock */
 export const qrOrderInitController = async (req, res) => {
   try {
-    const { cart, shippingAddress } = req.body;
     const u = await userModel.findById(req.user._id);
-    if (!Array.isArray(cart) || cart.length === 0) {
-      return res.status(400).send({ success: false, message: "Invalid cart" });
+    const parsed = parseCartAndAddress(req);
+    if (parsed.error) {
+      return res.status(400).send({ success: false, message: parsed.error });
     }
+    const { cart, shippingAddress, proofMode } = parsed;
+
     const stockCheck = await validateCartAgainstInventory(cart);
     if (!stockCheck.ok) {
       return res.status(400).send({
@@ -66,6 +142,7 @@ export const qrOrderInitController = async (req, res) => {
         paymentMode: "QR",
         paymentStatus: "Pending",
         paymentVerificationStatus: "Pending",
+        adminSeen: false,
         orderSubtotal,
         deliveryCharge,
         discountAmount,
@@ -84,25 +161,63 @@ export const qrOrderInitController = async (req, res) => {
       });
     }
 
+    let proofErr;
+    if (proofMode === "multipart") {
+      proofErr = await attachPaymentProofFromUpload(order, req);
+      if (proofErr?.error) {
+        await restoreInventoryFromProductIds(order.products);
+        await orderModel.findByIdAndDelete(order._id);
+        return res.status(400).send({ success: false, message: proofErr.error });
+      }
+    }
+
     pushHistory(order, {
       actorId: req.user._id,
       actorName: u.name,
       action: "order_created",
-      note: "QR order placed — pending payment proof",
+      note:
+        proofMode === "multipart"
+          ? "QR order placed with UPI proof"
+          : "QR order placed — pending payment proof",
     });
+
+    if (proofMode === "multipart") {
+      const submitter = await userModel.findById(req.user._id).select("name");
+      pushHistory(order, {
+        actorId: req.user._id,
+        actorName: submitter?.name,
+        action: "proof_submitted",
+        note: `UTR ${order.upiTransactionId} via ${order.paymentAppName} (with order)`,
+      });
+    }
     await order.save();
 
+    emitNewOrderCreated({ orderId: String(order._id) });
+
     try {
-      await sendOrderEmail(
-        u.email,
-        "Medicure — Order placed (UPI/QR pending verification)",
-        `Hi ${u.name},\n\nYour order ${order._id} has been placed. Please complete UPI payment and submit your transaction ID and screenshot from the checkout page.\n\nAmount payable: ₹${totalAmount}\n\nTeam Medicure`
-      );
-      await notifySmsWhatsapp(
-        u,
-        "whatsapp",
-        `Order ${String(order._id).slice(-8)} placed. Submit UPI proof in the app when ready.`
-      );
+      if (proofMode === "multipart") {
+        await sendOrderEmail(
+          u.email,
+          "Medicure — Order placed (payment proof received)",
+          `Hi ${u.name},\n\nYour order ${order._id} has been placed and we received your UPI payment details. Our team will verify shortly.\n\nAmount: ₹${totalAmount}\n\nTeam Medicure`
+        );
+        await notifySmsWhatsapp(
+          u,
+          "whatsapp",
+          `Order ${String(order._id).slice(-8)} placed with UPI proof. Awaiting verification.`
+        );
+      } else {
+        await sendOrderEmail(
+          u.email,
+          "Medicure — Order placed (UPI/QR pending verification)",
+          `Hi ${u.name},\n\nYour order ${order._id} has been placed. Please complete UPI payment and submit your transaction ID and screenshot from the checkout page.\n\nAmount payable: ₹${totalAmount}\n\nTeam Medicure`
+        );
+        await notifySmsWhatsapp(
+          u,
+          "whatsapp",
+          `Order ${String(order._id).slice(-8)} placed. Submit UPI proof in the app when ready.`
+        );
+      }
     } catch (e) {
       console.error(e);
     }
@@ -111,6 +226,7 @@ export const qrOrderInitController = async (req, res) => {
       success: true,
       orderId: order._id,
       order,
+      proofSubmitted: proofMode === "multipart",
     });
   } catch (error) {
     console.log(error);
@@ -158,14 +274,14 @@ export const qrOrderSubmitProofController = async (req, res) => {
       return res.status(400).send({ success: false, message: "Order is not awaiting proof" });
     }
 
-    const { transactionId, paymentAppName } = req.fields || {};
-    const utr = (transactionId || "").toString().replace(/\D/g, "");
+    const { transactionId, paymentAppName, upiTransactionId } = req.fields || {};
+    const rawUtr = upiTransactionId ?? transactionId ?? "";
+    const utr = String(rawUtr).replace(/\D/g, "");
     if (utr.length !== 12) {
       return res.status(400).send({ success: false, message: "Enter a valid 12-digit UPI / UTR number" });
     }
-    const apps = ["PhonePe", "Google Pay", "Paytm", "Other"];
     const app = (paymentAppName || "").toString();
-    if (!apps.includes(app)) {
+    if (!isValidUpiPaymentApp(app)) {
       return res.status(400).send({ success: false, message: "Invalid payment app" });
     }
 
@@ -182,10 +298,9 @@ export const qrOrderSubmitProofController = async (req, res) => {
       fs.unlinkSync(file.path);
     } catch (_) {}
 
-    order.transactionId = utr;
-    order.paymentAppName = app;
-    order.paymentScreenshotURL = `/api/v1/product/payment-proof/${order._id}`;
+    const relativeUrl = `/api/v1/product/payment-proof/${order._id}`;
     order.paymentScreenshotFilename = safeName;
+    syncUpiProofFields(order, utr, app, relativeUrl);
     order.paymentProofSubmittedAt = new Date();
     const submitter = await userModel.findById(req.user._id).select("name");
     pushHistory(order, {
@@ -270,7 +385,7 @@ export const verifyQrPaymentAdminController = async (req, res) => {
     const adminUser = await userModel.findById(req.user._id).select("name");
 
     if (action === "approve") {
-      if (!order.transactionId || !order.paymentScreenshotFilename) {
+      if (!(order.transactionId || order.upiTransactionId) || !order.paymentScreenshotFilename) {
         return res.status(400).send({ success: false, message: "Payment proof is incomplete" });
       }
       order.paymentVerificationStatus = "Verified";

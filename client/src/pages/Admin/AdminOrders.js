@@ -1,12 +1,64 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import AdminMenu from "../../components/Layout/AdminMenu";
 import { useAuth } from "../../context/auth";
+import { useAdminOrderAlerts } from "../../context/adminOrderAlerts";
 import moment from "moment";
 import { Helmet } from "react-helmet";
-import { FiSearch, FiPackage, FiUser, FiDollarSign, FiCalendar, FiMapPin, FiGrid, FiList } from "react-icons/fi";
+import { FiSearch, FiPackage, FiUser, FiDollarSign, FiCalendar, FiMapPin, FiGrid, FiList, FiImage } from "react-icons/fi";
 import { getPaymentModeLabel, getPaymentStatusMeta } from "../../utils/orderDisplay";
+
+const apiBase = process.env.REACT_APP_API_BASE_URL || "";
+
+function AdminOrderPaymentThumb({ orderId, token, onOpenZoom }) {
+  const [src, setSrc] = useState("");
+  const objectUrlRef = useRef("");
+
+  useEffect(() => {
+    let alive = true;
+    objectUrlRef.current = "";
+    setSrc("");
+    (async () => {
+      try {
+        const res = await axios.get(`${apiBase}/api/v1/product/payment-proof/${orderId}`, {
+          responseType: "blob",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const objectUrl = URL.createObjectURL(res.data);
+        if (!alive) {
+          URL.revokeObjectURL(objectUrl);
+          return;
+        }
+        objectUrlRef.current = objectUrl;
+        setSrc(objectUrl);
+      } catch {
+        if (alive) setSrc("");
+      }
+    })();
+    return () => {
+      alive = false;
+      if (objectUrlRef.current) {
+        URL.revokeObjectURL(objectUrlRef.current);
+        objectUrlRef.current = "";
+      }
+    };
+  }, [orderId, token]);
+
+  if (!src) {
+    return <span className="text-xs text-gray-400">No screenshot on file</span>;
+  }
+  return (
+    <button
+      type="button"
+      onClick={() => onOpenZoom(src)}
+      className="group text-left border border-gray-200 rounded-lg p-2 bg-white hover:border-orange-300 transition-colors"
+    >
+      <img src={src} alt="Payment proof" className="h-24 max-w-[200px] object-contain rounded" />
+      <span className="block text-xs text-orange-600 font-medium mt-1 group-hover:underline">Click to view full size</span>
+    </button>
+  );
+}
 
 const AdminOrders = () => {
   const [status] = useState([
@@ -24,6 +76,8 @@ const AdminOrders = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState("card"); // "card" or "table"
   const [statusFilter, setStatusFilter] = useState("All orders");
+  const { setUnreadCount, fetchUnreadCount } = useAdminOrderAlerts();
+  const [paymentZoomSrc, setPaymentZoomSrc] = useState(null);
 
   const getOrders = async () => {
     try {
@@ -49,6 +103,32 @@ const AdminOrders = () => {
     if (auth?.token) getOrders();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auth?.token]);
+
+  useEffect(() => {
+    if (!auth?.token || auth?.user?.role !== 1) return undefined;
+    let cancelled = false;
+    (async () => {
+      try {
+        await axios.put(
+          `${process.env.REACT_APP_API_BASE_URL}/api/v1/auth/orders/admin-mark-seen`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${auth.token}`,
+            },
+          }
+        );
+        if (cancelled) return;
+        setUnreadCount(0);
+        await fetchUnreadCount();
+      } catch (error) {
+        console.log(error);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [auth?.token, auth?.user?.role, setUnreadCount, fetchUnreadCount]);
 
   const handleChange = async (orderId, value) => {
     try {
@@ -126,6 +206,21 @@ const AdminOrders = () => {
       <Helmet>
         <title>Orders Management - Admin Dashboard</title>
       </Helmet>
+      {paymentZoomSrc ? (
+        <button
+          type="button"
+          className="fixed inset-0 z-[100] bg-black/85 flex items-center justify-center p-4"
+          onClick={() => setPaymentZoomSrc(null)}
+          aria-label="Close enlarged payment screenshot"
+        >
+          <img
+            src={paymentZoomSrc}
+            alt="Payment proof full size"
+            className="max-h-[92vh] max-w-full rounded-lg shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </button>
+      ) : null}
       <div className="flex min-h-screen bg-gray-50">
         <AdminMenu />
 
@@ -431,6 +526,42 @@ const AdminOrders = () => {
                             )}
                           </div>
                         </div>
+
+                        {/* UPI / QR payment proof (when applicable) */}
+                        {(order.paymentMode === "QR" || order.paymentMode === "qrcode") && (
+                          <div className="mt-6 pt-6 border-t border-gray-200">
+                            <h4 className="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide flex items-center gap-2">
+                              <FiImage className="w-4 h-4" />
+                              UPI / QR payment details
+                            </h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-amber-50/60 border border-amber-100 rounded-lg p-4">
+                              <div className="space-y-2 text-sm">
+                                <p>
+                                  <span className="text-gray-500 font-medium">UPI / UTR: </span>
+                                  <span className="font-mono text-gray-900">
+                                    {order.upiTransactionId || order.transactionId || "—"}
+                                  </span>
+                                </p>
+                                <p>
+                                  <span className="text-gray-500 font-medium">Payment app: </span>
+                                  <span className="text-gray-900">{order.paymentAppName || "—"}</span>
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-xs font-semibold text-gray-500 uppercase mb-2">Screenshot</p>
+                                {order.paymentScreenshotFilename ? (
+                                  <AdminOrderPaymentThumb
+                                    orderId={order._id}
+                                    token={auth?.token}
+                                    onOpenZoom={setPaymentZoomSrc}
+                                  />
+                                ) : (
+                                  <span className="text-xs text-gray-400">No screenshot uploaded</span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        )}
 
                         {/* Payment Info */}
                         <div className="mt-6 pt-6 border-t border-gray-200">

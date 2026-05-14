@@ -359,6 +359,41 @@ export const getAllOrdersController = async (req, res) => {
   }
 };
 
+/** Admin sidebar: count orders not yet acknowledged on Orders page */
+export const getAdminUnreadOrdersCountController = async (req, res) => {
+  try {
+    const count = await orderModel.countDocuments({ adminSeen: { $ne: true } });
+    res.json({ success: true, count });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Could not get unread order count",
+    });
+  }
+};
+
+/**
+ * Mark orders as seen by admin. Body: `{ orderIds?: string[] }` — if omitted, marks all unread.
+ */
+export const markAdminOrdersSeenController = async (req, res) => {
+  try {
+    const { orderIds } = req.body || {};
+    const filter =
+      Array.isArray(orderIds) && orderIds.length > 0
+        ? { _id: { $in: orderIds }, adminSeen: { $ne: true } }
+        : { adminSeen: { $ne: true } };
+    const result = await orderModel.updateMany(filter, { $set: { adminSeen: true } });
+    res.json({ success: true, modifiedCount: result.modifiedCount });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Could not update orders",
+    });
+  }
+};
+
 //order status
 export const orderStatusController = async (req, res) => {
   try {

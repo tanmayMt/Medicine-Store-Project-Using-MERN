@@ -168,7 +168,8 @@ const AdminQrPayments = () => {
                     <div>
                       <p className="text-xs font-semibold text-gray-500 uppercase mb-2">Payment details</p>
                       <p className="text-sm text-gray-700">
-                        <span className="text-gray-500">UTR:</span> {order.transactionId || "—"}
+                        <span className="text-gray-500">UTR:</span>{" "}
+                        {order.upiTransactionId || order.transactionId || "—"}
                       </p>
                       <p className="text-sm text-gray-700">
                         <span className="text-gray-500">App:</span> {order.paymentAppName || "—"}
@@ -191,7 +192,7 @@ const AdminQrPayments = () => {
                     <div className="flex flex-wrap gap-3">
                       <button
                         type="button"
-                        disabled={!order.transactionId}
+                        disabled={!(order.transactionId || order.upiTransactionId)}
                         onClick={() => verify(order._id, "approve")}
                         className="inline-flex items-center gap-2 px-5 py-2.5 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 disabled:opacity-40"
                       >

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/auth";
+import { useAdminOrderAlerts } from "../../context/adminOrderAlerts";
 import { 
   FiLayout, 
   FiShoppingCart, 
@@ -21,6 +22,7 @@ import {
 const AdminMenu = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [auth, setAuth] = useAuth();
+  const { unreadCount } = useAdminOrderAlerts();
   const navigate = useNavigate();
 
   const closeMobileMenu = () => {
@@ -123,15 +125,25 @@ const AdminMenu = () => {
             to="/dashboard/admin/orders"
             onClick={closeMobileMenu}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-3 mb-2 rounded-lg transition-colors ${
+              `flex items-center justify-between gap-2 px-4 py-3 mb-2 rounded-lg transition-colors w-full ${
                 isActive
                   ? "bg-orange-500 text-white"
                   : "text-gray-300 hover:bg-gray-700"
               }`
             }
           >
-            <FiShoppingCart className="w-5 h-5" />
-            <span>Orders</span>
+            <span className="flex items-center gap-3 min-w-0">
+              <FiShoppingCart className="w-5 h-5 shrink-0" />
+              <span>Orders</span>
+            </span>
+            {unreadCount > 0 ? (
+              <span
+                className="shrink-0 min-w-[1.25rem] h-5 px-1.5 rounded-full text-xs font-bold flex items-center justify-center bg-orange-500 text-white"
+                aria-label={`${unreadCount} unread orders`}
+              >
+                {unreadCount > 99 ? "99+" : unreadCount}
+              </span>
+            ) : null}
           </NavLink>
 
           <NavLink

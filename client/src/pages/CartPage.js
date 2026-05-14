@@ -7,7 +7,7 @@ import DropIn from "braintree-web-drop-in-react";
 import axios from "axios";
 import toast from "react-hot-toast";
 // FIXED: Added FiShoppingCart and FiPhone to the import list
-import { FiMapPin, FiTruck, FiShield, FiCreditCard, FiTrash2, FiPlus, FiShoppingCart, FiPhone, FiMinus } from "react-icons/fi";
+import { FiMapPin, FiTruck, FiShield, FiCreditCard, FiTrash2, FiPlus, FiShoppingCart, FiPhone, FiMinus, FiUpload } from "react-icons/fi";
 import {
   getStock,
   getCartLineQty,
@@ -16,6 +16,7 @@ import {
   cartSubtotalAmount,
   cartTotalUnits,
 } from "../utils/cartStock";
+import { UPI_PAYMENT_APP_OPTIONS, UPI_UTR_REGEX } from "../constants/upiPaymentApps";
 
 const OFFLINE_API_PAYMENT_MODES = ["COD"];
 
@@ -29,6 +30,9 @@ const CartPage = () => {
   const [addresses, setAddresses] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [loadingAddresses, setLoadingAddresses] = useState(false);
+  const [qrUtr, setQrUtr] = useState("");
+  const [qrPaymentApp, setQrPaymentApp] = useState("PhonePe");
+  const [qrScreenshot, setQrScreenshot] = useState(null);
   const navigate = useNavigate();
 
   // Total price calculation (uses line qty × price)
@@ -181,12 +185,28 @@ const CartPage = () => {
       toast.error("Select UPI / QR payment first");
       return;
     }
+    const digits = qrUtr.replace(/\D/g, "");
+    if (!UPI_UTR_REGEX.test(digits)) {
+      toast.error("Enter exactly 12 digits for the UPI / UTR transaction ID");
+      return;
+    }
+    if (!qrScreenshot) {
+      toast.error("Please attach a payment screenshot");
+      return;
+    }
     try {
       setLoading(true);
       const selectedAddr = addresses.find((addr) => addr._id === selectedAddress);
+      const fd = new FormData();
+      fd.append("cart", JSON.stringify(cart));
+      fd.append("shippingAddress", JSON.stringify(selectedAddr));
+      fd.append("upiTransactionId", digits);
+      fd.append("paymentAppName", qrPaymentApp);
+      fd.append("screenshot", qrScreenshot);
+
       const { data } = await axios.post(
         `${process.env.REACT_APP_API_BASE_URL}/api/v1/product/qr-order-init`,
-        { cart, shippingAddress: selectedAddr },
+        fd,
         { headers: { Authorization: `Bearer ${auth.token}` } }
       );
       const oid = data.orderId || data.order?._id;
@@ -196,8 +216,13 @@ const CartPage = () => {
       persistCart([]);
       localStorage.removeItem("cart");
       setCart([]);
-      toast.success("Order created — complete UPI payment on the next screen");
-      navigate(`/dashboard/user/checkout/qr/${oid}`);
+      if (data.proofSubmitted) {
+        toast.success("Order placed — payment details saved for verification");
+        navigate(`/dashboard/user/order-confirmation/${oid}`);
+      } else {
+        toast.success("Order created — complete UPI payment on the next screen");
+        navigate(`/dashboard/user/checkout/qr/${oid}`);
+      }
     } catch (error) {
       console.log(error);
       const msg =
@@ -507,10 +532,55 @@ const CartPage = () => {
                         ) : "Place Order"}
                       </button>
                     ) : paymentMethod === "QR" ? (
-                      <div className="animate-fade-in space-y-3">
-                        <p className="text-sm text-gray-600">
-                          You will be taken to a secure page to scan the QR, pay, and upload your UPI reference and screenshot.
+                      <div className="animate-fade-in space-y-4 border border-orange-100 rounded-lg p-4 bg-orange-50/40">
+                        <p className="text-sm text-gray-700">
+                          After paying via your UPI app, enter your transaction details below. Files are stored securely on our server.
                         </p>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-800 mb-1">
+                            12-digit UPI / UTR transaction ID
+                          </label>
+                          <input
+                            type="text"
+                            inputMode="numeric"
+                            autoComplete="off"
+                            maxLength={12}
+                            value={qrUtr}
+                            onChange={(e) => setQrUtr(e.target.value.replace(/\D/g, "").slice(0, 12))}
+                            placeholder="e.g. 123456789012"
+                            className={`w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 ${
+                              qrUtr.length > 0 && !UPI_UTR_REGEX.test(qrUtr.replace(/\D/g, ""))
+                                ? "border-red-300 bg-red-50"
+                                : "border-gray-300"
+                            }`}
+                          />
+                          <p className="text-xs text-gray-500 mt-1">Must be exactly 12 digits (numbers only).</p>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-800 mb-1">Payment app</label>
+                          <select
+                            value={qrPaymentApp}
+                            onChange={(e) => setQrPaymentApp(e.target.value)}
+                            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500"
+                          >
+                            {UPI_PAYMENT_APP_OPTIONS.map((app) => (
+                              <option key={app} value={app}>
+                                {app}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-800 mb-1 flex items-center gap-2">
+                            <FiUpload className="w-4 h-4" /> Payment screenshot
+                          </label>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => setQrScreenshot(e.target.files?.[0] || null)}
+                            className="w-full text-sm text-gray-600"
+                          />
+                        </div>
                         <button
                           type="button"
                           className="w-full bg-orange-600 text-white py-3.5 text-base font-bold uppercase rounded-lg shadow hover:bg-orange-700 hover:shadow-lg transition-all transform active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
@@ -518,8 +588,8 @@ const CartPage = () => {
                           disabled={loading}
                         >
                           {loading ? (
-                            <span className="flex items-center justify-center gap-2"><span className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span> Starting…</span>
-                          ) : "Continue to UPI / QR payment"}
+                            <span className="flex items-center justify-center gap-2"><span className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span> Placing order…</span>
+                          ) : "Place UPI / QR order"}
                         </button>
                       </div>
                     ) : null}

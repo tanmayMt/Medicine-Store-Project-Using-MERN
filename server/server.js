@@ -1,13 +1,17 @@
 import express from "express";
+import http from "http";
 import colors from "colors";
 import dotenv from "dotenv";
 import morgan from "morgan";
+import { Server } from "socket.io";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoute.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import settingsRoutes from "./routes/settingsRoutes.js";
 import cors from "cors";
+import { setAdminOrderIo } from "./utils/adminOrderSocket.js";
+import { setupAdminOrderSocket } from "./socket/adminOrderSocketSetup.js";
 
 //configure env
 dotenv.config();
@@ -35,14 +39,20 @@ app.get("/", (req, res) => {
 });
 
 //PORT
-const PORT = process.env.PORT ||8080; 
-const API_URL = process.env.REACT_APP_API_URL;
-//run listen
-app.listen(PORT, () => {
-//app.listen(API_URL, () => {
+const PORT = process.env.PORT || 8080;
+
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: true,
+    credentials: true,
+  },
+});
+setAdminOrderIo(io);
+setupAdminOrderSocket(io);
+
+server.listen(PORT, () => {
   console.log(
-    `Server Running on ${process.env.DEV_MODE} mode on port ${PORT}`.bgCyan
-    //`Server Running on ${process.env.DEV_MODE} mode on port ${PORT}`.bgCyan
-      .white
+    `Server Running on ${process.env.DEV_MODE} mode on port ${PORT}`.bgCyan.white
   );
 });

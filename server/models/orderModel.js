@@ -45,11 +45,15 @@ const orderSchema = new mongoose.Schema(
     /** Stored filename under uploads/payment-proofs (server-only basename) */
     paymentScreenshotFilename: { type: String, default: "" },
     transactionId: { type: String, default: "" },
+    /** Same as transactionId / UTR; stored explicitly for APIs that expect this name. */
+    upiTransactionId: { type: String, default: "" },
     paymentAppName: {
       type: String,
-      enum: ["", "PhonePe", "Google Pay", "Paytm", "Other"],
+      enum: ["", "PhonePe", "Google Pay", "Paytm", "Bhim", "Other"],
       default: "",
     },
+    /** Public/servable URL path for payment proof image (mirrors paymentScreenshotURL). */
+    paymentScreenshotUrl: { type: String, default: "" },
     adminRemarks: { type: String, default: "" },
     paymentTimerExpiry: { type: Date },
     paymentProofSubmittedAt: { type: Date },
@@ -76,6 +80,12 @@ const orderSchema = new mongoose.Schema(
     totalAmount: {
       type: Number,
       required: true,
+    },
+
+    /** When false, order counts toward admin "new order" badge until an admin opens Orders. */
+    adminSeen: {
+      type: Boolean,
+      default: false,
     },
 
     status: {
