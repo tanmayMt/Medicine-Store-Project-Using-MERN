@@ -15,6 +15,8 @@ import CreateCategory from "./pages/Admin/CreateCategory";
 import CreateProduct from "./pages/Admin/CreateProduct";
 import Users from "./pages/Admin/Users";
 import Orders from "./pages/user/Orders";
+import QrCheckoutPage from "./pages/user/QrCheckoutPage";
+import OrderConfirmationPage from "./pages/user/OrderConfirmationPage";
 import Profile from "./pages/user/Profile";
 import AddressForm from "./pages/user/AddressForm";
 import DeliveryAddress from "./pages/user/DeliveryAddress";
@@ -26,6 +28,7 @@ import Categories from "./pages/Categories";
 import CategoryProduct from "./pages/CategoryProduct";
 import CartPage from "./pages/CartPage";
 import AdminOrders from "./pages/Admin/AdminOrders";
+import AdminQrPayments from "./pages/Admin/AdminQrPayments";
 import Reports from "./pages/Admin/Reports";
 import Discounts from "./pages/Admin/Discounts";
 import Integrations from "./pages/Admin/Integrations";
@@ -46,6 +49,8 @@ function App() {
         <Route path="/dashboard" element={<PrivateRoute />}>
           <Route path="user" element={<Dashboard />} />
           <Route path="user/orders" element={<Orders />} />
+          <Route path="user/checkout/qr/:orderId" element={<QrCheckoutPage />} />
+          <Route path="user/order-confirmation/:orderId" element={<OrderConfirmationPage />} />
           <Route path="user/profile" element={<Profile />} />
           <Route path="user/address-update" element={<AddressForm/>}/>
           <Route path="user/delivery-address" element={<DeliveryAddress/>}/>
@@ -58,6 +63,7 @@ function App() {
           <Route path="admin/products" element={<Products />} />
           <Route path="admin/users" element={<Users />} />
           <Route path="admin/orders" element={<AdminOrders />} />
+          <Route path="admin/qr-payments" element={<AdminQrPayments />} />
           <Route path="admin/reports" element={<Reports />} />
           <Route path="admin/discounts" element={<Discounts />} />
           <Route path="admin/integrations" element={<Integrations />} />

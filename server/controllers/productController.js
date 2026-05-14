@@ -439,6 +439,7 @@ export const brainTreePaymentController = async (req, res) => {
             buyer: req.user._id,
             paymentMode: "Online",
             paymentStatus: "Success",
+            paymentVerificationStatus: "NA",
             totalAmount: total,
             shippingAddress: shippingAddress || u.address,
             status: "Order Placed",
@@ -491,7 +492,7 @@ Team Medicure`,
   }
 };
 
-// CASH ON DELIVERY / QR CHECKOUT (same endpoint; paymentMode disambiguates)
+// CASH ON DELIVERY
 export const createCodOrderController = async (req, res) => {
   try {
     const { cart, shippingAddress, paymentMode } = req.body;
@@ -528,6 +529,7 @@ export const createCodOrderController = async (req, res) => {
         payment: { paymentMethod: paymentMode },
         paymentMode,
         paymentStatus: "Pending",
+        paymentVerificationStatus: "NA",
         buyer: req.user._id,
         totalAmount: total,
         shippingAddress: shippingAddress || u.address,
@@ -554,14 +556,8 @@ export const createCodOrderController = async (req, res) => {
       },
     });
 
-    const subject =
-      paymentMode === "qrcode"
-        ? "Order Placed (QR / UPI) - Medicure"
-        : "Order Placed via Cash on Delivery - Medicure";
-    const bodyIntro =
-      paymentMode === "qrcode"
-        ? `Your order has been placed in Medicure using QR / UPI checkout.\nTotal Amount: Rs. ${total}\nPayment verification is pending.`
-        : `Your Cash on Delivery order has been successfully placed in Medicure.\nTotal Amount to Pay on Delivery: Rs. ${total}`;
+    const subject = "Order Placed via Cash on Delivery - Medicure";
+    const bodyIntro = `Your Cash on Delivery order has been successfully placed in Medicure.\nTotal Amount to Pay on Delivery: Rs. ${total}`;
 
     var mailOptions = {
       from: process.env.SENDER_GMAIL,

@@ -17,6 +17,12 @@ import {
   updateProductController,
   createCodOrderController,
 } from "../controllers/productController.js";
+import {
+  qrOrderInitController,
+  getQrOrderByIdController,
+  qrOrderSubmitProofController,
+  getPaymentProofController,
+} from "../controllers/qrOrderController.js";
 import { isAdmin, requireSignIn } from "../middlewares/authMiddleware.js";
 import formidable from "express-formidable";
 
@@ -80,5 +86,16 @@ router.post("/braintree/payment", requireSignIn, brainTreePaymentController);
 
 //create cod order
 router.post("/cod-order", requireSignIn, createCodOrderController);
+
+// UPI / QR professional checkout
+router.post("/qr-order-init", requireSignIn, qrOrderInitController);
+router.get("/qr-order/:orderId", requireSignIn, getQrOrderByIdController);
+router.post(
+  "/qr-order/:orderId/submit-proof",
+  requireSignIn,
+  formidable(),
+  qrOrderSubmitProofController
+);
+router.get("/payment-proof/:orderId", requireSignIn, getPaymentProofController);
 
 export default router;

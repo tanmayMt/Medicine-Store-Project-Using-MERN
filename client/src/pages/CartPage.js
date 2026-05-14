@@ -17,7 +17,7 @@ import {
   cartTotalUnits,
 } from "../utils/cartStock";
 
-const OFFLINE_API_PAYMENT_MODES = ["COD", "qrcode"];
+const OFFLINE_API_PAYMENT_MODES = ["COD"];
 
 const CartPage = () => {
   const [auth] = useAuth();
@@ -152,10 +152,6 @@ const CartPage = () => {
       toast.error("Select Cash on Delivery to place this order");
       return;
     }
-    if (apiPaymentMode === "qrcode" && paymentMethod !== "qrcode") {
-      toast.error("Select Pay via QR Code to confirm this order");
-      return;
-    }
     try {
       setLoading(true);
       const selectedAddr = addresses.find((addr) => addr._id === selectedAddress);
@@ -168,15 +164,49 @@ const CartPage = () => {
       localStorage.removeItem("cart");
       setCart([]);
       navigate("/dashboard/user/orders");
-      toast.success(
-        apiPaymentMode === "COD"
-          ? "Order Placed Successfully (Cash on Delivery)"
-          : "Order placed. Complete payment — status is pending until verified."
-      );
+      toast.success("Order Placed Successfully (Cash on Delivery)");
     } catch (error) {
       console.log(error);
       setLoading(false);
       toast.error("Error Placing Order");
+    }
+  };
+
+  const handleQrCheckoutStart = async () => {
+    if (!selectedAddress) {
+      toast.error("Please select a delivery address");
+      return;
+    }
+    if (paymentMethod !== "QR") {
+      toast.error("Select UPI / QR payment first");
+      return;
+    }
+    try {
+      setLoading(true);
+      const selectedAddr = addresses.find((addr) => addr._id === selectedAddress);
+      const { data } = await axios.post(
+        `${process.env.REACT_APP_API_BASE_URL}/api/v1/product/qr-order-init`,
+        { cart, shippingAddress: selectedAddr },
+        { headers: { Authorization: `Bearer ${auth.token}` } }
+      );
+      const oid = data.orderId || data.order?._id;
+      if (!oid) {
+        throw new Error("Invalid response from server");
+      }
+      persistCart([]);
+      localStorage.removeItem("cart");
+      setCart([]);
+      toast.success("Order created — complete UPI payment on the next screen");
+      navigate(`/dashboard/user/checkout/qr/${oid}`);
+    } catch (error) {
+      console.log(error);
+      const msg =
+        error.response?.data?.errors?.join?.(", ") ||
+        error.response?.data?.message ||
+        "Could not start UPI checkout";
+      toast.error(msg);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -436,14 +466,14 @@ const CartPage = () => {
                         <span className="font-medium text-gray-700">Cash on Delivery</span>
                       </label>
 
-                      <label className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-all ${paymentMethod === "qrcode" ? "border-blue-500 bg-blue-50/50 ring-1 ring-blue-500" : "border-gray-200 hover:border-gray-300"}`}>
+                      <label className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-all ${paymentMethod === "QR" ? "border-blue-500 bg-blue-50/50 ring-1 ring-blue-500" : "border-gray-200 hover:border-gray-300"}`}>
                         <input
-                          type="radio" name="payment" value="qrcode"
-                          checked={paymentMethod === "qrcode"}
+                          type="radio" name="payment" value="QR"
+                          checked={paymentMethod === "QR"}
                           onChange={(e) => setPaymentMethod(e.target.value)}
                           className="text-blue-600 focus:ring-blue-500"
                         />
-                        <span className="font-medium text-gray-700">Pay via QR Code</span>
+                        <span className="font-medium text-gray-700">UPI / QR (pay &amp; verify)</span>
                       </label>
                     </div>
 
@@ -476,36 +506,22 @@ const CartPage = () => {
                           <span className="flex items-center justify-center gap-2"><span className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span> Placing Order...</span>
                         ) : "Place Order"}
                       </button>
-                    ) : paymentMethod === "qrcode" ? (
-                      (() => {
-                        let totalAmount = 0;
-                        cart?.forEach((item) => {
-                          const q = getCartLineQty(item);
-                          totalAmount += item.price * q;
-                        });
-                        const upiLink = `upi://pay?pa=8768006557@ptyes&pn=Tanmay%20Samanta&am=${totalAmount}&cu=INR`;
-                        const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiLink)}`;
-
-                        return (
-                          <div className="animate-fade-in text-center p-4 border border-gray-200 rounded-lg bg-gray-50 flex flex-col items-center">
-                            <p className="text-sm font-bold text-gray-800 mb-1">Pay to: Tanmay Samanta</p>
-                            <p className="text-sm text-gray-700 font-medium mb-3">Scan this QR to pay <span className="font-bold text-green-600">₹{totalAmount}</span></p>
-                            <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 mb-4 flex justify-center w-full max-w-[200px]">
-                              <img src={qrApiUrl} alt="Payment QR Code" className="w-full h-auto object-contain rounded-md" />
-                            </div>
-                            <p className="text-xs text-gray-500 mb-4 px-2 tracking-wide font-medium">UPI ID: 8768006557@ptyes</p>
-                            <button
-                              className="w-full bg-orange-600 text-white py-3.5 text-base font-bold uppercase rounded-lg shadow hover:bg-orange-700 hover:shadow-lg transition-all transform active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
-                              onClick={() => handleOfflineOrder("qrcode")}
-                              disabled={loading}
-                            >
-                              {loading ? (
-                                <span className="flex items-center justify-center gap-2"><span className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span> Placing Order...</span>
-                              ) : "I have completed payment"}
-                            </button>
-                          </div>
-                        );
-                      })()
+                    ) : paymentMethod === "QR" ? (
+                      <div className="animate-fade-in space-y-3">
+                        <p className="text-sm text-gray-600">
+                          You will be taken to a secure page to scan the QR, pay, and upload your UPI reference and screenshot.
+                        </p>
+                        <button
+                          type="button"
+                          className="w-full bg-orange-600 text-white py-3.5 text-base font-bold uppercase rounded-lg shadow hover:bg-orange-700 hover:shadow-lg transition-all transform active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
+                          onClick={handleQrCheckoutStart}
+                          disabled={loading}
+                        >
+                          {loading ? (
+                            <span className="flex items-center justify-center gap-2"><span className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span> Starting…</span>
+                          ) : "Continue to UPI / QR payment"}
+                        </button>
+                      </div>
                     ) : null}
                   </div>
                 ) : (

@@ -1,6 +1,17 @@
 import mongoose from "mongoose";
 import { PAYMENT_MODES } from "../constants/paymentModes.js";
 
+const verificationHistorySchema = new mongoose.Schema(
+  {
+    actor: { type: mongoose.ObjectId, ref: "users" },
+    actorName: { type: String, default: "" },
+    action: { type: String, required: true },
+    note: { type: String, default: "" },
+    at: { type: Date, default: Date.now },
+  },
+  { _id: false }
+);
+
 const orderSchema = new mongoose.Schema(
   {
     products: [
@@ -9,17 +20,7 @@ const orderSchema = new mongoose.Schema(
         ref: "Products",
       },
     ],
-    // Ideally, for a pro app, products should look like this (optional upgrade):
-    /*
-    products: [
-      {
-        product: { type: mongoose.ObjectId, ref: "Products" },
-        count: { type: Number, default: 1 },
-        price: { type: Number } // Save price at time of purchase
-      }
-    ],
-    */
-    payment: {}, // Stores the Braintree response or your COD object
+    payment: {},
 
     paymentMode: {
       type: String,
@@ -29,8 +30,37 @@ const orderSchema = new mongoose.Schema(
 
     paymentStatus: {
       type: String,
-      enum: ["Success", "Pending", "Failed"],
+      enum: ["Success", "Pending", "Failed", "Paid"],
       default: "Pending",
+    },
+
+    /** UPI / QR manual verification lifecycle */
+    paymentVerificationStatus: {
+      type: String,
+      enum: ["NA", "Pending", "Verified", "Rejected", "Timed_Out"],
+      default: "NA",
+    },
+
+    paymentScreenshotURL: { type: String, default: "" },
+    /** Stored filename under uploads/payment-proofs (server-only basename) */
+    paymentScreenshotFilename: { type: String, default: "" },
+    transactionId: { type: String, default: "" },
+    paymentAppName: {
+      type: String,
+      enum: ["", "PhonePe", "Google Pay", "Paytm", "Other"],
+      default: "",
+    },
+    adminRemarks: { type: String, default: "" },
+    paymentTimerExpiry: { type: Date },
+    paymentProofSubmittedAt: { type: Date },
+
+    orderSubtotal: { type: Number },
+    deliveryCharge: { type: Number, default: 0 },
+    discountAmount: { type: Number, default: 0 },
+
+    verificationHistory: {
+      type: [verificationHistorySchema],
+      default: [],
     },
 
     buyer: {
@@ -38,13 +68,11 @@ const orderSchema = new mongoose.Schema(
       ref: "users",
     },
 
-    // NEW: Save the address specifically for this order
     shippingAddress: {
-      type: Object, // Or String, depending on how you store address
+      type: Object,
       required: true,
     },
 
-    // NEW: Save the final total price
     totalAmount: {
       type: Number,
       required: true,
@@ -60,7 +88,7 @@ const orderSchema = new mongoose.Schema(
         "Shipped",
         "Delivered",
         "Cancelled",
-        "Returned"
+        "Returned",
       ],
     },
   },

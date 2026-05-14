@@ -18,6 +18,10 @@ import {
   deleteDeliveryAddressController,
   setDefaultAddressController,
 } from "../controllers/authController.js";
+import {
+  listQrPendingVerificationController,
+  verifyQrPaymentAdminController,
+} from "../controllers/qrOrderController.js";
 import { isAdmin, requireSignIn } from "../middlewares/authMiddleware.js";
 
 //router object
@@ -73,6 +77,19 @@ router.put(
   orderStatusController
 );
 
+// QR / UPI payment verification (admin)
+router.get(
+  "/orders/qr-pending-verification",
+  requireSignIn,
+  isAdmin,
+  listQrPendingVerificationController
+);
+router.put(
+  "/orders/verify-qr/:orderId",
+  requireSignIn,
+  isAdmin,
+  verifyQrPaymentAdminController
+);
 
 //all users
 router.get("/users", requireSignIn, isAdmin, getAllUsersController);

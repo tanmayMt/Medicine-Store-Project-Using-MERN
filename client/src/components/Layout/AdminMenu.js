@@ -14,7 +14,8 @@ import {
   FiSettings,
   FiMenu,
   FiX,
-  FiLogOut
+  FiLogOut,
+  FiImage
 } from "react-icons/fi";
 
 const AdminMenu = () => {
@@ -131,6 +132,21 @@ const AdminMenu = () => {
           >
             <FiShoppingCart className="w-5 h-5" />
             <span>Orders</span>
+          </NavLink>
+
+          <NavLink
+            to="/dashboard/admin/qr-payments"
+            onClick={closeMobileMenu}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 mb-2 rounded-lg transition-colors ${
+                isActive
+                  ? "bg-orange-500 text-white"
+                  : "text-gray-300 hover:bg-gray-700"
+              }`
+            }
+          >
+            <FiImage className="w-5 h-5" />
+            <span>UPI / QR verification</span>
           </NavLink>
 
           <NavLink
