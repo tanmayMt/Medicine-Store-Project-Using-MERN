@@ -7,7 +7,17 @@ import DropIn from "braintree-web-drop-in-react";
 import axios from "axios";
 import toast from "react-hot-toast";
 // FIXED: Added FiShoppingCart and FiPhone to the import list
-import { FiMapPin, FiTruck, FiShield, FiCreditCard, FiTrash2, FiPlus, FiShoppingCart, FiPhone, FiSmartphone } from "react-icons/fi";
+import { FiMapPin, FiTruck, FiShield, FiCreditCard, FiTrash2, FiPlus, FiShoppingCart, FiPhone, FiMinus } from "react-icons/fi";
+import {
+  getStock,
+  getCartLineQty,
+  incrementLineQty,
+  normalizeCartLines,
+  cartSubtotalAmount,
+  cartTotalUnits,
+} from "../utils/cartStock";
+
+const OFFLINE_API_PAYMENT_MODES = ["COD", "qrcode"];
 
 const CartPage = () => {
   const [auth] = useAuth();
@@ -21,13 +31,10 @@ const CartPage = () => {
   const [loadingAddresses, setLoadingAddresses] = useState(false);
   const navigate = useNavigate();
 
-  // Total price calculation
+  // Total price calculation (uses line qty × price)
   const totalPrice = () => {
     try {
-      let total = 0;
-      cart?.forEach((item) => {
-        total = total + item.price;
-      });
+      const total = cartSubtotalAmount(cart);
       return total.toLocaleString("en-IN", {
         style: "currency",
         currency: "INR",
@@ -37,18 +44,26 @@ const CartPage = () => {
     }
   };
 
+  const persistCart = (next) => {
+    const normalized = normalizeCartLines(next);
+    setCart(normalized);
+    localStorage.setItem("cart", JSON.stringify(normalized));
+  };
+
   // Delete item
   const removeCartItem = (pid) => {
     try {
-      let myCart = [...cart];
-      let index = myCart.findIndex((item) => item._id === pid);
-      myCart.splice(index, 1);
+      const myCart = cart.filter((item) => item._id !== pid);
       toast.success("Item is Removed from Cart");
-      setCart(myCart);
-      localStorage.setItem("cart", JSON.stringify(myCart));
+      persistCart(myCart);
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const changeLineQty = (pid, delta) => {
+    const next = incrementLineQty(cart, pid, delta);
+    persistCart(next);
   };
 
   // Get payment gateway token
@@ -98,6 +113,10 @@ const CartPage = () => {
       toast.error("Please select a delivery address");
       return;
     }
+    if (paymentMethod !== "online") {
+      toast.error("Invalid payment method for card checkout");
+      return;
+    }
     try {
       setLoading(true);
       const { nonce } = await instance.requestPaymentMethod();
@@ -106,6 +125,7 @@ const CartPage = () => {
         nonce,
         cart,
         shippingAddress: selectedAddr,
+        paymentMode: "Online",
       });
       setLoading(false);
       localStorage.removeItem("cart");
@@ -119,9 +139,21 @@ const CartPage = () => {
     }
   };
 
-  const handleCOD = async () => {
+  const handleOfflineOrder = async (apiPaymentMode) => {
     if (!selectedAddress) {
       toast.error("Please select a delivery address");
+      return;
+    }
+    if (!OFFLINE_API_PAYMENT_MODES.includes(apiPaymentMode)) {
+      toast.error("Invalid payment method");
+      return;
+    }
+    if (apiPaymentMode === "COD" && paymentMethod !== "cod") {
+      toast.error("Select Cash on Delivery to place this order");
+      return;
+    }
+    if (apiPaymentMode === "qrcode" && paymentMethod !== "qrcode") {
+      toast.error("Select Pay via QR Code to confirm this order");
       return;
     }
     try {
@@ -130,44 +162,23 @@ const CartPage = () => {
       await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/v1/product/cod-order`, {
         cart,
         shippingAddress: selectedAddr,
+        paymentMode: apiPaymentMode,
       });
       setLoading(false);
       localStorage.removeItem("cart");
       setCart([]);
       navigate("/dashboard/user/orders");
-      toast.success("Order Placed Successfully (Cash on Delivery)");
+      toast.success(
+        apiPaymentMode === "COD"
+          ? "Order Placed Successfully (Cash on Delivery)"
+          : "Order placed. Complete payment — status is pending until verified."
+      );
     } catch (error) {
       console.log(error);
       setLoading(false);
       toast.error("Error Placing Order");
     }
   };
-
-  // eslint-disable-next-line no-unused-vars
-  const handleUPI = async () => {
-    if (!selectedAddress) {
-      toast.error("Please select a delivery address");
-      return;
-    }
-    try {
-      setLoading(true);
-      const selectedAddr = addresses.find((addr) => addr._id === selectedAddress);
-      await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/v1/product/upi-order`, {
-        cart,
-        shippingAddress: selectedAddr,
-      });
-      setLoading(false);
-      localStorage.removeItem("cart");
-      setCart([]);
-      navigate("/dashboard/user/orders");
-      toast.success("Order Placed Successfully! Please complete UPI payment.");
-    } catch (error) {
-      console.log(error);
-      setLoading(false);
-      toast.error("Error Placing Order");
-    }
-  };
-
 
   return (
     <Layout title={"Cart - Medicure Checkout"}>
@@ -272,7 +283,7 @@ const CartPage = () => {
                 <div className="bg-gray-50 px-6 py-4 border-b border-gray-100">
                   <h3 className="font-semibold text-gray-800 text-lg flex items-center gap-2">
                     <div className="bg-orange-100 p-1.5 rounded-full text-orange-600"><FiShoppingCart size={18} /></div>
-                    Your Cart <span className="text-gray-500 font-normal text-base">({cart?.length} items)</span>
+                    Your Cart <span className="text-gray-500 font-normal text-base">({cartTotalUnits(cart)} items)</span>
                   </h3>
                 </div>
 
@@ -293,17 +304,50 @@ const CartPage = () => {
                             <p className="text-sm text-gray-500 mt-1 line-clamp-2">{p.description}</p>
                           </div>
 
-                          <div className="flex justify-between items-end mt-4">
-                            <div className="flex items-baseline gap-2">
+                          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mt-4">
+                            <div>
+                              <p className="text-xs text-gray-500 mb-1">
+                                Stock: {getStock(p)} · Qty: {getCartLineQty(p)}
+                              </p>
+                              <div className="inline-flex items-center border border-gray-300 rounded-md overflow-hidden">
+                                <button
+                                  type="button"
+                                  className="px-2 py-1.5 bg-gray-50 hover:bg-gray-100 disabled:opacity-40"
+                                  onClick={() => changeLineQty(p._id, -1)}
+                                  disabled={getCartLineQty(p) <= 1}
+                                  aria-label="Decrease quantity"
+                                >
+                                  <FiMinus className="w-4 h-4" />
+                                </button>
+                                <span className="px-4 py-1.5 min-w-[2.5rem] text-center text-sm font-semibold tabular-nums">
+                                  {getCartLineQty(p)}
+                                </span>
+                                <button
+                                  type="button"
+                                  className="px-2 py-1.5 bg-gray-50 hover:bg-gray-100 disabled:opacity-40"
+                                  onClick={() => changeLineQty(p._id, 1)}
+                                  disabled={getCartLineQty(p) >= getStock(p)}
+                                  aria-label="Increase quantity"
+                                >
+                                  <FiPlus className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </div>
+                            <div className="flex items-baseline gap-2 flex-wrap">
                               <span className="text-xl font-bold text-gray-900">
-                                {p.price.toLocaleString("en-US", { style: "currency", currency: "INR" })}
+                                {(p.price * getCartLineQty(p)).toLocaleString("en-US", {
+                                  style: "currency",
+                                  currency: "INR",
+                                })}
                               </span>
-                              <span className="text-sm text-gray-400 line-through">₹{(p.price * 1.2).toFixed(2)}</span>
+                              <span className="text-sm text-gray-400 line-through">
+                                ₹{(p.price * 1.2 * getCartLineQty(p)).toFixed(2)}
+                              </span>
                               <span className="text-xs font-bold text-green-600">20% OFF</span>
                             </div>
 
                             <button
-                              className="text-red-500 hover:text-red-700 text-sm font-medium flex items-center gap-1 transition-colors group"
+                              className="text-red-500 hover:text-red-700 text-sm font-medium flex items-center gap-1 transition-colors group sm:self-end"
                               onClick={() => removeCartItem(p._id)}
                             >
                               <FiTrash2 className="group-hover:scale-110 transition-transform" /> Remove
@@ -341,7 +385,7 @@ const CartPage = () => {
 
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between text-gray-600">
-                    <span>Price ({cart?.length} items)</span>
+                    <span>Price ({cartTotalUnits(cart)} items)</span>
                     <span className="font-medium text-gray-900">{totalPrice()}</span>
                   </div>
                   <div className="flex justify-between text-gray-600">
@@ -380,17 +424,6 @@ const CartPage = () => {
                           className="text-blue-600 focus:ring-blue-500"
                         />
                         <span className="font-medium text-gray-700">Pay Online (Card/Wallet)</span>
-                      </label>
-
-                      <label className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-all ${paymentMethod === "upi" ? "border-blue-500 bg-blue-50/50 ring-1 ring-blue-500" : "border-gray-200 hover:border-gray-300"}`}>
-                        <input
-                          type="radio" name="payment" value="upi"
-                          checked={paymentMethod === "upi"}
-                          onChange={(e) => setPaymentMethod(e.target.value)}
-                          className="text-blue-600 focus:ring-blue-500"
-                        />
-                        <FiSmartphone className="text-blue-600" size={20} />
-                        <span className="font-medium text-gray-700">UPI Payment (Scan QR Code)</span>
                       </label>
 
                       <label className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-all ${paymentMethod === "cod" ? "border-blue-500 bg-blue-50/50 ring-1 ring-blue-500" : "border-gray-200 hover:border-gray-300"}`}>
@@ -436,7 +469,7 @@ const CartPage = () => {
                     ) : paymentMethod === "cod" ? (
                       <button
                         className="w-full bg-orange-600 text-white py-3.5 text-base font-bold uppercase rounded-lg shadow hover:bg-orange-700 hover:shadow-lg transition-all transform active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
-                        onClick={handleCOD}
+                        onClick={() => handleOfflineOrder("COD")}
                         disabled={loading}
                       >
                         {loading ? (
@@ -446,7 +479,10 @@ const CartPage = () => {
                     ) : paymentMethod === "qrcode" ? (
                       (() => {
                         let totalAmount = 0;
-                        cart?.forEach((item) => { totalAmount += item.price; });
+                        cart?.forEach((item) => {
+                          const q = getCartLineQty(item);
+                          totalAmount += item.price * q;
+                        });
                         const upiLink = `upi://pay?pa=8768006557@ptyes&pn=Tanmay%20Samanta&am=${totalAmount}&cu=INR`;
                         const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiLink)}`;
 
@@ -460,7 +496,7 @@ const CartPage = () => {
                             <p className="text-xs text-gray-500 mb-4 px-2 tracking-wide font-medium">UPI ID: 8768006557@ptyes</p>
                             <button
                               className="w-full bg-orange-600 text-white py-3.5 text-base font-bold uppercase rounded-lg shadow hover:bg-orange-700 hover:shadow-lg transition-all transform active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
-                              onClick={handleCOD}
+                              onClick={() => handleOfflineOrder("qrcode")}
                               disabled={loading}
                             >
                               {loading ? (

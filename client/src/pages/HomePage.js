@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import Layout from "./../components/Layout/Layout";
 import { AiOutlineReload } from "react-icons/ai";
 import { FiShoppingCart } from "react-icons/fi";
+import { getStock, addToCartWithStock } from "../utils/cartStock";
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -241,6 +242,9 @@ const HomePage = () => {
                           <span className="text-2xl font-extrabold text-green-400 tracking-tight drop-shadow-sm">
                             ₹ {p.price.toLocaleString("en-US")}
                           </span>
+                          <p className="text-xs text-gray-400 mt-1">
+                            {getStock(p) > 0 ? `${getStock(p)} in stock` : "Out of stock"}
+                          </p>
                         </div>
 
                         {/* Button Block */}
@@ -254,18 +258,22 @@ const HomePage = () => {
                             shadow-md hover:shadow-blue-500/30 
                             uppercase tracking-wide
                             transform active:scale-95
+                            disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600
                           "
+                          disabled={getStock(p) <= 0}
                           onClick={(e) => {
                             e.stopPropagation();
-                            setCart([...cart, p]);
-                            localStorage.setItem(
-                              "cart",
-                              JSON.stringify([...cart, p])
-                            );
+                            const { cart: next, ok, message } = addToCartWithStock(cart, p, 1);
+                            if (!ok) {
+                              toast.error(message || "Could not add to cart");
+                              return;
+                            }
+                            setCart(next);
+                            localStorage.setItem("cart", JSON.stringify(next));
                             toast.success("Item Added to cart");
                           }}
                         >
-                          ADD TO CART
+                          {getStock(p) <= 0 ? "OUT OF STOCK" : "ADD TO CART"}
                         </button>
                       </div>
                     </div>

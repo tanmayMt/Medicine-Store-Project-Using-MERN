@@ -23,6 +23,7 @@ const productSchema = new mongoose.Schema(
       ref: "Category",
       required: true,
     },
+    /** Units available in inventory (stock on hand). */
     quantity: {
       type: Number,
       required: true,
@@ -35,7 +36,11 @@ const productSchema = new mongoose.Schema(
       type: Boolean,
     },
   },
-  { timestamps: true }
+  { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
+
+productSchema.virtual("stock_quantity").get(function () {
+  return this.quantity;
+});
 
 export default mongoose.model("Products", productSchema);

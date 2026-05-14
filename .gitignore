@@ -1,6 +1,6 @@
 .env
-node_modules
 client/.env
+node_modules
 .vercel
 ProjectDetails/Let's_Login.txt
 ProjectDetails/Let's_Login.txt

@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import SearchInput from "../Form/SearchInput";
 import useCategory from "../../hooks/useCategory";
 import { useCart } from "../../context/cart";
+import { cartTotalUnits } from "../../utils/cartStock";
 import { FiUser, FiMenu, FiX, FiChevronDown, FiLogOut } from "react-icons/fi";
 
 const Header = () => {
@@ -161,9 +162,9 @@ const Header = () => {
 
                 <NavLink to="/cart" className={navItemClasses}>
                   Cart
-                  {cart?.length > 0 && (
+                  {cartTotalUnits(cart) > 0 && (
                     <span className="ml-2 bg-blue-600 text-white text-[10px] font-bold h-5 w-5 flex items-center justify-center rounded-full">
-                      {cart.length}
+                      {cartTotalUnits(cart)}
                     </span>
                   )}
                 </NavLink>
@@ -318,7 +319,7 @@ const Header = () => {
               onClick={() => setMobileMenuOpen(false)}
               className="text-base font-semibold text-gray-800 hover:text-blue-600"
             >
-              Cart {cart?.length > 0 && `(${cart.length})`}
+              Cart {cartTotalUnits(cart) > 0 && `(${cartTotalUnits(cart)})`}
             </NavLink>
           </div>
         )}

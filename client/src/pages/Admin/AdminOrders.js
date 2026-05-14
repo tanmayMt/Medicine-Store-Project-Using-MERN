@@ -6,6 +6,7 @@ import { useAuth } from "../../context/auth";
 import moment from "moment";
 import { Helmet } from "react-helmet";
 import { FiSearch, FiPackage, FiUser, FiDollarSign, FiCalendar, FiMapPin, FiGrid, FiList } from "react-icons/fi";
+import { getPaymentModeLabel, getPaymentStatusMeta } from "../../utils/orderDisplay";
 
 const AdminOrders = () => {
   const [status] = useState([
@@ -118,21 +119,6 @@ const AdminOrders = () => {
     if (address.pincode) parts.push(address.pincode);
 
     return parts.length > 0 ? parts.join(', ') : "No address provided";
-  };
-
-
-
-  // Helper function to map payment mode to desired display UI strings
-  const getPaymentModeDisplay = (mode) => {
-    if (!mode) return "N/A";
-    switch (mode.toLowerCase()) {
-      case 'online': return 'Online';
-      case 'cod': return 'COD';
-      case 'upi': return 'UPI';
-      case 'qr':
-      case 'qrcode': return 'QR';
-      default: return mode;
-    }
   };
 
   return (
@@ -316,6 +302,7 @@ const AdminOrders = () => {
                 {filteredOrders.map((order) => {
                   const orderTotal = order.totalAmount ||
                     (order.products?.reduce((sum, p) => sum + (p.price || 0), 0) || 0);
+                  const payMeta = getPaymentStatusMeta(order);
 
                   return (
                     <div key={order._id} className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
@@ -344,7 +331,7 @@ const AdminOrders = () => {
                               </div>
                               <div className="flex items-center gap-2 text-gray-600">
                                 <FiMapPin className="w-4 h-4" />
-                                <span><strong>Payment:</strong> {getPaymentModeDisplay(order.paymentMode)}</span>
+                                <span><strong>Payment:</strong> {getPaymentModeLabel(order.paymentMode)}</span>
                               </div>
                             </div>
                           </div>
@@ -449,15 +436,14 @@ const AdminOrders = () => {
                         <div className="mt-6 pt-6 border-t border-gray-200">
                           <div className="flex items-center justify-between">
                             <span className="text-sm text-gray-600">Payment Status:</span>
-                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${order.payment?.success ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-                              }`}>
-                              {order.payment?.success ? "Success" : "Failed"}
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${payMeta.badgeClass}`}>
+                              {payMeta.label}
                             </span>
                           </div>
                           {order.paymentMode && (
                             <div className="flex items-center justify-between mt-2">
                               <span className="text-sm text-gray-600">Payment Mode:</span>
-                              <span className="text-sm font-medium text-gray-800">{getPaymentModeDisplay(order.paymentMode)}</span>
+                              <span className="text-sm font-medium text-gray-800">{getPaymentModeLabel(order.paymentMode)}</span>
                             </div>
                           )}
                         </div>

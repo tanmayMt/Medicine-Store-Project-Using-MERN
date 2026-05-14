@@ -19,6 +19,7 @@ import {
 } from "react-icons/fi";
 // Import Rupee Icon from FontAwesome or similar package since Feather (fi) doesn't have it
 import { FaRupeeSign } from "react-icons/fa";
+import { getPaymentModeLabel, getPaymentStatusMeta } from "../../utils/orderDisplay";
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
@@ -174,6 +175,7 @@ const Orders = () => {
                   {orders?.map((o, i) => {
                     const statusConfig = getStatusConfig(o?.status);
                     const orderTotal = o?.products?.reduce((acc, item) => acc + (item.price || 0), 0) || 0;
+                    const payMeta = getPaymentStatusMeta(o);
                     
                     return (
                       <div key={i} className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300">
@@ -218,7 +220,7 @@ const Orders = () => {
                         </div>
 
                         {/* Order Details Grid */}
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
                           <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
                             <FiCalendar className="w-5 h-5 text-gray-400" />
                             <div>
@@ -245,6 +247,24 @@ const Orders = () => {
                             <div>
                               <p className="text-xs text-gray-500 uppercase font-semibold tracking-wide mb-1">Items</p>
                               <p className="text-sm font-medium text-gray-900">{o?.products?.length} {o?.products?.length === 1 ? 'Product' : 'Products'}</p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                            <FiShoppingBag className="w-5 h-5 text-gray-400" />
+                            <div>
+                              <p className="text-xs text-gray-500 uppercase font-semibold tracking-wide mb-1">Payment</p>
+                              <p className="text-sm font-medium text-gray-900">{getPaymentModeLabel(o?.paymentMode)}</p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                            <FiClock className="w-5 h-5 text-gray-400" />
+                            <div>
+                              <p className="text-xs text-gray-500 uppercase font-semibold tracking-wide mb-1">Payment status</p>
+                              <span className={`inline-flex mt-0.5 px-2 py-0.5 rounded-full text-xs font-semibold ${payMeta.badgeClass}`}>
+                                {payMeta.label}
+                              </span>
                             </div>
                           </div>
                         </div>

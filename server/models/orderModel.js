@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { PAYMENT_MODES } from "../constants/paymentModes.js";
 
 const orderSchema = new mongoose.Schema(
   {
@@ -20,11 +21,16 @@ const orderSchema = new mongoose.Schema(
     */
     payment: {}, // Stores the Braintree response or your COD object
 
-    // NEW: To distinguish between COD and Card easily
     paymentMode: {
       type: String,
-      enum: ["Online", "COD", "qrcode", "upi"],
+      enum: PAYMENT_MODES,
       default: "Online",
+    },
+
+    paymentStatus: {
+      type: String,
+      enum: ["Success", "Pending", "Failed"],
+      default: "Pending",
     },
 
     buyer: {

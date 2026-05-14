@@ -8,6 +8,16 @@ import braintree from "braintree";
 import dotenv from "dotenv";
 import userModel from "../models/userModel.js";
 import nodemailer from "nodemailer";
+import {
+  assertOnlinePaymentMode,
+  isOfflineCheckoutPaymentMode,
+} from "../constants/paymentModes.js";
+import {
+  validateCartAgainstInventory,
+  decrementInventoryForCart,
+  orderProductIdsFromCart,
+  computeCartTotal,
+} from "../utils/cartStock.js";
 
 dotenv.config();
 
@@ -373,13 +383,34 @@ export const braintreeTokenController = async (req, res) => {
 //payment
 export const brainTreePaymentController = async (req, res) => {
   try {
-    const u = await userModel.findById({_id:req.user._id});
-    const { nonce, cart, shippingAddress } = req.body;
-    let total = 0;
-    cart.map((i) => {
-      total += i.price;
-    });
-    let newTransaction = gateway.transaction.sale(
+    const u = await userModel.findById({ _id: req.user._id });
+    const { nonce, cart, shippingAddress, paymentMode } = req.body;
+
+    if (!assertOnlinePaymentMode(paymentMode)) {
+      return res.status(400).send({
+        success: false,
+        message: "Invalid paymentMode for online checkout",
+      });
+    }
+    if (!nonce || !Array.isArray(cart) || cart.length === 0) {
+      return res.status(400).send({
+        success: false,
+        message: "Invalid order payload",
+      });
+    }
+
+    const stockCheck = await validateCartAgainstInventory(cart);
+    if (!stockCheck.ok) {
+      return res.status(400).send({
+        success: false,
+        message: "Insufficient stock for one or more items",
+        errors: stockCheck.errors,
+      });
+    }
+
+    const total = computeCartTotal(cart);
+
+    gateway.transaction.sale(
       {
         amount: total,
         paymentMethodNonce: nonce,
@@ -387,84 +418,132 @@ export const brainTreePaymentController = async (req, res) => {
           submitForSettlement: true,
         },
       },
-      function (error, result) {
-        if (result) {
-          const order = new orderModel({
-            products: cart,
+      async function (error, result) {
+        if (error) {
+          return res.status(500).send({
+            success: false,
+            message: error.message || "Payment gateway error",
+          });
+        }
+        if (!result || !result.success) {
+          return res.status(400).send({
+            success: false,
+            message: result?.message || "Payment declined",
+          });
+        }
+
+        try {
+          await new orderModel({
+            products: orderProductIdsFromCart(cart),
             payment: result,
             buyer: req.user._id,
             paymentMode: "Online",
+            paymentStatus: "Success",
             totalAmount: total,
             shippingAddress: shippingAddress || u.address,
             status: "Order Placed",
           }).save();
-          
-          //Order placing email//send email
-var transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.SENDER_GMAIL,
-    pass: process.env.SENDER_GMAIL_PASSCODE,
-  }
-});
+          try {
+            await decrementInventoryForCart(cart);
+          } catch (invErr) {
+            console.error("Inventory decrement failed after paid order", invErr);
+          }
+        } catch (saveErr) {
+          console.log(saveErr);
+          return res.status(500).send({
+            success: false,
+            message: "Could not save order",
+          });
+        }
 
-var mailOptions = {
-  from: process.env.SENDER_GMAIL,
-  to: u.email,
-  subject: 'Thank you for placing order in Medicure',
-  text: `Hi ${u.name},
+        const transporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            user: process.env.SENDER_GMAIL,
+            pass: process.env.SENDER_GMAIL_PASSCODE,
+          },
+        });
+
+        const mailOptions = {
+          from: process.env.SENDER_GMAIL,
+          to: u.email,
+          subject: "Thank you for placing order in Medicure",
+          text: `Hi ${u.name},
     Welcome to Medicure, your one-stop point to buy all medicines. We hope you a very good health. Your order has been successfully placed in Medicure. We will try our best to deliver it as fast as possible. Further details about your order will be emailed to you. Stay tuned.
 Thank You,
 Team Medicure`,
-  // html: '<h1>Hi Smartherd</h1><p>Your Messsage</p>'        
-};
+        };
 
-transporter.sendMail(mailOptions, function (error, info) {
-  if (error) {
-    console.log(error);
-  } else {
-    res.json({ ok: true });
-  }
-});
-//Email code
-          
-        } else {
-          res.status(500).send(error);
-        }
+        transporter.sendMail(mailOptions, function (mailErr) {
+          if (mailErr) {
+            console.log(mailErr);
+          }
+          return res.status(200).json({ ok: true, success: true });
+        });
       }
     );
   } catch (error) {
     console.log(error);
+    return res.status(500).send({
+      success: false,
+      message: "Error processing payment",
+    });
   }
 };
 
-// ... imports (userModel, orderModel, nodemailer, etc)
-
-// CASH ON DELIVERY CONTROLLER
+// CASH ON DELIVERY / QR CHECKOUT (same endpoint; paymentMode disambiguates)
 export const createCodOrderController = async (req, res) => {
   try {
-    const { cart, shippingAddress } = req.body;
+    const { cart, shippingAddress, paymentMode } = req.body;
     const u = await userModel.findById({ _id: req.user._id });
 
-    // Calculate total (optional, but good for verification)
-    let total = 0;
-    cart.map((i) => {
-      total += i.price;
-    });
+    if (!isOfflineCheckoutPaymentMode(paymentMode)) {
+      return res.status(400).send({
+        success: false,
+        message: "Invalid paymentMode for this checkout",
+      });
+    }
+    if (!Array.isArray(cart) || cart.length === 0) {
+      return res.status(400).send({
+        success: false,
+        message: "Invalid order payload",
+      });
+    }
 
-    // Create Order with COD status
-    const order = await new orderModel({
-      products: cart,
-      payment: {
-        success: true,
-        paymentMethod: "COD",
-      },
-      paymentMode: "COD",
-      buyer: req.user._id,
-      totalAmount: total,
-      shippingAddress: shippingAddress || u.address,
-      status: "Order Placed",
-    }).save();
+    const stockCheck = await validateCartAgainstInventory(cart);
+    if (!stockCheck.ok) {
+      return res.status(400).send({
+        success: false,
+        message: "Insufficient stock for one or more items",
+        errors: stockCheck.errors,
+      });
+    }
+
+    const total = computeCartTotal(cart);
+
+    let order;
+    try {
+      order = await new orderModel({
+        products: orderProductIdsFromCart(cart),
+        payment: { paymentMethod: paymentMode },
+        paymentMode,
+        paymentStatus: "Pending",
+        buyer: req.user._id,
+        totalAmount: total,
+        shippingAddress: shippingAddress || u.address,
+        status: "Order Placed",
+      }).save();
+      await decrementInventoryForCart(cart);
+    } catch (err) {
+      console.log(err);
+      if (order?._id) {
+        await orderModel.findByIdAndDelete(order._id);
+      }
+      return res.status(400).send({
+        success: false,
+        message: err?.message || "Could not complete order (stock or server error)",
+      });
+    }
 
     // Send Email
     var transporter = nodemailer.createTransport({
@@ -475,14 +554,22 @@ export const createCodOrderController = async (req, res) => {
       },
     });
 
+    const subject =
+      paymentMode === "qrcode"
+        ? "Order Placed (QR / UPI) - Medicure"
+        : "Order Placed via Cash on Delivery - Medicure";
+    const bodyIntro =
+      paymentMode === "qrcode"
+        ? `Your order has been placed in Medicure using QR / UPI checkout.\nTotal Amount: Rs. ${total}\nPayment verification is pending.`
+        : `Your Cash on Delivery order has been successfully placed in Medicure.\nTotal Amount to Pay on Delivery: Rs. ${total}`;
+
     var mailOptions = {
       from: process.env.SENDER_GMAIL,
       to: u.email,
-      subject: "Order Placed via Cash on Delivery - Medicure",
+      subject,
       text: `Hi ${u.name},
       
-      Your Cash on Delivery order has been successfully placed in Medicure. 
-      Total Amount to Pay on Delivery: Rs. ${total}
+      ${bodyIntro}
       
       We will try our best to deliver it as fast as possible.
       
@@ -505,78 +592,6 @@ export const createCodOrderController = async (req, res) => {
     res.status(500).send({
       success: false,
       message: "Error in COD Order API",
-      error,
-    });
-  }
-};
-
-// UPI PAYMENT CONTROLLER
-export const createUpiOrderController = async (req, res) => {
-  try {
-    const { cart, shippingAddress } = req.body;
-    const u = await userModel.findById({ _id: req.user._id });
-
-    // Calculate total
-    let total = 0;
-    cart.map((i) => {
-      total += i.price;
-    });
-
-    // Create Order with UPI status (pending payment confirmation)
-    const order = await new orderModel({
-      products: cart,
-      payment: {
-        success: false, // Will be updated when payment is verified
-        paymentMethod: "UPI",
-        status: "Pending",
-      },
-      paymentMode: "UPI",
-      buyer: req.user._id,
-      totalAmount: total,
-      shippingAddress: shippingAddress || u.address,
-      status: "Order Placed", // Will be confirmed after payment verification
-    }).save();
-
-    // Send Email
-    var transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.SENDER_GMAIL,
-        pass: process.env.SENDER_GMAIL_PASSCODE,
-      },
-    });
-
-    var mailOptions = {
-      from: process.env.SENDER_GMAIL,
-      to: u.email,
-      subject: "Order Placed via UPI Payment - Medicure",
-      text: `Hi ${u.name},
-      
-      Your order has been placed via UPI payment in Medicure. 
-      Total Amount: Rs. ${total}
-      
-      Please complete the payment using the QR code or UPI ID provided.
-      Once payment is confirmed, your order will be processed.
-      
-      Thank You,
-      Team Medicure`,
-    };
-
-    transporter.sendMail(mailOptions, function (error, info) {
-      if (error) {
-        console.log(error);
-        // Even if email fails, respond success because order is saved
-        res.json({ ok: true, orderId: order._id });
-      } else {
-        res.json({ ok: true, orderId: order._id });
-      }
-    });
-
-  } catch (error) {
-    console.log(error);
-    res.status(500).send({
-      success: false,
-      message: "Error in UPI Order API",
       error,
     });
   }
