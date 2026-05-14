@@ -2,6 +2,8 @@ import React from "react";
 import { useSearch } from "../../context/search";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { FiSearch } from "react-icons/fi";
+
 const SearchInput = () => {
   const [values, setValues] = useSearch();
   const navigate = useNavigate();
@@ -21,26 +23,24 @@ const SearchInput = () => {
   return (
     <div className="w-full">
       <form
-        className="flex items-center w-full relative"
+        className="group relative flex w-full items-center rounded-full border border-slate-200/90 bg-white/90 shadow-sm shadow-slate-900/[0.04] ring-1 ring-slate-900/[0.03] transition focus-within:border-sky-300 focus-within:shadow-md focus-within:ring-2 focus-within:ring-sky-500/20"
         role="search"
         onSubmit={handleSubmit}
       >
         <input
-          className="flex-1 border-none rounded-full px-4 py-2.5 pr-12 outline-none bg-white text-gray-700 placeholder-gray-400 shadow-sm focus:shadow-md transition-shadow w-full"
+          className="min-h-[44px] w-full flex-1 rounded-full border-0 bg-transparent py-2.5 pl-4 pr-12 text-sm text-slate-800 outline-none placeholder:text-slate-400"
           type="search"
-          placeholder="Search Your Product..."
-          aria-label="Search"
+          placeholder="Search medicines & health products…"
+          aria-label="Search products"
           value={values.keyword}
           onChange={(e) => setValues({ ...values, keyword: e.target.value })}
         />
         <button
-          className="absolute right-2 bg-transparent border-none cursor-pointer p-2 hover:opacity-80 transition-opacity"
+          className="absolute right-1.5 flex h-9 w-9 items-center justify-center rounded-full bg-sky-600 text-white transition hover:bg-sky-700 focus-visible:outline focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
           type="submit"
-          aria-label="Search"
+          aria-label="Submit search"
         >
-          <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
+          <FiSearch className="h-4 w-4" strokeWidth={2.25} />
         </button>
       </form>
     </div>

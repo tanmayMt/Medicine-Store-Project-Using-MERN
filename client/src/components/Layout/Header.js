@@ -54,28 +54,25 @@ const Header = () => {
 
   // Nav Item Styles (Dark text for light gradient bg)
   const navItemClasses = ({ isActive }) =>
-    `px-4 py-2 rounded-full text-base font-semibold transition-all duration-200 flex items-center ${isActive
-      ? "bg-blue-600 text-white shadow-md"
-      : "text-slate-700 hover:bg-white hover:text-blue-700"
+    `px-3.5 py-2 rounded-full text-sm font-semibold transition-all duration-200 flex items-center whitespace-nowrap ${
+      isActive
+        ? "bg-sky-600 text-white shadow-md shadow-sky-900/15"
+        : "text-slate-700 hover:bg-white/90 hover:text-sky-800 hover:shadow-sm"
     }`;
 
   const dropdownButtonClasses =
-    "flex items-center px-4 py-2 rounded-full text-base font-semibold text-slate-700 hover:bg-white hover:text-blue-700 transition-all duration-200 focus:outline-none";
+    "flex items-center gap-1 rounded-full px-3.5 py-2 text-sm font-semibold text-slate-700 transition-all duration-200 hover:bg-white/90 hover:text-sky-800 hover:shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500/40";
 
   return (
     <>
       <nav
-        className="fixed top-0 left-0 right-0 z-50 shadow-sm font-sans border-b border-blue-100"
-        // RESTORED: Original Gradient Background
-        style={{
-          background: "linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 50%, #ffffff 100%)",
-        }}
+        className="fixed top-0 left-0 right-0 z-50 border-b border-slate-200/70 bg-gradient-to-r from-sky-50/90 via-white/85 to-cyan-50/90 backdrop-blur-md shadow-sm shadow-slate-900/[0.04] font-sans"
+        aria-label="Main navigation"
       >
-        <div className="w-full px-6 lg:px-8">
-          <div className="flex items-center justify-between h-[70px]">
-
-            {/* ================= LEFT: BRANDING ================= */}
-            <Link to="/" className="flex items-center gap-2 group">
+        <div className="w-full px-4 lg:px-6">
+          <div className="flex h-[72px] w-full items-center justify-between gap-3 lg:gap-4">
+            {/* LEFT: BRANDING — flush to content padding */}
+            <Link to="/" className="flex shrink-0 items-center gap-2 group">
               <div className="relative transform group-hover:scale-105 transition-transform duration-200">
                 <svg
                   className="w-8 h-8"
@@ -110,16 +107,16 @@ const Header = () => {
               </span>
             </Link>
 
-            {/* ================= CENTER: SEARCH BAR ================= */}
-            <div className="hidden lg:flex items-center justify-center flex-1 max-w-md mx-8">
-              <div className="w-full">
+            {/* CENTER: SEARCH — grows so bar uses full width; inner max-width keeps field readable */}
+            <div className="hidden min-w-0 flex-1 justify-center px-2 sm:px-3 lg:flex">
+              <div className="w-full max-w-md lg:max-w-lg xl:max-w-xl">
                 <SearchInput />
               </div>
             </div>
 
-            {/* ================= RIGHT: NAVIGATION ================= */}
-            <div className="hidden lg:flex items-center gap-3">
-              <div className="flex items-center gap-1 ml-2">
+            {/* RIGHT: NAV + AUTH — flush to content padding */}
+            <div className="hidden shrink-0 items-center gap-1 lg:flex">
+              <div className="flex items-center gap-1">
                 <NavLink to="/" className={navItemClasses}>
                   Home
                 </NavLink>
@@ -137,10 +134,10 @@ const Header = () => {
 
                   {categoriesDropdownOpen && (
                     <div className="absolute top-full right-0 pt-1 z-50">
-                      <div className="w-56 bg-white border border-gray-100 shadow-xl py-2 rounded-md">
+                      <div className="w-56 rounded-xl border border-slate-100 bg-white/95 py-2 shadow-xl shadow-slate-900/10 ring-1 ring-slate-900/5 backdrop-blur-sm">
                         <Link
                           to="/categories"
-                          className="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600"
+                          className="block px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-sky-50 hover:text-sky-800"
                           onClick={() => setCategoriesDropdownOpen(false)}
                         >
                           All Categories
@@ -149,7 +146,7 @@ const Header = () => {
                           <Link
                             key={c._id}
                             to={`/category/${c.slug}`}
-                            className="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600"
+                            className="block px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-sky-50 hover:text-sky-800"
                             onClick={() => setCategoriesDropdownOpen(false)}
                           >
                             {c.name}
@@ -163,7 +160,7 @@ const Header = () => {
                 <NavLink to="/cart" className={navItemClasses}>
                   Cart
                   {cartTotalUnits(cart) > 0 && (
-                    <span className="ml-2 bg-blue-600 text-white text-[10px] font-bold h-5 w-5 flex items-center justify-center rounded-full">
+                    <span className="ml-1.5 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-sky-700 px-1 text-[10px] font-bold text-white">
                       {cartTotalUnits(cart)}
                     </span>
                   )}
@@ -173,10 +170,10 @@ const Header = () => {
               {/* ================= USER AUTH SECTION ================= */}
               {!auth?.user ? (
                 <>
-                  <div className="w-px h-6 bg-slate-300 mx-2"></div>
+                  <div className="mx-1.5 h-6 w-px shrink-0 bg-slate-200/90" aria-hidden />
                   <NavLink
                     to="/login"
-                    className="flex items-center justify-center w-10 h-10 rounded-full border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-all duration-200"
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-sky-600 text-sky-700 transition-all duration-200 hover:bg-sky-600 hover:text-white hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
                     title="Login"
                   >
                     <FiUser className="w-5 h-5" />
@@ -184,17 +181,17 @@ const Header = () => {
                 </>
               ) : (
                 <>
-                  <div className="w-px h-6 bg-slate-300 mx-2"></div>
+                  <div className="mx-1.5 h-6 w-px shrink-0 bg-slate-200/90" aria-hidden />
                   <div
                     ref={userDropdownRef}
                     className="relative"
                     onMouseEnter={() => setUserDropdownOpen(true)}
                     onMouseLeave={() => setUserDropdownOpen(false)}
                   >
-                    {/* User Avatar */}
                     <button
+                      type="button"
                       onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                      className="flex items-center justify-center w-10 h-10 rounded-full bg-white border border-blue-200 text-blue-600 text-lg font-bold hover:bg-blue-50 transition-colors duration-200 focus:outline-none shadow-sm"
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-sky-200 bg-white text-base font-bold text-sky-700 shadow-sm transition-colors duration-200 hover:border-sky-300 hover:bg-sky-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500/40"
                     >
                       {getUserInitial()}
                     </button>
@@ -202,40 +199,35 @@ const Header = () => {
                     {/* Custom Dropdown */}
                     {userDropdownOpen && (
                       <div className="absolute top-full right-0 pt-3 z-50">
-                        <div className="w-72 bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] border border-gray-100 overflow-hidden">
-                          {/* 1. Header Section */}
-                          <div className="px-6 py-5 border-b border-gray-50 bg-gray-50/30">
-                            <h4 className="text-base font-bold text-gray-900 leading-tight">
+                        <div className="w-72 overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-xl shadow-slate-900/10 ring-1 ring-slate-900/5">
+                          <div className="border-b border-slate-100 bg-gradient-to-br from-sky-50/80 to-white px-6 py-5">
+                            <h4 className="text-base font-bold leading-tight text-slate-900">
                               {auth?.user?.name}
                             </h4>
-                            <p className="text-sm text-gray-500 mt-1 break-words">
-                              {auth?.user?.email}
-                            </p>
+                            <p className="mt-1 break-words text-sm text-slate-600">{auth?.user?.email}</p>
                           </div>
 
-                          {/* 2. Menu Items */}
                           <div className="py-2">
                             <NavLink
-                              to={`/dashboard/${auth?.user?.role === 1 ? "admin" : "user"
-                                }`}
-                              className="flex items-center gap-3 px-6 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                              to={`/dashboard/${auth?.user?.role === 1 ? "admin" : "user"}`}
+                              className="flex items-center gap-3 px-6 py-3 text-sm font-medium text-slate-700 transition hover:bg-sky-50 hover:text-sky-900"
                               onClick={() => setUserDropdownOpen(false)}
                             >
-                              <FiUser className="w-4 h-4" />
+                              <FiUser className="h-4 w-4 text-sky-600" />
                               Dashboard
                             </NavLink>
 
-                            <div className="h-px bg-gray-50 mx-6 my-1"></div>
+                            <div className="mx-6 my-1 h-px bg-slate-100" />
 
-                            {/* 3. Logout Item */}
                             <button
+                              type="button"
                               onClick={() => {
                                 handleLogout();
                                 setUserDropdownOpen(false);
                               }}
-                              className="w-full flex items-center gap-3 px-6 py-3 text-sm font-medium text-red-500 hover:bg-red-50 transition-colors text-left"
+                              className="flex w-full items-center gap-3 px-6 py-3 text-left text-sm font-medium text-red-600 transition hover:bg-red-50"
                             >
-                              <FiLogOut className="w-4 h-4" />
+                              <FiLogOut className="h-4 w-4" />
                               Logout
                             </button>
                           </div>
@@ -249,8 +241,11 @@ const Header = () => {
 
             {/* Mobile Menu Toggle */}
             <button
-              className="lg:hidden p-2 text-slate-700 hover:text-blue-600"
+              type="button"
+              className="shrink-0 rounded-lg p-2 text-slate-700 transition hover:bg-white/80 hover:text-sky-700 focus-visible:outline focus-visible:ring-2 focus-visible:ring-sky-500/40 lg:hidden"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-expanded={mobileMenuOpen}
+              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
             >
               {mobileMenuOpen ? <FiX className="w-6 h-6" /> : <FiMenu className="w-6 h-6" />}
             </button>
@@ -259,21 +254,22 @@ const Header = () => {
 
         {/* Mobile Menu Overlay */}
         {mobileMenuOpen && (
-          <div className="lg:hidden bg-white border-t border-gray-200 shadow-lg p-6 flex flex-col gap-4">
-            <div className="w-full mb-4">
+          <div className="border-t border-slate-200/80 bg-white/95 shadow-inner backdrop-blur-md lg:hidden">
+          <div className="w-full space-y-1 px-4 py-5 lg:px-6">
+            <div className="w-full pb-2">
               <SearchInput />
             </div>
             <NavLink
               to="/"
               onClick={() => setMobileMenuOpen(false)}
-              className="text-base font-semibold text-gray-800 hover:text-blue-600"
+              className="block rounded-lg px-3 py-2.5 text-base font-semibold text-slate-800 hover:bg-sky-50 hover:text-sky-800"
             >
               Home
             </NavLink>
             <NavLink
               to="/categories"
               onClick={() => setMobileMenuOpen(false)}
-              className="text-base font-semibold text-gray-800 hover:text-blue-600"
+              className="block rounded-lg px-3 py-2.5 text-base font-semibold text-slate-800 hover:bg-sky-50 hover:text-sky-800"
             >
               Categories
             </NavLink>
@@ -282,14 +278,14 @@ const Header = () => {
                 <NavLink
                   to="/register"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="text-base font-semibold text-gray-800 hover:text-blue-600"
+                  className="block rounded-lg px-3 py-2.5 text-base font-semibold text-slate-800 hover:bg-sky-50 hover:text-sky-800"
                 >
                   Register
                 </NavLink>
                 <NavLink
                   to="/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="text-base font-semibold text-gray-800 hover:text-blue-600"
+                  className="block rounded-lg px-3 py-2.5 text-base font-semibold text-slate-800 hover:bg-sky-50 hover:text-sky-800"
                 >
                   Login
                 </NavLink>
@@ -299,16 +295,17 @@ const Header = () => {
                 <NavLink
                   to={`/dashboard/${auth?.user?.role === 1 ? "admin" : "user"}`}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="text-base font-semibold text-gray-800 hover:text-blue-600"
+                  className="block rounded-lg px-3 py-2.5 text-base font-semibold text-slate-800 hover:bg-sky-50 hover:text-sky-800"
                 >
                   Dashboard
                 </NavLink>
                 <button
+                  type="button"
                   onClick={() => {
                     handleLogout();
                     setMobileMenuOpen(false);
                   }}
-                  className="text-base font-semibold text-red-500 hover:text-red-600 text-left"
+                  className="block w-full rounded-lg px-3 py-2.5 text-left text-base font-semibold text-red-600 hover:bg-red-50"
                 >
                   Logout
                 </button>
@@ -317,15 +314,15 @@ const Header = () => {
             <NavLink
               to="/cart"
               onClick={() => setMobileMenuOpen(false)}
-              className="text-base font-semibold text-gray-800 hover:text-blue-600"
+              className="block rounded-lg px-3 py-2.5 text-base font-semibold text-slate-800 hover:bg-sky-50 hover:text-sky-800"
             >
               Cart {cartTotalUnits(cart) > 0 && `(${cartTotalUnits(cart)})`}
             </NavLink>
+            </div>
           </div>
         )}
       </nav>
-      {/* Spacer div */}
-      <div className="h-[70px]"></div>
+      <div className="h-[72px]" aria-hidden />
     </>
   );
 };
